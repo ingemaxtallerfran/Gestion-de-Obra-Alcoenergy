@@ -622,6 +622,64 @@ function generarReporte(){
     html+='</tbody></table></div>';
   }
 
+  // ── GANTT SVG ──
+  if(inclGantt && tareas.length>0){
+    var minD=desde||tareas.reduce(function(m,t){return t.inicio<m?t.inicio:m;},tareas[0].inicio);
+    var maxD=hasta||tareas.reduce(function(m,t){return t.fin>m?t.fin:m;},tareas[0].fin);
+    var totalMs=new Date(maxD)-new Date(minD);
+    var totalDias=Math.ceil(totalMs/86400000)+1;
+    var LABEL_W=180, BAR_H=14, ROW_H=20, HEADER_H=30;
+    var CHART_W=580;
+    var colores={suelo:'#D97706',encofrado:'#3B82F6',hormigon:'#6B7280',detalle:'#16A34A'};
+
+    var svgRows='';
+    var y=HEADER_H;
+    // Agrupar por sector
+    var sectoresVistos={};
+    tareas.forEach(function(t){
+      if(!sectoresVistos[t.sector]){
+        sectoresVistos[t.sector]=true;
+        // Header de sector
+        svgRows+='<rect x="0" y="'+y+'" width="'+(LABEL_W+CHART_W)+'" height="'+ROW_H+'" fill="#1a1a2e"/>';
+        svgRows+='<text x="8" y="'+(y+14)+'" font-family="Barlow Condensed,sans-serif" font-size="10" font-weight="800" fill="#A78BFA" letter-spacing="1">'+escHGlob(t.sector.toUpperCase())+'</text>';
+        y+=ROW_H;
+      }
+      // Fila tarea
+      var bg=t.parentId?'#f8f8f8':'#f0f0f0';
+      svgRows+='<rect x="0" y="'+y+'" width="'+(LABEL_W+CHART_W)+'" height="'+ROW_H+'" fill="'+bg+'"/>';
+      var indent=t.parentId?12:4;
+      var label=t.nombre.length>22?t.nombre.slice(0,22)+'…':t.nombre;
+      svgRows+='<text x="'+(indent)+'" y="'+(y+13)+'" font-family="Barlow Condensed,sans-serif" font-size="'+(t.parentId?9:10)+'" font-weight="'+(t.parentId?'400':'700')+'" fill="#333">'+escHGlob(label)+'</text>';
+      // Barra
+      var startMs=new Date(t.inicio)-new Date(minD);
+      var durMs=new Date(t.fin)-new Date(t.inicio)+86400000;
+      var bx=LABEL_W+Math.round((startMs/totalMs)*CHART_W);
+      var bw=Math.max(Math.round((durMs/totalMs)*CHART_W),4);
+      var bColor=t.cuadrilla?colores[t.cuadrilla]||'#888':'#ccc';
+      svgRows+='<rect x="'+bx+'" y="'+(y+3)+'" width="'+bw+'" height="'+BAR_H+'" rx="2" fill="'+bColor+'" opacity="0.85"/>';
+      if(t.m3) svgRows+='<text x="'+(bx+3)+'" y="'+(y+13)+'" font-family="Barlow Condensed,sans-serif" font-size="8" font-weight="800" fill="#fff">'+t.m3+'m³</text>';
+      y+=ROW_H;
+    });
+    var totalH=y+10;
+
+    // Header de fechas
+    var headerCells='';
+    var stepDias=Math.ceil(totalDias/8);
+    for(var di=0;di<=totalDias;di+=stepDias){
+      var dx=LABEL_W+Math.round((di/totalDias)*CHART_W);
+      var dLabel=new Date(new Date(minD).getTime()+di*86400000);
+      var dStr=(dLabel.getDate())+'/'+(dLabel.getMonth()+1);
+      headerCells+='<line x1="'+dx+'" y1="0" x2="'+dx+'" y2="'+totalH+'" stroke="#ddd" stroke-width="0.5"/>';
+      headerCells+='<text x="'+dx+'" y="20" font-family="Barlow Condensed,sans-serif" font-size="9" fill="#888" text-anchor="middle">'+dStr+'</text>';
+    }
+
+    var svg='<svg width="'+(LABEL_W+CHART_W)+'" height="'+totalH+'" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:'+(LABEL_W+CHART_W)+'px;">'
+      +'<rect width="'+(LABEL_W+CHART_W)+'" height="'+totalH+'" fill="#fff"/>'
+      +headerCells+svgRows+'</svg>';
+
+    html+='<div class="ps-section" style="page-break-before:always;"><div class="ps-section-title">Cronograma — Vista Gantt</div>'+svg+'</div>';
+  }
+
   // ── CUADRILLAS ──
   if(inclCuad && st.cuadrillas){
     html+='<div class="ps-section"><div class="ps-section-title">Cuadrillas — Pico de Simultaneidad</div>'
@@ -914,6 +972,77 @@ function delMaqItem(i){
 }
 
 // ── TEMA GLOBAL (fuera del IIFE para que onclick pueda acceder) ──
+// ── VER DETALLE (modo lectura) ──
+function cerrarDetalle(){
+  var ov=document.getElementById('detalleOverlay');
+  if(ov)ov.remove();
+}
+function verDetalle(t){
+  cerrarDetalle();
+  var colores={suelo:'#D97706',encofrado:'#3B82F6',hormigon:'#6B7280',detalle:'#16A34A'};
+  var color=t.cuadrilla?(colores[t.cuadrilla]||'#888'):'#888';
+  var cuadNombre='';
+  if(window._stateRef&&t.cuadrilla){
+    var c=(window._stateRef.cuadrillas||[]).find(function(c){return c.id===t.cuadrilla;});
+    if(c)cuadNombre=c.nombre;
+  }
+  var dur=t.inicio&&t.fin?Math.round((new Date(t.fin)-new Date(t.inicio))/86400000)+1:0;
+  var maqStr=(t.maquinas||[]).map(function(m){return m.cant+'x '+m.tipo;}).join(', ');
+
+  var ov=document.createElement('div');
+  ov.id='detalleOverlay';
+  ov.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:400;display:flex;align-items:flex-end;justify-content:center;';
+  ov.onclick=function(e){if(e.target===ov)ov.remove();};
+
+  var card=document.createElement('div');
+  card.style.cssText='background:var(--gris1,#1a1a1a);border-top:3px solid var(--naranja,#E8651A);border-radius:18px 18px 0 0;width:100%;max-width:560px;padding:20px 20px 36px;animation:slideUp .2s ease;';
+
+  // Header
+  var hdr=document.createElement('div');
+  hdr.style.cssText='display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:14px;';
+  var title=document.createElement('div');
+  title.style.cssText='font-family:Barlow Condensed,sans-serif;font-size:20px;font-weight:800;color:var(--texto,#f0f0f0);line-height:1.2;max-width:400px;';
+  title.textContent=t.nombre;
+  var closeBtn=document.createElement('button');
+  closeBtn.textContent='✕';
+  closeBtn.style.cssText='background:var(--gris2,#252525);border:1px solid var(--borde,#2e2e2e);color:var(--texto,#f0f0f0);border-radius:50%;width:32px;height:32px;font-size:18px;cursor:pointer;flex-shrink:0;';
+  closeBtn.onclick=function(){ov.remove();};
+  hdr.appendChild(title); hdr.appendChild(closeBtn);
+  card.appendChild(hdr);
+
+  // Filas de datos
+  var body=document.createElement('div');
+  body.style.cssText='display:flex;flex-direction:column;gap:0;';
+
+  function addRow(label, value, html){
+    var row=document.createElement('div');
+    row.style.cssText='display:flex;gap:10px;align-items:center;padding:8px 0;border-bottom:1px solid var(--borde,#2e2e2e);';
+    var lbl=document.createElement('span');
+    lbl.style.cssText='font-family:Barlow Condensed,sans-serif;font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--gris5,#888);width:90px;flex-shrink:0;';
+    lbl.textContent=label;
+    var val=document.createElement('span');
+    val.style.cssText='font-family:Barlow Condensed,sans-serif;font-size:14px;color:var(--texto,#f0f0f0);';
+    if(html) val.innerHTML=value; else val.textContent=value;
+    row.appendChild(lbl); row.appendChild(val);
+    body.appendChild(row);
+  }
+
+  if(t.sector) addRow('Sector', t.sector);
+  if(cuadNombre) addRow('Cuadrilla', '<span style="background:'+color+'22;color:'+color+';border:1px solid '+color+'44;border-radius:20px;padding:2px 9px;font-size:12px;font-weight:700;">'+escHGlob(cuadNombre)+'</span>', true);
+  if(t.inicio) addRow('Inicio', fmtDateES(t.inicio));
+  if(t.fin) addRow('Fin', fmtDateES(t.fin));
+  if(dur) addRow('Duración', dur+' días');
+  if(t.personas) addRow('Personas', t.personas+'p');
+  if(t.m3) addRow('Hormigón', t.m3+' m³');
+  if(maqStr) addRow('Maquinaria', maqStr);
+  if(t.descripcion) addRow('Descripción', t.descripcion);
+  if(t.notas) addRow('Notas', t.notas);
+
+  card.appendChild(body);
+  ov.appendChild(card);
+  document.body.appendChild(ov);
+}
+
 function aplicarPlantilla(cuadrillaId){
   // Buscar la plantilla de esa cuadrilla
   const cuad = (window._stateRef ? window._stateRef.cuadrillas : []).find(c=>c.id===cuadrillaId);
@@ -2719,6 +2848,18 @@ function toggleTema(){
     document.getElementById('btnRangeAll').onclick = clearRange;
     document.getElementById('btnRange90').onclick = ()=>nextDaysRange(90);
     root.querySelectorAll('[data-edit]').forEach(b=>b.onclick=()=>openModal(taskById(b.dataset.edit),null));
+    // Click en barras del Gantt
+    root.querySelectorAll('.cf-bar[data-task]').forEach(bar=>{
+      if(bar.classList.contains('osbar')) return;
+      bar.style.cursor='pointer';
+      bar.onclick=(e)=>{
+        if(e.target.classList.contains('cf-handle')) return;
+        const task=taskById(bar.dataset.task);
+        if(!task) return;
+        if(IS_EDITOR) openModal(task,null);
+        else verDetalle(task);
+      };
+    });
     root.querySelectorAll('[data-del]').forEach(b=>b.onclick=()=>{ deleteWithChildren(b.dataset.del); save(); render(); });
     root.querySelectorAll('[data-toggle]').forEach(b=>b.onclick=()=>{ const t=taskById(b.dataset.toggle); t.collapsed=!t.collapsed; save(); render(); });
     root.querySelectorAll('[data-toggle-sector]').forEach(b=>b.onclick=()=>{ const s=sectorObj(b.dataset.toggleSector); s.collapsed=!s.collapsed; save(); render(); });
@@ -2853,12 +2994,13 @@ function toggleTema(){
     const _maqTip = (t.maquinas||[]).map(m=>m.cant+'×'+m.tipo).join(', ');
     const tooltip = [t.nombre, t.inicio+' → '+t.fin, t.descripcion, t.personas?(t.personas+' personas'):'', _maqTip].filter(Boolean).join(' | ');
     const maqStr = (t.maquinas||[]).map(m=>m.cant+'×'+m.tipo).join(', ');
+    const m3Badge = (t.cuadrilla==='hormigon' && t.m3) ? `<span style="margin-left:6px;font-size:9px;opacity:0.9;font-weight:800;">${t.m3}m³</span>` : '';
     const resourceBadge = (t.personas||maqStr) ? `<span style="margin-left:6px;font-size:9px;opacity:0.75;font-weight:400;">${t.personas?t.personas+'p':''} ${maqStr?'· '+maqStr:''}</span>` : '';
     // Etiqueta: usar _barLabel si fue seteado (vista cuadrilla), sino t.nombre
     const barLabel = (t._barLabel && !isParent) ? t._barLabel : t.nombre;
     return `<div class="cf-bar ${isParent?'parentbar':''}" style="left:${left}%;width:${width}%;top:${top}px;${bg}" data-task="${t.id}" title="${escAttr(tooltip)}">
       <span class="cf-handle left" data-mode="left" data-task="${t.id}"></span>
-      <span class="cf-bar-label">${escHtml(barLabel)}${resourceBadge}</span>
+      <span class="cf-bar-label">${escHtml(barLabel)}${m3Badge}${resourceBadge}</span>
       <span class="cf-handle right" data-mode="right" data-task="${t.id}"></span>
     </div>`;
   }
@@ -3127,8 +3269,8 @@ function toggleTema(){
           <span>🔷 Órdenes de Servicio INGEMAX</span>
         </label>
         <label class="reporte-check">
-          <input type="checkbox" id="rpGantt">
-          <span>📊 Gantt visual (próximamente)</span>
+          <input type="checkbox" id="rpGantt" checked>
+          <span>📊 Cronograma Gantt (SVG vectorial)</span>
         </label>
       </div>
     </div>
