@@ -118,7 +118,16 @@
   }
 
   /* ── GANTT ── */
-  .cf-gantt-wrap{border:1px solid var(--borde);border-radius:var(--radius);overflow-x:auto;background:var(--gris2);}
+  .cf-gantt-wrap{
+    border:1px solid var(--borde);border-radius:var(--radius);
+    overflow:auto;
+    max-height:calc(100vh - 320px);
+    min-height:300px;
+    background:var(--gris2);
+  }
+  .cf-gantt-wrap .cf-weekrow{position:sticky;top:0;z-index:10;background:var(--gris1);}
+  .cf-gantt-wrap .cf-rowlabels{position:sticky;left:0;z-index:11;}
+  .cf-gantt-wrap .cf-rowlabel-h{position:sticky;top:0;left:0;z-index:12;background:var(--negro);}
   .cf-gantt{display:flex;min-width:max-content;}
   .cf-rowlabels{position:sticky;left:0;z-index:3;background:var(--negro);border-right:1px solid var(--borde);width:280px;flex-shrink:0;}
   .cf-rowlabel-h{height:44px;border-bottom:1px solid var(--borde);}
