@@ -2435,12 +2435,14 @@ function toggleTema(){
 
     `;
  
-    document.getElementById('btnAdd').onclick = ()=>openModal(null,null);
-    document.getElementById('btnReset').onclick = ()=>{ if(confirm('¿Vaciar todas las actividades cargadas?')){ state.tasks=[]; save(); render(); } };
-    document.getElementById('btnAddCuadrilla').onclick = addCuadrilla;
-    document.getElementById('btnAddSector').onclick = addSector;
-    document.getElementById('inpProyecto').onchange = (e)=>{ state.proyecto=e.target.value; save(); };
-    document.getElementById('inpLimite').onchange = (e)=>{ state.fechaLimite=e.target.value; save(); render(); };
+    const _sa = (id,fn)=>{ const el=document.getElementById(id); if(el) el.onclick=fn; };
+    const _sc = (id,fn)=>{ const el=document.getElementById(id); if(el) el.onchange=fn; };
+    _sa('btnAdd', ()=>openModal(null,null));
+    _sa('btnReset', ()=>{ if(confirm('¿Vaciar todas las actividades cargadas?')){ state.tasks=[]; save(); render(); } });
+    _sa('btnAddCuadrilla', addCuadrilla);
+    _sa('btnAddSector', addSector);
+    _sc('inpProyecto', (e)=>{ state.proyecto=e.target.value; save(); });
+    _sc('inpLimite', (e)=>{ state.fechaLimite=e.target.value; save(); render(); });
     root.querySelectorAll('[data-vista]').forEach(b=>b.onclick=()=>{ state.vista=b.dataset.vista; save(); render(); });
     root.querySelectorAll('[data-zoom]').forEach(b=>b.onclick=()=>{ state.zoom=b.dataset.zoom; save(); render(); });
     const lvlS = document.getElementById('btnLvlSectores'); if(lvlS) lvlS.onclick = ()=>setAllCollapsed(true,true);
@@ -2449,8 +2451,8 @@ function toggleTema(){
     const openAll = document.getElementById('btnOpenAll'); if(openAll) openAll.onclick = ()=>setAllCollapsed(false,false);
     const closeAll = document.getElementById('btnCloseAll'); if(closeAll) closeAll.onclick = ()=>setAllCollapsed(true,true);
     const crewSummary = document.getElementById('btnCrewSummary'); if(crewSummary) crewSummary.onclick = ()=>{ state.showCuadrillas=!state.showCuadrillas; save(); render(); };
-    document.getElementById('inpRangoInicio').onchange = (e)=>{ state.rangoInicio=e.target.value; if(state.rangoFin && state.rangoInicio && state.rangoFin<state.rangoInicio) state.rangoFin=state.rangoInicio; save(); render(); };
-    document.getElementById('inpRangoFin').onchange = (e)=>{ state.rangoFin=e.target.value; if(state.rangoInicio && state.rangoFin && state.rangoFin<state.rangoInicio) state.rangoInicio=state.rangoFin; save(); render(); };
+    _sc('inpRangoInicio', (e)=>{ state.rangoInicio=e.target.value; if(state.rangoFin && state.rangoInicio && state.rangoFin<state.rangoInicio) state.rangoFin=state.rangoInicio; save(); render(); });
+    _sc('inpRangoFin', (e)=>{ state.rangoFin=e.target.value; save(); render(); });
     document.getElementById('btnRangeAll').onclick = clearRange;
     document.getElementById('btnRange90').onclick = ()=>nextDaysRange(90);
     root.querySelectorAll('[data-edit]').forEach(b=>b.onclick=()=>openModal(taskById(b.dataset.edit),null));
@@ -2471,24 +2473,22 @@ function toggleTema(){
         if(arrow)arrow.textContent=open?'▸':'▾';
       };
     });
-    const btnExp=document.getElementById('btnOSExpandir');
-    if(btnExp)btnExp.onclick=(e)=>{ e.stopPropagation();
+    _sa('btnOSExpandir', (e)=>{ e&&e.stopPropagation&&e.stopPropagation();
       document.querySelectorAll('.os-det').forEach(d=>d.style.display='flex');
       document.querySelectorAll('.os-row-arrow').forEach(a=>a.textContent='▾');
-    };
-    const btnCol=document.getElementById('btnOSColapsar');
-    if(btnCol)btnCol.onclick=(e)=>{ e.stopPropagation();
+    });
+    _sa('btnOSColapsar', (e)=>{ e&&e.stopPropagation&&e.stopPropagation();
       document.querySelectorAll('.os-det').forEach(d=>d.style.display='none');
       document.querySelectorAll('.os-row-arrow').forEach(a=>a.textContent='▸');
-    };
-    const btnTgl=document.getElementById('btnOSToggle');
-    if(btnTgl)btnTgl.onclick=(e)=>{ e.stopPropagation();
+    });
+    _sa('btnOSToggle', (e)=>{ e&&e.stopPropagation&&e.stopPropagation();
       const body=document.getElementById('osBody');
       if(!body)return;
       const open=body.classList.contains('open');
       body.classList.toggle('open');
-      btnTgl.textContent=open?'▸ Mostrar panel':'▾ Ocultar panel';
-    };
+      const btn=document.getElementById('btnOSToggle');
+      if(btn)btn.textContent=open?'▸ Mostrar panel':'▾ Ocultar panel';
+    });
     if(IS_EDITOR) root.querySelectorAll('[data-rename-task]').forEach(el=>{
       el.addEventListener('dblclick', (e)=>{ e.stopPropagation(); inlineRename(el, taskById(el.dataset.renameTask)); });
     });
