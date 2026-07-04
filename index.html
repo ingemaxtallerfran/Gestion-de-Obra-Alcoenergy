@@ -1,3 +1,12 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#0f0f0f">
+<title>INGEMAX — Cronograma Alcoenergy</title>
+</head>
+<body>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;800&family=Barlow:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
@@ -278,6 +287,98 @@
   [data-theme="light"] .cf-needchip{ background:var(--gris1); }
   [data-theme="light"] .cf-table tr:hover td{ background:rgba(217,84,10,.05); }
   [data-theme="light"] .theme-toggle-btn{ background:var(--gris2); }
+  /* ══════════════════════════════════
+     RESPONSIVE MOBILE (< 768px)
+  ══════════════════════════════════ */
+  @media (max-width: 768px){
+
+    /* Brandbar compacto */
+    .cf-brandbar{ padding:8px 0; flex-wrap:wrap; gap:8px; }
+    .cf-brand-tag{ display:none; }
+    .ingemax-logo-box{ height:34px; }
+    .ingemax-logo{ height:22px; }
+    .cf-brand-right{ gap:7px; flex-wrap:wrap; }
+    .cf-client-badge .lbl{ display:none; }
+    .cf-client-badge img{ height:16px; }
+    #cfEditorBadge{ font-size:10px; padding:2px 6px; }
+    #cfSyncStatus{ font-size:9px; }
+
+    /* Root padding */
+    .cf-root{ padding:0 8px 40px; }
+
+    /* Header stats compacto */
+    .cf-header{ flex-direction:column; gap:10px; }
+    .cf-stats{ flex-wrap:wrap; gap:0; }
+    .cf-stat{ min-width:80px; padding:4px 12px; }
+    .cf-stat .num{ font-size:22px; }
+    .cf-title{ font-size:20px; }
+
+    /* Panels cuadrillas/maquinas en columna */
+    .cf-summary-panels{ flex-direction:column; gap:8px; }
+    .cf-summary-chips{ gap:5px; }
+    .cf-needchip{ font-size:12px; padding:4px 10px; }
+
+    /* Toolbar: botones más chicos, wrap */
+    .cf-toolbar-section{ padding:8px 10px; }
+    .cf-toolbar{ gap:5px; }
+    .cf-segmented button{ padding:6px 8px; font-size:10px; letter-spacing:.04em; }
+    .cf-btn{ padding:6px 10px; font-size:11px; }
+    .cf-btn.mini{ font-size:10px; padding:5px 8px; }
+    .cf-field-inline{ font-size:10px; gap:5px; }
+    .cf-field-inline input[type=date]{ font-size:10px; padding:5px 6px; }
+
+    /* Gantt: labels más angostos, barras más altas para tocar */
+    .cf-rowlabels{ width:160px; }
+    .cf-rowlabel{ height:40px; font-size:11px; padding:0 6px; }
+    .cf-rowlabel.sectorrow{ height:28px; font-size:10px; }
+    .cf-grouphead{ font-size:9px; padding:4px 8px; }
+    .cf-track{ height:40px; }
+    .cf-track.sectortrack{ height:28px; }
+    .cf-bar{ height:30px; top:5px; font-size:10px; border-radius:5px; }
+    .cf-gantt-wrap{ max-height:60vh; border-radius:7px; }
+    .cf-week{ font-size:8px; }
+    .cf-week .sub{ font-size:7px; }
+
+    /* Panel detalle de tarea: ancho completo */
+    #taskDetailPanel{
+      position:fixed !important;
+      left:8px !important; right:8px !important;
+      top:auto !important; bottom:80px !important;
+      width:auto !important; max-width:none !important;
+    }
+
+    /* Modal: ocupa toda la pantalla */
+    .cf-modal-backdrop{ align-items:flex-end; }
+    .cf-modal{ border-radius:14px 14px 0 0; max-height:95vh; padding:16px 14px 30px; }
+    .cf-form-row-2{ flex-direction:column; }
+
+    /* Modal planos */
+    .planos-modal{ padding:16px 12px 30px; border-radius:14px 14px 0 0; }
+
+    /* OS section */
+    .os-row-nombre{ font-size:12px; }
+    .os-row-num{ width:36px; font-size:10px; }
+    .os-hdr-btns{ gap:5px; }
+    .os-hdr-btn{ padding:2px 7px; font-size:9px; }
+
+    /* Reporte modal */
+    .reporte-modal{ border-radius:14px 14px 0 0; padding:16px 12px 30px; }
+    .reporte-row2{ grid-template-columns:1fr; }
+
+    /* Hint */
+    .cf-hint{ font-size:10px; }
+
+    /* Legend */
+    .cf-legend{ gap:8px; font-size:10px; }
+  }
+
+  /* Pantallas muy chicas (iPhone SE, etc.) */
+  @media (max-width: 400px){
+    .cf-segmented button{ padding:5px 6px; font-size:9px; }
+    .cf-rowlabels{ width:130px; }
+    .cf-stat .num{ font-size:18px; }
+  }
+
   /* ── REPORTE / PRINT ── */
   .reporte-overlay{position:fixed;inset:0;background:rgba(0,0,0,.88);z-index:600;
     display:none;align-items:flex-start;justify-content:center;padding:24px;overflow-y:auto;}
@@ -3555,3 +3656,6 @@ function toggleTema(){
     <div id="planosSectores"></div>
   </div>
     +'<button id="taskDetailClose" '
+
+</body>
+</html>
