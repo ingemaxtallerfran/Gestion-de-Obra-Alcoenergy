@@ -785,7 +785,7 @@ function toggleTema(){
   // Estructura: { sector, nombre, tipo, url }
   // Se guardan en state.planos
 
-  // ===== Datos del CSV (fechas reales modificadas por Francisco) =====
+  // ===== Datos v32 (fechas reales de Francisco) =====
   function seedTasks(){
     return [
     {
@@ -1992,6 +1992,20 @@ function toggleTema(){
       const r = await fetch(GAS_URL + '?action=load', {signal: controller.signal});
       clearTimeout(timer);
       const d = await r.json();
+      // Limpiar fechas del Sheet que puedan venir mal formateadas
+      if(d && d.tasks) d.tasks = d.tasks.map(t=>{
+        const fixDate = v => {
+          if(!v) return '';
+          const s = String(v).trim();
+          // ya es YYYY-MM-DD
+          if(/^\d{4}-\d{2}-\d{2}$/.test(s)) return s;
+          // intentar parsear
+          const dt = new Date(s);
+          if(!isNaN(dt)) return dt.toISOString().slice(0,10);
+          return '';
+        };
+        return Object.assign({}, t, {inicio: fixDate(t.inicio), fin: fixDate(t.fin)});
+      }).filter(t=>t.inicio && t.fin);
       // Siempre usar el Sheet si tiene datos — las fechas modificadas están ahí
       if(d && d.tasks && d.tasks.length > 0){
         state = Object.assign(state, d);
