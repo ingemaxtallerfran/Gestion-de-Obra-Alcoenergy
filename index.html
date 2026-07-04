@@ -786,6 +786,7 @@ function toggleTema(){
   // Se guardan en state.planos
 
   // ===== Datos v32 (fechas reales de Francisco) =====
+    // ===== Datos v32 =====
   function seedTasks(){
     return [
     {
@@ -1954,8 +1955,8 @@ function toggleTema(){
   const ZOOMS = { dia:{dw:26}, semana:{dw:64/7}, mes:{dw:76/30.4} };
  
   function todayISO(){ return new Date().toISOString().slice(0,10); }
-  function parseD(str){ return new Date(str+'T00:00:00'); }
-  function fmt(d){ return d.toLocaleDateString('es-AR',{day:'2-digit',month:'2-digit'}); }
+  function parseD(str){ if(!str) return new Date('2026-01-01T00:00:00'); const d=new Date(str+'T00:00:00'); return isNaN(d)?new Date('2026-01-01T00:00:00'):d; }
+  function fmt(d){ if(!d||isNaN(d.getTime())) return '—'; return d.toLocaleDateString('es-AR',{day:'2-digit',month:'2-digit'}); }
   function iso(d){ const off = d.getTimezoneOffset(); const local = new Date(d.getTime()-off*60000); return local.toISOString().slice(0,10); }
   function addDays(d,n){ const r=new Date(d); r.setDate(r.getDate()+n); return r; }
   function mondayOf(d){ const r=new Date(d); const day=r.getDay(); return addDays(r,(day===0?-6:1-day)); }
@@ -2148,14 +2149,14 @@ function toggleTema(){
   function render(){
     const root = document.getElementById('cfRoot');
     const hasTasks = state.tasks.length>0;
-    const rangedTasks = tasksInRange();
+    const rangedTasks = tasksInRange().filter(t=>t.inicio && t.fin && t.inicio.length===10 && t.fin.length===10);
     const hasVisibleTasks = rangedTasks.length>0;
     const dw = ZOOMS[state.zoom].dw;
  
     let minDate, maxDate;
     if(hasVisibleTasks){
-      minDate = state.rangoInicio ? parseD(state.rangoInicio) : parseD(rangedTasks.reduce((m,t)=>t.inicio<m?t.inicio:m, rangedTasks[0].inicio));
-      let maxTask = rangedTasks.reduce((m,t)=>t.fin>m?t.fin:m, rangedTasks[0].fin);
+      minDate = state.rangoInicio ? parseD(state.rangoInicio) : parseD(rangedTasks.reduce((m,t)=>t.inicio&&t.inicio<m?t.inicio:m, rangedTasks[0]?.inicio||'2026-01-01'));
+      let maxTask = rangedTasks.reduce((m,t)=>t.fin&&t.fin>m?t.fin:m, rangedTasks[0]?.fin||'2027-01-01');
       maxDate = parseD(state.fechaLimite && state.fechaLimite>maxTask ? state.fechaLimite : maxTask);
       if(state.rangoFin) maxDate = parseD(state.rangoFin);
     } else { minDate = new Date(); maxDate = addDays(minDate,28); }
