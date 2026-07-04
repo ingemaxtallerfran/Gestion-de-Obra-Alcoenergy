@@ -269,6 +269,91 @@
   [data-theme="light"] .cf-needchip{ background:var(--gris1); }
   [data-theme="light"] .cf-table tr:hover td{ background:rgba(217,84,10,.05); }
   [data-theme="light"] .theme-toggle-btn{ background:var(--gris2); }
+  /* ── REPORTE / PRINT ── */
+  .reporte-overlay{position:fixed;inset:0;background:rgba(0,0,0,.88);z-index:600;
+    display:none;align-items:flex-start;justify-content:center;padding:24px;overflow-y:auto;}
+  .reporte-overlay.open{display:flex;}
+  .reporte-modal{background:var(--gris1,#1a1a1a);border:1px solid var(--borde,#2e2e2e);
+    border-top:3px solid var(--naranja,#E8651A);border-radius:12px;
+    width:100%;max-width:560px;padding:24px;margin:auto;}
+  .reporte-modal h2{font-family:'Barlow Condensed',sans-serif;font-size:22px;font-weight:800;
+    margin:0 0 18px;letter-spacing:.03em;}
+  .reporte-section{margin-bottom:16px;}
+  .reporte-section-title{font-family:'Barlow Condensed',sans-serif;font-size:10px;
+    font-weight:800;letter-spacing:.14em;text-transform:uppercase;color:var(--gris5,#888);
+    margin-bottom:10px;padding-bottom:6px;border-bottom:1px solid var(--borde,#2e2e2e);}
+  .reporte-checks{display:flex;flex-direction:column;gap:8px;}
+  .reporte-check{display:flex;align-items:center;gap:10px;cursor:pointer;padding:8px 12px;
+    border:1px solid var(--borde,#2e2e2e);border-radius:7px;transition:border-color .15s;
+    background:var(--gris2,#252525);}
+  .reporte-check:hover{border-color:var(--naranja,#E8651A);}
+  .reporte-check input[type=checkbox]{width:16px;height:16px;accent-color:var(--naranja,#E8651A);cursor:pointer;}
+  .reporte-check span{font-family:'Barlow Condensed',sans-serif;font-size:14px;font-weight:700;
+    color:var(--texto,#f0f0f0);}
+  .reporte-row2{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+  .reporte-field{display:flex;flex-direction:column;gap:5px;}
+  .reporte-field label{font-family:'Barlow Condensed',sans-serif;font-size:10px;font-weight:700;
+    letter-spacing:.08em;text-transform:uppercase;color:var(--gris5,#888);}
+  .reporte-field input,.reporte-field select{background:var(--gris2,#252525);
+    border:1px solid var(--borde,#2e2e2e);color:var(--texto,#f0f0f0);
+    padding:8px 10px;border-radius:7px;font-family:'Barlow',sans-serif;font-size:13px;outline:none;}
+  .reporte-field input:focus,.reporte-field select:focus{border-color:var(--naranja,#E8651A);}
+  .reporte-actions{display:flex;gap:8px;margin-top:20px;}
+  .reporte-btn-print{flex:1;background:var(--naranja,#E8651A);border:none;color:#fff;
+    border-radius:7px;padding:12px;font-family:'Barlow Condensed',sans-serif;
+    font-size:16px;font-weight:800;cursor:pointer;letter-spacing:.05em;text-transform:uppercase;}
+  .reporte-btn-cancel{background:var(--gris2,#252525);border:1px solid var(--borde,#2e2e2e);
+    color:var(--gris5,#888);border-radius:7px;padding:12px 18px;
+    font-family:'Barlow Condensed',sans-serif;font-size:14px;font-weight:700;cursor:pointer;}
+
+  /* ── HOJA DE IMPRESIÓN ── */
+  @media print {
+    body > *:not(#printSheet){ display:none !important; }
+    #printSheet{ display:block !important; }
+    @page{ size:A4 landscape; margin:15mm; }
+  }
+  #printSheet{display:none;font-family:'Barlow Condensed',sans-serif;}
+  .ps-header{display:flex;justify-content:space-between;align-items:flex-start;
+    border-bottom:3px solid #E8651A;padding-bottom:12px;margin-bottom:20px;}
+  .ps-logo-box{background:#fff;border-radius:6px;padding:6px 12px;display:flex;align-items:center;}
+  .ps-logo-box img{height:28px;}
+  .ps-title-block{}
+  .ps-proyecto{font-size:22px;font-weight:800;color:#111;letter-spacing:.02em;}
+  .ps-sub{font-size:11px;color:#666;letter-spacing:.08em;text-transform:uppercase;margin-top:2px;}
+  .ps-meta{font-size:10px;color:#888;text-align:right;}
+  .ps-section{margin-bottom:24px;}
+  .ps-section-title{font-size:11px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;
+    color:#E8651A;border-left:3px solid #E8651A;padding-left:8px;margin-bottom:12px;}
+  /* Tabla actividades */
+  .ps-table{width:100%;border-collapse:collapse;font-size:11px;}
+  .ps-table th{text-align:left;font-size:9px;font-weight:800;letter-spacing:.08em;
+    text-transform:uppercase;color:#888;padding:5px 8px;border-bottom:2px solid #eee;}
+  .ps-table td{padding:6px 8px;border-bottom:1px solid #f0f0f0;color:#222;vertical-align:middle;}
+  .ps-table tr:nth-child(even) td{background:#fafafa;}
+  .ps-chip{display:inline-block;padding:2px 7px;border-radius:20px;font-size:9px;font-weight:700;}
+  /* Gantt en print */
+  .ps-gantt-wrap{overflow:hidden;}
+  .ps-gantt-bar-row{display:flex;align-items:center;border-bottom:1px solid #f0f0f0;min-height:24px;}
+  .ps-gantt-label{width:200px;flex-shrink:0;font-size:10px;font-weight:700;color:#333;
+    padding:3px 8px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+  .ps-gantt-track{flex:1;position:relative;height:18px;background:#f8f8f8;}
+  .ps-gantt-bar{position:absolute;height:14px;top:2px;border-radius:3px;
+    display:flex;align-items:center;padding:0 5px;font-size:8px;font-weight:700;color:#fff;
+    overflow:hidden;white-space:nowrap;}
+  /* Cuadrillas */
+  .ps-crew-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;}
+  .ps-crew-card{border:1px solid #eee;border-radius:8px;padding:12px;text-align:center;}
+  .ps-crew-peak{font-size:32px;font-weight:800;color:#E8651A;}
+  .ps-crew-name{font-size:10px;color:#888;text-transform:uppercase;letter-spacing:.08em;margin-top:4px;}
+  /* OS */
+  .ps-os-row{display:flex;align-items:center;gap:8px;padding:5px 0;border-bottom:1px solid #f0f0f0;font-size:10px;}
+  .ps-os-num{font-weight:800;color:#6D28D9;width:44px;flex-shrink:0;}
+  .ps-os-nombre{flex:1;color:#222;}
+  .ps-os-estado{font-size:8px;font-weight:700;padding:2px 6px;border-radius:20px;}
+  .ps-os-estado.realizado{background:#dcfce7;color:#16a34a;}
+  .ps-os-estado.pendiente{background:#fff7ed;color:#E8651A;}
+  .ps-os-estado.sin_fecha{background:#f3f4f6;color:#888;}
+
   /* ── PLANOS MODAL ── */
   .planos-overlay{position:fixed;inset:0;background:rgba(0,0,0,.88);z-index:500;display:none;
     align-items:flex-start;justify-content:center;padding:24px;overflow-y:auto;}
@@ -456,6 +541,168 @@
  
 <script>
 // ── MÁQUINAS MODAL — funciones globales ──
+
+
+// ════════════════════════════════════════
+//  REPORTE PDF
+// ════════════════════════════════════════
+function abrirReporte(){
+  var ov=document.getElementById('reporteOverlay');
+  if(!ov)return;
+  // Setear fechas default = rango actual del cronograma
+  var hoy=new Date().toISOString().slice(0,10);
+  document.getElementById('rpDesde').value = hoy.slice(0,7)+'-01';
+  document.getElementById('rpHasta').value = '2027-02-28';
+  ov.classList.add('open');
+}
+function cerrarReporte(){
+  var ov=document.getElementById('reporteOverlay');
+  if(ov)ov.classList.remove('open');
+}
+
+function generarReporte(){
+  var desde=document.getElementById('rpDesde').value;
+  var hasta=document.getElementById('rpHasta').value;
+  var inclGantt=document.getElementById('rpGantt').checked;
+  var inclTabla=document.getElementById('rpTabla').checked;
+  var inclCuad=document.getElementById('rpCuad').checked;
+  var inclMaq=document.getElementById('rpMaq').checked;
+  var inclOS=document.getElementById('rpOS').checked;
+
+  var st=window._stateRef;
+  if(!st){alert('No hay datos cargados.');return;}
+
+  var tareas=st.tasks.filter(function(t){
+    if(!t.inicio||!t.fin)return false;
+    if(desde&&t.fin<desde)return false;
+    if(hasta&&t.inicio>hasta)return false;
+    return true;
+  });
+
+  // Armar el HTML del reporte
+  var now=new Date();
+  var fechaGen=now.toLocaleDateString('es-AR',{day:'2-digit',month:'2-digit',year:'numeric'});
+
+  // Logo base64 desde el INGEMAX_SVG
+  var logoHtml='<div style="font-family:Barlow Condensed,sans-serif;font-size:20px;font-weight:800;color:#E8651A;">INGEMAX S.A.</div>';
+
+  var html='<div class="ps-header">'
+    +'<div>'
+    +'<div class="ps-proyecto">'+escHGlob(st.proyecto||'Alcoenergy — Obra Civil')+'</div>'
+    +'<div class="ps-sub">Cronograma de Obra Civil · INGEMAX S.A.</div>'
+    +'</div>'
+    +'<div class="ps-meta">'
+    +'Generado: '+fechaGen+'<br>'
+    +(desde||'inicio')+' → '+(hasta||'fin')+'<br>'
+    +'<strong>'+tareas.length+' actividades</strong>'
+    +'</div>'
+    +'</div>';
+
+  // ── TABLA DE ACTIVIDADES ──
+  if(inclTabla && tareas.length>0){
+    var colores={suelo:'#D97706',encofrado:'#3B82F6',hormigon:'#6B7280',detalle:'#16A34A'};
+    html+='<div class="ps-section"><div class="ps-section-title">Actividades y Subactividades</div>'
+      +'<table class="ps-table">'
+      +'<thead><tr><th>Actividad</th><th>Sector</th><th>Cuadrilla</th><th>Inicio</th><th>Fin</th><th>Duración</th><th>Personas</th></tr></thead>'
+      +'<tbody>';
+    tareas.forEach(function(t){
+      var dur=Math.round((new Date(t.fin)-new Date(t.inicio))/(1000*60*60*24))+1;
+      var color=t.cuadrilla?colores[t.cuadrilla]||'#888':'#ccc';
+      var indent=t.parentId?'padding-left:16px;':'font-weight:700;';
+      html+='<tr>'
+        +'<td style="'+indent+'">'+escHGlob(t.nombre)+'</td>'
+        +'<td style="font-size:9px;color:#888;">'+escHGlob(t.sector||'')+'</td>'
+        +'<td>'+(t.cuadrilla?'<span class="ps-chip" style="background:'+color+'22;color:'+color+';">'+escHGlob(t.cuadrilla)+'</span>':'—')+'</td>'
+        +'<td>'+fmtDateES(t.inicio)+'</td>'
+        +'<td>'+fmtDateES(t.fin)+'</td>'
+        +'<td style="text-align:center;">'+dur+' días</td>'
+        +'<td style="text-align:center;">'+(t.personas||'—')+'</td>'
+        +'</tr>';
+    });
+    html+='</tbody></table></div>';
+  }
+
+  // ── CUADRILLAS ──
+  if(inclCuad && st.cuadrillas){
+    html+='<div class="ps-section"><div class="ps-section-title">Cuadrillas — Pico de Simultaneidad</div>'
+      +'<div class="ps-crew-grid">';
+    st.cuadrillas.forEach(function(c){
+      // Calcular pico
+      var activas=tareas.filter(function(t){return t.cuadrilla===c.id;});
+      var pico=0;
+      activas.forEach(function(t1){
+        var simult=activas.filter(function(t2){return t2.inicio<=t1.inicio&&t2.fin>=t1.inicio;}).length;
+        if(simult>pico)pico=simult;
+      });
+      html+='<div class="ps-crew-card">'
+        +'<div class="ps-crew-peak">'+pico+'</div>'
+        +'<div class="ps-crew-name">'+escHGlob(c.nombre)+'</div>'
+        +'</div>';
+    });
+    html+='</div></div>';
+  }
+
+  // ── MÁQUINAS ──
+  if(inclMaq){
+    var maqMap={};
+    tareas.forEach(function(t){
+      (t.maquinas||[]).forEach(function(m){
+        if(!maqMap[m.tipo])maqMap[m.tipo]=0;
+        maqMap[m.tipo]=Math.max(maqMap[m.tipo],m.cant);
+      });
+    });
+    var tipos=Object.keys(maqMap);
+    if(tipos.length>0){
+      html+='<div class="ps-section"><div class="ps-section-title">Maquinaria — Máximo Simultáneo</div>'
+        +'<table class="ps-table"><thead><tr><th>Equipo</th><th>Cant. máx.</th></tr></thead><tbody>';
+      tipos.forEach(function(tipo){
+        html+='<tr><td>'+escHGlob(tipo)+'</td><td style="text-align:center;font-weight:800;">'+maqMap[tipo]+'</td></tr>';
+      });
+      html+='</tbody></table></div>';
+    }
+  }
+
+  // ── ÓRDENES DE SERVICIO ──
+  if(inclOS && typeof ORDENES_SERVICIO!=='undefined'){
+    html+='<div class="ps-section"><div class="ps-section-title">Órdenes de Servicio INGEMAX</div>';
+    ORDENES_SERVICIO.forEach(function(os){
+      html+='<div class="ps-os-row">'
+        +'<span class="ps-os-num">'+os.id+'</span>'
+        +'<span class="ps-os-nombre">'+escHGlob(os.nombre)+'</span>'
+        +(os.inicio?'<span style="font-size:9px;color:#888;white-space:nowrap;">'+fmtDateES(os.inicio)+(os.fin&&os.fin!==os.inicio?' → '+fmtDateES(os.fin):'')+'</span>':'')
+        +'<span class="ps-os-estado '+os.estado+'">'+( os.estado==='realizado'?'Realizado':os.estado==='pendiente'?'Pendiente':'Sin fecha')+'</span>'
+        +'</div>';
+    });
+    html+='</div>';
+  }
+
+  // Pie de página
+  html+='<div style="margin-top:30px;padding-top:10px;border-top:1px solid #eee;'
+    +'font-size:9px;color:#aaa;display:flex;justify-content:space-between;">'
+    +'<span>INGEMAX S.A. — Sistema de Gestión de Obra Civil</span>'
+    +'<span>'+escHGlob(st.proyecto||'Alcoenergy')+'</span>'
+    +'</div>';
+
+  // Mostrar en printSheet y ejecutar print
+  var sheet=document.getElementById('printSheet');
+  sheet.innerHTML=html;
+  sheet.style.display='block';
+  cerrarReporte();
+
+  // Dar tiempo al browser para renderizar
+  setTimeout(function(){
+    window.print();
+    // Después de imprimir, ocultar la hoja
+    setTimeout(function(){ sheet.style.display='none'; }, 500);
+  }, 300);
+}
+
+function fmtDateES(str){
+  if(!str)return '—';
+  var parts=str.split('-');
+  if(parts.length!==3)return str;
+  return parts[2]+'/'+parts[1]+'/'+parts[0];
+}
 
 // ── PLANOS ──
 function abrirPlanos(){
@@ -2288,6 +2535,7 @@ function toggleTema(){
         </div>
         <div class="cf-brand-right" style="display:flex;align-items:center;gap:10px;">
           <div class="cf-client-badge"><span class="lbl">Obra de</span><img src="${ALCO_LOGO}" alt="AlcoEnergy"/></div>
+          <button onclick="abrirReporte()" style="background:rgba(232,101,26,.15);border:1px solid rgba(232,101,26,.45);color:var(--naranja,#E8651A);border-radius:7px;padding:6px 14px;font-family:Barlow Condensed,sans-serif;font-size:12px;font-weight:800;cursor:pointer;letter-spacing:.06em;text-transform:uppercase;display:flex;align-items:center;gap:6px;white-space:nowrap;">🖨 Reporte</button>
           <button onclick="abrirPlanos()" style="background:rgba(124,58,237,.15);border:1px solid rgba(124,58,237,.45);color:#A78BFA;border-radius:7px;padding:6px 14px;font-family:Barlow Condensed,sans-serif;font-size:12px;font-weight:800;cursor:pointer;letter-spacing:.06em;text-transform:uppercase;display:flex;align-items:center;gap:6px;white-space:nowrap;">📋 Planos</button>
           <span id="cfEditorBadge"></span>
           <span id="cfSyncStatus"></span>
@@ -2836,6 +3084,61 @@ function toggleTema(){
 </script>
 
 
+
+<!-- ── HOJA DE IMPRESIÓN ── -->
+<div id="printSheet" style="display:none;padding:0;background:#fff;color:#111;font-family:'Barlow Condensed',sans-serif;"></div>
+
+<!-- ── MODAL REPORTE ── -->
+<div class="reporte-overlay" id="reporteOverlay" onclick="if(event.target===this)cerrarReporte()">
+  <div class="reporte-modal">
+    <h2>🖨 Generar Reporte PDF</h2>
+
+    <div class="reporte-section">
+      <div class="reporte-section-title">Rango de fechas</div>
+      <div class="reporte-row2">
+        <div class="reporte-field">
+          <label>Desde</label>
+          <input type="date" id="rpDesde">
+        </div>
+        <div class="reporte-field">
+          <label>Hasta</label>
+          <input type="date" id="rpHasta">
+        </div>
+      </div>
+    </div>
+
+    <div class="reporte-section">
+      <div class="reporte-section-title">Contenido a incluir</div>
+      <div class="reporte-checks">
+        <label class="reporte-check">
+          <input type="checkbox" id="rpTabla" checked>
+          <span>📋 Tabla de actividades y subactividades</span>
+        </label>
+        <label class="reporte-check">
+          <input type="checkbox" id="rpCuad" checked>
+          <span>👷 Resumen de cuadrillas (pico de simultaneidad)</span>
+        </label>
+        <label class="reporte-check">
+          <input type="checkbox" id="rpMaq" checked>
+          <span>🚜 Resumen de maquinaria</span>
+        </label>
+        <label class="reporte-check">
+          <input type="checkbox" id="rpOS" checked>
+          <span>🔷 Órdenes de Servicio INGEMAX</span>
+        </label>
+        <label class="reporte-check">
+          <input type="checkbox" id="rpGantt">
+          <span>📊 Gantt visual (próximamente)</span>
+        </label>
+      </div>
+    </div>
+
+    <div class="reporte-actions">
+      <button class="reporte-btn-cancel" onclick="cerrarReporte()">Cancelar</button>
+      <button class="reporte-btn-print" onclick="generarReporte()">🖨 Generar e Imprimir</button>
+    </div>
+  </div>
+</div>
 
 <!-- ── OVERLAY PLANOS ── -->
 <div class="planos-overlay" id="planosOverlay" onclick="if(event.target===this)cerrarPlanos()">
