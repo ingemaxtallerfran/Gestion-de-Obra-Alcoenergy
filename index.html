@@ -1296,6 +1296,8 @@ function verDetalle(t){
 function aplicarPlantilla(cuadrillaId){
   // Buscar la plantilla de esa cuadrilla
   const cuad = (window._stateRef ? window._stateRef.cuadrillas : []).find(c=>c.id===cuadrillaId);
+  const m3row = document.getElementById('mM3Wrap');
+  if(m3row) m3row.style.display = cuadrillaId==='hormigon' ? 'flex' : 'none';
   if(!cuad || !cuad.plantilla) return;
   const p = cuad.plantilla;
   // Setear personas
@@ -3389,6 +3391,7 @@ function toggleTema(){
         <div class="cf-form-row"><label>Descripción / Tareas específicas</label><textarea id="mDesc" rows="2" placeholder="Ej: Sacar 40cm suelo, tirar cal, compactar">${t?escHtml(t.descripcion||''):''}</textarea></div>
         <div class="cf-form-row-2">
           <div class="cf-form-row"><label>Personas necesarias</label><input type="number" id="mPersonas" min="0" value="${t?(t.personas||0):0}" placeholder="0"/></div>
+          <div class="cf-form-row" id="mM3Wrap" style="display:${(t&&t.cuadrilla==='hormigon')?'flex':'none'};flex-direction:column;gap:5px;"><label style="font-family:'Barlow Condensed',sans-serif;font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--gris5,#888);">Volumen hormig&oacute;n (m&sup3;)</label><input type="number" id="mM3" min="0" step="0.5" value="${t&&t.m3?t.m3:''}" placeholder="Ej: 12.5" style="background:var(--gris2);border:1px solid var(--borde);color:var(--texto);padding:10px 12px;border-radius:var(--rsm);font-family:'Barlow',sans-serif;font-size:15px;outline:none;width:100%;"/></div>
           <div class="cf-form-row" style="flex:1;"><label>Máquinas</label><div id="mMaqList" class="cf-maq-list"></div><div class="cf-maq-add"><input type="number" class="qty-inp" id="mMaqCant" min="1" value="1" placeholder="Cant"/><input class="tipo-inp" id="mMaqTipo" placeholder="Ej: Minicargadora" list="maqSuggest" autocomplete="off"/><datalist id="maqSuggest"></datalist><button type="button" onclick="addMaqItem()">+</button></div></div>
         </div>
         <div class="cf-form-row"><label>Notas (opcional)</label><textarea id="mNotas" rows="1">${t?escHtml(t.notas||''):''}</textarea></div>
@@ -3414,6 +3417,7 @@ function toggleTema(){
       const notas = document.getElementById('mNotas').value.trim();
       const descripcion = document.getElementById('mDesc').value.trim();
       const personas = parseInt(document.getElementById('mPersonas').value)||0;
+      const m3El=document.getElementById('mM3'); const m3v=m3El?parseFloat(m3El.value)||0:0;
       const maquinas = [..._modalMaquinas]; // copia del array temporal
       if(!nombre||!inicio||!fin){ alert('Completá al menos nombre, inicio y fin.'); return; }
       if(fin<inicio){ alert('La fecha de fin no puede ser anterior al inicio.'); return; }
