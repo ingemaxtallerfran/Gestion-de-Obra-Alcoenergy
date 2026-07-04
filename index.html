@@ -672,6 +672,135 @@ function cerrarReporte(){
   if(ov)ov.classList.remove('open');
 }
 
+
+function buildGanttSVG(tareas, desde, hasta){
+  if(!tareas || tareas.length === 0) return '';
+
+  // Calcular rango de fechas
+  var minD = desde ? new Date(desde+'T00:00:00') : new Date(tareas.reduce(function(m,t){ return t.inicio < m ? t.inicio : m; }, tareas[0].inicio)+'T00:00:00');
+  var maxD = hasta ? new Date(hasta+'T00:00:00') : new Date(tareas.reduce(function(m,t){ return t.fin > m ? t.fin : m; }, tareas[0].fin)+'T00:00:00');
+
+  var totalDays = Math.round((maxD - minD) / 86400000) + 1;
+  if(totalDays < 1) totalDays = 1;
+
+  // Dimensiones SVG (A4 landscape: ~780px útiles)
+  var LABEL_W = 180;
+  var CHART_W = 580;
+  var ROW_H = 22;
+  var HEADER_H = 36;
+  var colores = {suelo:'#D97706', encofrado:'#3B82F6', hormigon:'#6B7280', detalle:'#16A34A'};
+
+  // Filtrar solo tareas raíz y sus hijos directos (2 niveles)
+  var rootTasks = tareas.filter(function(t){ return !t.parentId; });
+  var rows = [];
+  rootTasks.forEach(function(t){
+    rows.push({task:t, depth:0});
+    if(!t.collapsed){
+      tareas.filter(function(c){ return c.parentId === t.id; }).forEach(function(c){
+        rows.push({task:c, depth:1});
+      });
+    }
+  });
+
+  var SVG_H = HEADER_H + rows.length * ROW_H + 10;
+  var SVG_W = LABEL_W + CHART_W;
+
+  var svg = '<svg xmlns="http://www.w3.org/2000/svg" width="'+SVG_W+'" height="'+SVG_H+'" '
+    +'style="font-family:Barlow Condensed,Arial,sans-serif;background:#fff;">';
+
+  // Fondo header
+  svg += '<rect x="0" y="0" width="'+SVG_W+'" height="'+HEADER_H+'" fill="#1a1a2e"/>';
+
+  // Columnas de mes en el header
+  var months = [];
+  var d = new Date(minD);
+  while(d <= maxD){
+    var key = d.getFullYear()+'-'+(d.getMonth()+1);
+    if(!months.length || months[months.length-1].key !== key){
+      months.push({key:key, date: new Date(d), dayIndex: Math.round((d - minD)/86400000)});
+    }
+    d.setDate(d.getDate()+7);
+  }
+
+  months.forEach(function(m, i){
+    var x = LABEL_W + (m.dayIndex / totalDays) * CHART_W;
+    var nextX = (i+1 < months.length)
+      ? LABEL_W + (months[i+1].dayIndex / totalDays) * CHART_W
+      : SVG_W;
+    var label = m.date.toLocaleDateString('es-AR',{month:'short',year:'2-digit'}).toUpperCase();
+    svg += '<rect x="'+x+'" y="0" width="'+(nextX-x)+'" height="'+HEADER_H+'" fill="none" stroke="#2a2a4a" stroke-width="0.5"/>';
+    svg += '<text x="'+(x+6)+'" y="22" fill="#aaa" font-size="10" font-weight="700" letter-spacing="0.08em">'+label+'</text>';
+  });
+
+  // Línea "hoy"
+  var today = new Date();
+  var todayX = LABEL_W + (Math.round((today - minD)/86400000) / totalDays) * CHART_W;
+  if(todayX >= LABEL_W && todayX <= SVG_W){
+    svg += '<line x1="'+todayX+'" y1="0" x2="'+todayX+'" y2="'+SVG_H+'" stroke="#E8651A" stroke-width="1" stroke-opacity="0.5"/>';
+    svg += '<text x="'+(todayX+2)+'" y="32" fill="#E8651A" font-size="8" font-weight="700">HOY</text>';
+  }
+
+  // Filas
+  rows.forEach(function(row, i){
+    var t = row.task;
+    var y = HEADER_H + i * ROW_H;
+    var isParent = row.depth === 0;
+
+    // Fondo alternado
+    svg += '<rect x="0" y="'+y+'" width="'+SVG_W+'" height="'+ROW_H
+      +'" fill="'+(isParent ? '#f8f8f8' : (i%2===0?'#fff':'#fafafa'))+'"/>';
+
+    // Línea separadora
+    svg += '<line x1="0" y1="'+(y+ROW_H)+'" x2="'+SVG_W+'" y2="'+(y+ROW_H)+'" stroke="#eeeeee" stroke-width="0.5"/>';
+
+    // Label
+    var labelX = 8 + row.depth * 14;
+    var labelText = t.nombre.length > 26 ? t.nombre.slice(0,25)+'…' : t.nombre;
+    svg += '<text x="'+labelX+'" y="'+(y+14)+'" fill="'+(isParent?'#111':'#444')+'" '
+      +'font-size="'+(isParent?'10':'9')+'" font-weight="'+(isParent?'700':'400')+'" '
+      +'text-anchor="start">'+escHGlob(labelText)+'</text>';
+
+    // Separador label/chart
+    svg += '<line x1="'+LABEL_W+'" y1="'+y+'" x2="'+LABEL_W+'" y2="'+(y+ROW_H)+'" stroke="#ddd" stroke-width="0.5"/>';
+
+    // Barra
+    if(t.inicio && t.fin){
+      var startDay = Math.round((new Date(t.inicio+'T00:00:00') - minD) / 86400000);
+      var lenDays = Math.round((new Date(t.fin+'T00:00:00') - new Date(t.inicio+'T00:00:00')) / 86400000) + 1;
+      var barX = LABEL_W + Math.max(0, (startDay / totalDays) * CHART_W);
+      var barW = Math.max(4, (lenDays / totalDays) * CHART_W);
+      // No salirse del chart
+      if(barX + barW > SVG_W) barW = SVG_W - barX;
+
+      var barColor = isParent ? '#94a3b8' : (colores[t.cuadrilla] || '#64748b');
+      var barH = isParent ? 8 : 12;
+      var barY = y + (ROW_H - barH) / 2;
+
+      if(isParent){
+        // Barra padre: outline
+        svg += '<rect x="'+barX+'" y="'+barY+'" width="'+barW+'" height="'+barH
+          +'" fill="'+barColor+'33" stroke="'+barColor+'" stroke-width="1" rx="2"/>';
+      } else {
+        svg += '<rect x="'+barX+'" y="'+barY+'" width="'+barW+'" height="'+barH
+          +'" fill="'+barColor+'" rx="2" opacity="0.9"/>';
+        // Label en la barra si hay espacio
+        if(barW > 40){
+          var bLabel = t.nombre.length > 16 ? t.nombre.slice(0,15)+'…' : t.nombre;
+          svg += '<text x="'+(barX+4)+'" y="'+(barY+barH-2)+'" fill="#fff" '
+            +'font-size="8" font-weight="700">'+escHGlob(bLabel)+'</text>';
+        }
+      }
+    }
+  });
+
+  // Marco exterior
+  svg += '<rect x="0" y="0" width="'+SVG_W+'" height="'+SVG_H+'" fill="none" stroke="#ddd" stroke-width="0.5"/>';
+  svg += '<line x1="'+LABEL_W+'" y1="0" x2="'+LABEL_W+'" y2="'+SVG_H+'" stroke="#ccc" stroke-width="1"/>';
+
+  svg += '</svg>';
+  return svg;
+}
+
 function generarReporte(){
   var desde=document.getElementById('rpDesde').value;
   var hasta=document.getElementById('rpHasta').value;
@@ -844,6 +973,15 @@ function generarReporte(){
         +'</div>';
     });
     html+='</div>';
+  }
+
+  // ── GANTT SVG ──
+  if(inclGantt && tareas.length>0){
+    var ganttSvg = buildGanttSVG(tareas, desde, hasta);
+    html += '<div class="ps-section">'
+      +'<div class="ps-section-title">Cronograma Visual</div>'
+      +'<div style="width:100%;overflow:hidden;">'+ganttSvg+'</div>'
+      +'</div>';
   }
 
   // Pie de página
