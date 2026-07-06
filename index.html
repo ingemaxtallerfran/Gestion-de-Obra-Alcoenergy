@@ -523,7 +523,7 @@
   @media print {
     body > *:not(#printSheet){ display:none !important; }
     #printSheet{ display:block !important; }
-    @page{ size:A4 landscape; margin:15mm; }
+    @page{ size:A3 landscape; margin:12mm; }
   }
   #printSheet{display:none;font-family:'Barlow Condensed',sans-serif;}
   .ps-header{display:flex;justify-content:space-between;align-items:flex-start;
@@ -1015,231 +1015,220 @@ function buildGanttSVG(tareas, desde, hasta){
 }
 
 function generarReporte(){
-  var desde=document.getElementById('rpDesde').value;
-  var hasta=document.getElementById('rpHasta').value;
-  var inclGantt=document.getElementById('rpGantt').checked;
-  var inclTabla=document.getElementById('rpTabla').checked;
-  var inclCuad=document.getElementById('rpCuad').checked;
-  var inclMaq=document.getElementById('rpMaq').checked;
-  var inclOS=document.getElementById('rpOS').checked;
+  var desde = document.getElementById('rpDesde').value;
+  var hasta  = document.getElementById('rpHasta').value;
+  var inclGantt  = document.getElementById('rpGantt').checked;
+  var inclCal    = document.getElementById('rpCal') && document.getElementById('rpCal').checked;
+  var inclHorm   = document.getElementById('rpHorm').checked;
+  var inclTabla  = document.getElementById('rpTabla').checked;
+  var inclCuad   = document.getElementById('rpCuad').checked;
+  var inclMaq    = document.getElementById('rpMaq').checked;
+  var inclOS     = document.getElementById('rpOS').checked;
 
-  var st=window._stateRef;
-  if(!st){alert('No hay datos cargados.');return;}
+  var st = window._stateRef;
+  if(!st){ alert('No hay datos cargados.'); return; }
 
-  var tareas=st.tasks.filter(function(t){
-    if(!t.inicio||!t.fin)return false;
-    if(desde&&t.fin<desde)return false;
-    if(hasta&&t.inicio>hasta)return false;
+  var tareas = st.tasks.filter(function(t){
+    if(!t.inicio||!t.fin) return false;
+    if(desde && t.fin < desde) return false;
+    if(hasta && t.inicio > hasta) return false;
     return true;
   });
 
-  // Armar el HTML del reporte
-  var now=new Date();
-  var fechaGen=now.toLocaleDateString('es-AR',{day:'2-digit',month:'2-digit',year:'numeric'});
+  var now = new Date();
+  var fechaGen = now.toLocaleDateString('es-AR',{day:'2-digit',month:'2-digit',year:'numeric'});
+  var colores = {suelo:'#D97706',encofrado:'#3B82F6',hormigon:'#6B7280',detalle:'#16A34A'};
 
-  // Logo base64 desde el INGEMAX_SVG
-  var logoHtml='<div style="font-family:Barlow Condensed,sans-serif;font-size:20px;font-weight:800;color:#E8651A;">INGEMAX S.A.</div>';
+  var html = '';
 
-  var html='<div class="ps-header">'
+  // ── ENCABEZADO ──
+  html += '<div style="display:flex;justify-content:space-between;align-items:flex-start;'
+    +'border-bottom:3px solid #E8651A;padding-bottom:12px;margin-bottom:20px;">'
     +'<div>'
-    +'<div class="ps-proyecto">'+escHGlob(st.proyecto||'Alcoenergy — Obra Civil')+'</div>'
-    +'<div class="ps-sub">Cronograma de Obra Civil · INGEMAX S.A.</div>'
+    +'<div style="font-size:26px;font-weight:800;color:#111;letter-spacing:.02em;">'+escHGlob(st.proyecto||'Alcoenergy — Obra Civil')+'</div>'
+    +'<div style="font-size:11px;color:#888;letter-spacing:.08em;text-transform:uppercase;margin-top:3px;">Cronograma de Obra Civil · INGEMAX S.A.</div>'
     +'</div>'
-    +'<div class="ps-meta">'
+    +'<div style="text-align:right;font-size:10px;color:#888;">'
     +'Generado: '+fechaGen+'<br>'
-    +(desde||'inicio')+' → '+(hasta||'fin')+'<br>'
-    +'<strong>'+tareas.length+' actividades</strong>'
-    +'</div>'
-    +'</div>';
-
-  // ── TABLA DE ACTIVIDADES ──
-  if(inclTabla && tareas.length>0){
-    var colores={suelo:'#D97706',encofrado:'#3B82F6',hormigon:'#6B7280',detalle:'#16A34A'};
-    html+='<div class="ps-section"><div class="ps-section-title">Actividades y Subactividades</div>'
-      +'<table class="ps-table">'
-      +'<thead><tr><th>Actividad</th><th>Sector</th><th>Cuadrilla</th><th>Inicio</th><th>Fin</th><th>Duración</th><th>Personas</th></tr></thead>'
-      +'<tbody>';
-    tareas.forEach(function(t){
-      var dur=Math.round((new Date(t.fin)-new Date(t.inicio))/(1000*60*60*24))+1;
-      var color=t.cuadrilla?colores[t.cuadrilla]||'#888':'#ccc';
-      var indent=t.parentId?'padding-left:16px;':'font-weight:700;';
-      html+='<tr>'
-        +'<td style="'+indent+'">'+escHGlob(t.nombre)+'</td>'
-        +'<td style="font-size:9px;color:#888;">'+escHGlob(t.sector||'')+'</td>'
-        +'<td>'+(t.cuadrilla?'<span class="ps-chip" style="background:'+color+'22;color:'+color+';">'+escHGlob(t.cuadrilla)+'</span>':'—')+'</td>'
-        +'<td>'+fmtDateES(t.inicio)+'</td>'
-        +'<td>'+fmtDateES(t.fin)+'</td>'
-        +'<td style="text-align:center;">'+dur+' días</td>'
-        +'<td style="text-align:center;">'+(t.personas||'—')+'</td>'
-        +'</tr>';
-    });
-    html+='</tbody></table></div>';
-  }
+    +(desde?fmtDateES(desde):'inicio')+' → '+(hasta?fmtDateES(hasta):'fin')+'<br>'
+    +'<strong style="color:#E8651A;">'+tareas.length+' actividades</strong>'
+    +'</div></div>';
 
   // ── GANTT SVG ──
-  if(inclGantt && tareas.length>0){
-    var minD=desde||tareas.reduce(function(m,t){return t.inicio<m?t.inicio:m;},tareas[0].inicio);
-    var maxD=hasta||tareas.reduce(function(m,t){return t.fin>m?t.fin:m;},tareas[0].fin);
-    var totalMs=new Date(maxD)-new Date(minD);
-    var totalDias=Math.ceil(totalMs/86400000)+1;
-    var LABEL_W=180, BAR_H=14, ROW_H=20, HEADER_H=30;
-    var CHART_W=580;
-    var colores={suelo:'#D97706',encofrado:'#3B82F6',hormigon:'#6B7280',detalle:'#16A34A'};
-
-    var svgRows='';
-    var y=HEADER_H;
-    // Agrupar por sector
-    var sectoresVistos={};
-    tareas.forEach(function(t){
-      if(!sectoresVistos[t.sector]){
-        sectoresVistos[t.sector]=true;
-        // Header de sector
-        svgRows+='<rect x="0" y="'+y+'" width="'+(LABEL_W+CHART_W)+'" height="'+ROW_H+'" fill="#1a1a2e"/>';
-        svgRows+='<text x="8" y="'+(y+14)+'" font-family="Barlow Condensed,sans-serif" font-size="10" font-weight="800" fill="#A78BFA" letter-spacing="1">'+escHGlob(t.sector.toUpperCase())+'</text>';
-        y+=ROW_H;
-      }
-      // Fila tarea
-      var bg=t.parentId?'#f8f8f8':'#f0f0f0';
-      svgRows+='<rect x="0" y="'+y+'" width="'+(LABEL_W+CHART_W)+'" height="'+ROW_H+'" fill="'+bg+'"/>';
-      var indent=t.parentId?12:4;
-      var label=t.nombre.length>22?t.nombre.slice(0,22)+'…':t.nombre;
-      svgRows+='<text x="'+(indent)+'" y="'+(y+13)+'" font-family="Barlow Condensed,sans-serif" font-size="'+(t.parentId?9:10)+'" font-weight="'+(t.parentId?'400':'700')+'" fill="#333">'+escHGlob(label)+'</text>';
-      // Barra
-      var startMs=new Date(t.inicio)-new Date(minD);
-      var durMs=new Date(t.fin)-new Date(t.inicio)+86400000;
-      var bx=LABEL_W+Math.round((startMs/totalMs)*CHART_W);
-      var bw=Math.max(Math.round((durMs/totalMs)*CHART_W),4);
-      var bColor=t.cuadrilla?colores[t.cuadrilla]||'#888':'#ccc';
-      svgRows+='<rect x="'+bx+'" y="'+(y+3)+'" width="'+bw+'" height="'+BAR_H+'" rx="2" fill="'+bColor+'" opacity="0.85"/>';
-      if(t.m3) svgRows+='<text x="'+(bx+3)+'" y="'+(y+13)+'" font-family="Barlow Condensed,sans-serif" font-size="8" font-weight="800" fill="#fff">'+t.m3+'m³</text>';
-      y+=ROW_H;
-    });
-    var totalH=y+10;
-
-    // Header de fechas
-    var headerCells='';
-    var stepDias=Math.ceil(totalDias/8);
-    for(var di=0;di<=totalDias;di+=stepDias){
-      var dx=LABEL_W+Math.round((di/totalDias)*CHART_W);
-      var dLabel=new Date(new Date(minD).getTime()+di*86400000);
-      var dStr=(dLabel.getDate())+'/'+(dLabel.getMonth()+1);
-      headerCells+='<line x1="'+dx+'" y1="0" x2="'+dx+'" y2="'+totalH+'" stroke="#ddd" stroke-width="0.5"/>';
-      headerCells+='<text x="'+dx+'" y="20" font-family="Barlow Condensed,sans-serif" font-size="9" fill="#888" text-anchor="middle">'+dStr+'</text>';
-    }
-
-    var svg='<svg width="'+(LABEL_W+CHART_W)+'" height="'+totalH+'" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:'+(LABEL_W+CHART_W)+'px;">'
-      +'<rect width="'+(LABEL_W+CHART_W)+'" height="'+totalH+'" fill="#fff"/>'
-      +headerCells+svgRows+'</svg>';
-
-    html+='<div class="ps-section" style="page-break-before:always;"><div class="ps-section-title">Cronograma — Vista Gantt</div>'+svg+'</div>';
+  if(inclGantt && tareas.length > 0){
+    var ganttSvg = buildGanttSVG(tareas, desde, hasta);
+    html += '<div style="margin-bottom:28px;">'
+      +'<div style="font-size:11px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;'
+      +'color:#E8651A;border-left:3px solid #E8651A;padding-left:8px;margin-bottom:10px;">Cronograma Visual</div>'
+      +'<div style="width:100%;overflow:hidden;">'+ganttSvg+'</div></div>';
   }
 
-  // ── CUADRILLAS ──
-  if(inclCuad && st.cuadrillas){
-    html+='<div class="ps-section"><div class="ps-section-title">Cuadrillas — Pico de Simultaneidad</div>'
-      +'<div class="ps-crew-grid">';
-    st.cuadrillas.forEach(function(c){
-      // Calcular pico
-      var activas=tareas.filter(function(t){return t.cuadrilla===c.id;});
-      var pico=0;
-      activas.forEach(function(t1){
-        var simult=activas.filter(function(t2){return t2.inicio<=t1.inicio&&t2.fin>=t1.inicio;}).length;
-        if(simult>pico)pico=simult;
-      });
-      html+='<div class="ps-crew-card">'
-        +'<div class="ps-crew-peak">'+pico+'</div>'
-        +'<div class="ps-crew-name">'+escHGlob(c.nombre)+'</div>'
-        +'</div>';
-    });
-    html+='</div></div>';
-  }
-
-  // ── MÁQUINAS ──
-  if(inclMaq){
-    var maqMap={};
-    tareas.forEach(function(t){
-      (t.maquinas||[]).forEach(function(m){
-        if(!maqMap[m.tipo])maqMap[m.tipo]=0;
-        maqMap[m.tipo]=Math.max(maqMap[m.tipo],m.cant);
-      });
-    });
-    var tipos=Object.keys(maqMap);
-    if(tipos.length>0){
-      html+='<div class="ps-section"><div class="ps-section-title">Maquinaria — Máximo Simultáneo</div>'
-        +'<table class="ps-table"><thead><tr><th>Equipo</th><th>Cant. máx.</th></tr></thead><tbody>';
-      tipos.forEach(function(tipo){
-        html+='<tr><td>'+escHGlob(tipo)+'</td><td style="text-align:center;font-weight:800;">'+maqMap[tipo]+'</td></tr>';
-      });
-      html+='</tbody></table></div>';
-    }
-  }
-
-  // ── PEDIDO DE HORMIGÓN ──
-  if(inclTabla && tareas.length>0){
-    var hormiTareas = tareas.filter(function(t){ return t.cuadrilla==='hormigon' && t.m3>0; });
-    if(hormiTareas.length > 0){
-      var totalM3 = hormiTareas.reduce(function(sum,t){ return sum+(t.m3||0); }, 0);
-      html += '<div class="ps-section"><div class="ps-section-title">Pedido de Hormigón · Total: '+totalM3.toFixed(1)+' m³</div>'
-        +'<table class="ps-table"><thead><tr><th>Sector</th><th>Actividad</th><th>Inicio</th><th>Fin</th><th style="text-align:right;">m³</th></tr></thead><tbody>';
-      // Agrupar por semana
-      hormiTareas.sort(function(a,b){ return a.inicio.localeCompare(b.inicio); });
-      hormiTareas.forEach(function(t){
-        html += '<tr>'
-          +'<td style="font-size:10px;color:#888;">'+escHGlob(t.sector||'')+'</td>'
-          +'<td style="font-weight:700;">'+escHGlob(t.nombre)+'</td>'
-          +'<td>'+fmtDateES(t.inicio)+'</td>'
-          +'<td>'+fmtDateES(t.fin)+'</td>'
-          +'<td style="text-align:right;font-weight:800;color:#6B7280;">'+t.m3+' m³</td>'
+  // ── TABLA HORMIGÓN ──
+  if(inclHorm){
+    var hormi = tareas.filter(function(t){ return t.cuadrilla==='hormigon' && t.m3 > 0; });
+    if(hormi.length > 0){
+      var totalM3 = hormi.reduce(function(s,t){ return s+(t.m3||0); }, 0);
+      html += '<div style="margin-bottom:28px;">'
+        +'<div style="font-size:11px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;'
+        +'color:#E8651A;border-left:3px solid #E8651A;padding-left:8px;margin-bottom:10px;">'
+        +'Pedido de Hormigón · Total: <strong>'+totalM3.toFixed(1)+' m³</strong></div>'
+        +'<table style="width:100%;border-collapse:collapse;font-size:11px;">'
+        +'<thead><tr style="border-bottom:2px solid #ddd;">'
+        +'<th style="text-align:left;padding:5px 8px;font-size:9px;color:#888;text-transform:uppercase;letter-spacing:.08em;">Sector</th>'
+        +'<th style="text-align:left;padding:5px 8px;font-size:9px;color:#888;text-transform:uppercase;letter-spacing:.08em;">Actividad</th>'
+        +'<th style="text-align:left;padding:5px 8px;font-size:9px;color:#888;text-transform:uppercase;letter-spacing:.08em;">Inicio</th>'
+        +'<th style="text-align:left;padding:5px 8px;font-size:9px;color:#888;text-transform:uppercase;letter-spacing:.08em;">Fin</th>'
+        +'<th style="text-align:right;padding:5px 8px;font-size:9px;color:#888;text-transform:uppercase;letter-spacing:.08em;">m³</th>'
+        +'</tr></thead><tbody>';
+      hormi.sort(function(a,b){ return a.inicio.localeCompare(b.inicio); });
+      hormi.forEach(function(t){
+        html += '<tr style="border-bottom:1px solid #f0f0f0;">'
+          +'<td style="padding:6px 8px;font-size:10px;color:#888;">'+escHGlob(t.sector||'')+'</td>'
+          +'<td style="padding:6px 8px;font-weight:700;color:#222;">'+escHGlob(t.nombre)+'</td>'
+          +'<td style="padding:6px 8px;color:#444;">'+fmtDateES(t.inicio)+'</td>'
+          +'<td style="padding:6px 8px;color:#444;">'+fmtDateES(t.fin)+'</td>'
+          +'<td style="padding:6px 8px;text-align:right;font-weight:800;color:#6B7280;">'+t.m3+' m³</td>'
           +'</tr>';
       });
-      html += '<tr style="border-top:2px solid #eee;"><td colspan="4" style="font-weight:800;text-align:right;">TOTAL</td>'
-        +'<td style="text-align:right;font-weight:800;font-size:16px;color:#6B7280;">'+totalM3.toFixed(1)+' m³</td></tr>';
-      html += '</tbody></table></div>';
+      html += '<tr style="border-top:2px solid #ddd;">'
+        +'<td colspan="4" style="padding:7px 8px;font-weight:800;text-align:right;color:#222;">TOTAL</td>'
+        +'<td style="padding:7px 8px;text-align:right;font-weight:800;font-size:16px;color:#6B7280;">'+totalM3.toFixed(1)+' m³</td>'
+        +'</tr></tbody></table></div>';
+    } else {
+      html += '<div style="color:#aaa;font-size:11px;padding:10px 0 20px;">No hay actividades de hormigón con m³ cargados en el período.</div>';
     }
   }
 
   // ── ÓRDENES DE SERVICIO ──
-  if(inclOS && typeof ORDENES_SERVICIO!=='undefined'){
-    html+='<div class="ps-section"><div class="ps-section-title">Órdenes de Servicio INGEMAX</div>';
+  if(inclOS && typeof ORDENES_SERVICIO !== 'undefined'){
+    html += '<div style="margin-bottom:28px;">'
+      +'<div style="font-size:11px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;'
+      +'color:#6D28D9;border-left:3px solid #6D28D9;padding-left:8px;margin-bottom:10px;">Órdenes de Servicio INGEMAX</div>'
+      +'<table style="width:100%;border-collapse:collapse;font-size:11px;">'
+      +'<thead><tr style="border-bottom:2px solid #ddd;">'
+      +'<th style="text-align:left;padding:5px 8px;font-size:9px;color:#888;text-transform:uppercase;width:50px;">OS</th>'
+      +'<th style="text-align:left;padding:5px 8px;font-size:9px;color:#888;text-transform:uppercase;">Descripción</th>'
+      +'<th style="text-align:left;padding:5px 8px;font-size:9px;color:#888;text-transform:uppercase;">Fechas</th>'
+      +'<th style="text-align:left;padding:5px 8px;font-size:9px;color:#888;text-transform:uppercase;">Estado</th>'
+      +'</tr></thead><tbody>';
     ORDENES_SERVICIO.forEach(function(os){
-      html+='<div class="ps-os-row">'
-        +'<span class="ps-os-num">'+os.id+'</span>'
-        +'<span class="ps-os-nombre">'+escHGlob(os.nombre)+'</span>'
-        +(os.inicio?'<span style="font-size:9px;color:#888;white-space:nowrap;">'+fmtDateES(os.inicio)+(os.fin&&os.fin!==os.inicio?' → '+fmtDateES(os.fin):'')+'</span>':'')
-        +'<span class="ps-os-estado '+os.estado+'">'+( os.estado==='realizado'?'Realizado':os.estado==='pendiente'?'Pendiente':'Sin fecha')+'</span>'
-        +'</div>';
+      var estadoColor = os.estado==='realizado'?'#16a34a':os.estado==='pendiente'?'#E8651A':'#888';
+      var estadoLabel = os.estado==='realizado'?'Realizado':os.estado==='pendiente'?'Pendiente':'Sin fecha';
+      html += '<tr style="border-bottom:1px solid #f0f0f0;">'
+        +'<td style="padding:6px 8px;font-weight:800;color:#6D28D9;">'+os.id+'</td>'
+        +'<td style="padding:6px 8px;color:#222;">'+escHGlob(os.nombre)+'</td>'
+        +'<td style="padding:6px 8px;color:#666;white-space:nowrap;font-size:10px;">'
+        +(os.inicio?fmtDateES(os.inicio)+(os.fin&&os.fin!==os.inicio?' → '+fmtDateES(os.fin):''):'—')
+        +(os.nota?'<br><em style="color:#9333EA;font-size:9px;">'+escHGlob(os.nota)+'</em>':'')
+        +'</td>'
+        +'<td style="padding:6px 8px;"><span style="font-size:9px;font-weight:700;padding:2px 8px;'
+        +'border-radius:20px;background:'+estadoColor+'22;color:'+estadoColor+';border:1px solid '+estadoColor+'44;">'+estadoLabel+'</span></td>'
+        +'</tr>';
     });
-    html+='</div>';
+    html += '</tbody></table></div>';
   }
 
-  // ── GANTT SVG ──
-  if(inclGantt && tareas.length>0){
-    var ganttSvg = buildGanttSVG(tareas, desde, hasta);
-    html += '<div class="ps-section">'
-      +'<div class="ps-section-title">Cronograma Visual</div>'
-      +'<div style="width:100%;overflow:hidden;">'+ganttSvg+'</div>'
-      +'</div>';
+  // ── CUADRILLAS ──
+  if(inclCuad && st.cuadrillas){
+    html += '<div style="margin-bottom:28px;">'
+      +'<div style="font-size:11px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;'
+      +'color:#E8651A;border-left:3px solid #E8651A;padding-left:8px;margin-bottom:10px;">Cuadrillas — Pico de Simultaneidad</div>'
+      +'<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;">';
+    st.cuadrillas.forEach(function(c){
+      var activas = tareas.filter(function(t){ return t.cuadrilla===c.id; });
+      var pico = 0;
+      activas.forEach(function(t1){
+        var simult = activas.filter(function(t2){ return t2.inicio<=t1.inicio&&t2.fin>=t1.inicio; }).length;
+        if(simult>pico) pico=simult;
+      });
+      html += '<div style="border:1px solid #eee;border-radius:8px;padding:14px;text-align:center;">'
+        +'<div style="font-size:38px;font-weight:800;color:#E8651A;">'+pico+'</div>'
+        +'<div style="font-size:10px;color:#888;text-transform:uppercase;letter-spacing:.08em;margin-top:4px;">'+escHGlob(c.nombre)+'</div>'
+        +'</div>';
+    });
+    html += '</div></div>';
+  }
+
+  // ── MAQUINARIA ──
+  if(inclMaq){
+    var maqMap = {};
+    tareas.forEach(function(t){
+      (t.maquinas||[]).forEach(function(m){
+        if(!maqMap[m.tipo]) maqMap[m.tipo]=0;
+        maqMap[m.tipo] = Math.max(maqMap[m.tipo], m.cant);
+      });
+    });
+    var tipos = Object.keys(maqMap);
+    if(tipos.length > 0){
+      html += '<div style="margin-bottom:28px;">'
+        +'<div style="font-size:11px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;'
+        +'color:#E8651A;border-left:3px solid #E8651A;padding-left:8px;margin-bottom:10px;">Maquinaria — Máximo Simultáneo</div>'
+        +'<table style="width:100%;border-collapse:collapse;font-size:11px;">'
+        +'<thead><tr style="border-bottom:2px solid #ddd;">'
+        +'<th style="text-align:left;padding:5px 8px;font-size:9px;color:#888;text-transform:uppercase;">Equipo</th>'
+        +'<th style="text-align:center;padding:5px 8px;font-size:9px;color:#888;text-transform:uppercase;">Cant. máx.</th>'
+        +'</tr></thead><tbody>';
+      tipos.forEach(function(tipo){
+        html += '<tr style="border-bottom:1px solid #f0f0f0;">'
+          +'<td style="padding:6px 8px;color:#222;">'+escHGlob(tipo)+'</td>'
+          +'<td style="padding:6px 8px;text-align:center;font-weight:800;font-size:16px;">'+maqMap[tipo]+'</td>'
+          +'</tr>';
+      });
+      html += '</tbody></table></div>';
+    }
+  }
+
+  // ── TABLA ACTIVIDADES ──
+  if(inclTabla && tareas.length > 0){
+    html += '<div style="margin-bottom:28px;">'
+      +'<div style="font-size:11px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;'
+      +'color:#E8651A;border-left:3px solid #E8651A;padding-left:8px;margin-bottom:10px;">Actividades del Período</div>'
+      +'<table style="width:100%;border-collapse:collapse;font-size:10px;">'
+      +'<thead><tr style="border-bottom:2px solid #ddd;">'
+      +'<th style="text-align:left;padding:5px 6px;font-size:8px;color:#888;text-transform:uppercase;">Actividad</th>'
+      +'<th style="text-align:left;padding:5px 6px;font-size:8px;color:#888;text-transform:uppercase;">Sector</th>'
+      +'<th style="text-align:left;padding:5px 6px;font-size:8px;color:#888;text-transform:uppercase;">Cuadrilla</th>'
+      +'<th style="text-align:left;padding:5px 6px;font-size:8px;color:#888;text-transform:uppercase;">Inicio</th>'
+      +'<th style="text-align:left;padding:5px 6px;font-size:8px;color:#888;text-transform:uppercase;">Fin</th>'
+      +'<th style="text-align:center;padding:5px 6px;font-size:8px;color:#888;text-transform:uppercase;">Días</th>'
+      +'<th style="text-align:center;padding:5px 6px;font-size:8px;color:#888;text-transform:uppercase;">Pers.</th>'
+      +'<th style="text-align:right;padding:5px 6px;font-size:8px;color:#888;text-transform:uppercase;">m³</th>'
+      +'</tr></thead><tbody>';
+    tareas.forEach(function(t){
+      var dur = Math.round((new Date(t.fin+'T00:00:00')-new Date(t.inicio+'T00:00:00'))/86400000)+1;
+      var color = t.cuadrilla?(colores[t.cuadrilla]||'#888'):'#ccc';
+      var indent = t.parentId?'padding-left:16px;':'font-weight:700;';
+      html += '<tr style="border-bottom:1px solid #f5f5f5;">'
+        +'<td style="padding:5px 6px;'+indent+'color:#222;">'+escHGlob(t.nombre)+'</td>'
+        +'<td style="padding:5px 6px;font-size:9px;color:#888;">'+escHGlob(t.sector||'')+'</td>'
+        +'<td style="padding:5px 6px;">'
+        +(t.cuadrilla?'<span style="font-size:8px;font-weight:700;padding:1px 6px;border-radius:20px;background:'+color+'22;color:'+color+';">'+escHGlob(t.cuadrilla)+'</span>':'—')
+        +'</td>'
+        +'<td style="padding:5px 6px;white-space:nowrap;">'+fmtDateES(t.inicio)+'</td>'
+        +'<td style="padding:5px 6px;white-space:nowrap;">'+fmtDateES(t.fin)+'</td>'
+        +'<td style="padding:5px 6px;text-align:center;">'+dur+'</td>'
+        +'<td style="padding:5px 6px;text-align:center;">'+(t.personas||'—')+'</td>'
+        +'<td style="padding:5px 6px;text-align:right;">'+(t.m3?t.m3+' m³':'—')+'</td>'
+        +'</tr>';
+    });
+    html += '</tbody></table></div>';
   }
 
   // Pie de página
-  html+='<div style="margin-top:30px;padding-top:10px;border-top:1px solid #eee;'
+  html += '<div style="margin-top:30px;padding-top:10px;border-top:1px solid #eee;'
     +'font-size:9px;color:#aaa;display:flex;justify-content:space-between;">'
     +'<span>INGEMAX S.A. — Sistema de Gestión de Obra Civil</span>'
     +'<span>'+escHGlob(st.proyecto||'Alcoenergy')+'</span>'
     +'</div>';
 
-  // Mostrar en printSheet y ejecutar print
-  var sheet=document.getElementById('printSheet');
-  sheet.innerHTML=html;
-  sheet.style.display='block';
+  var sheet = document.getElementById('printSheet');
+  sheet.innerHTML = html;
+  sheet.style.display = 'block';
   cerrarReporte();
-
-  // Dar tiempo al browser para renderizar
   setTimeout(function(){
     window.print();
-    // Después de imprimir, ocultar la hoja
     setTimeout(function(){ sheet.style.display='none'; }, 500);
-  }, 300);
+  }, 400);
 }
 
 function fmtDateES(str){
@@ -1558,6 +1547,12 @@ function renderCalendario(container, st){
   var filCuad   = container._filCuad || '';
 
   var html = '<div class="cal-wrap">';
+  html += '<div style="padding:8px 0 14px;">'
+    +'<button onclick="if(window._stateRef){window._stateRef.vista=\'sector\';if(typeof render===\'function\')render();}" '
+    +'style="font-family:Barlow Condensed,sans-serif;font-size:13px;font-weight:700;'
+    +'background:var(--gris2,#252525);border:1px solid var(--borde,#2e2e2e);color:var(--texto,#f0f0f0);'
+    +'padding:7px 14px;border-radius:7px;cursor:pointer;letter-spacing:.04em;">← Volver al Gantt</button>'
+    +'</div>';
   html += '<div class="cal-filtros">';
   html += '<span class="cal-filtro-label">Sector</span>';
   html += '<select class="cal-filtro-select" id="calFiltroSector" onchange="_calSetSector(this.value)">';
@@ -1658,6 +1653,12 @@ function _calSetCuad(v){
 function renderCompras(container, st){
   var compras = st.compras || [];
   var html = '<div class="compras-wrap">';
+  html += '<div style="padding:8px 0 14px;">'
+    +'<button onclick="if(window._stateRef){window._stateRef.vista=\'sector\';if(typeof render===\'function\')render();}" '
+    +'style="font-family:Barlow Condensed,sans-serif;font-size:13px;font-weight:700;'
+    +'background:var(--gris2,#252525);border:1px solid var(--borde,#2e2e2e);color:var(--texto,#f0f0f0);'
+    +'padding:7px 14px;border-radius:7px;cursor:pointer;letter-spacing:.04em;">← Volver al Gantt</button>'
+    +'</div>';
   // Toolbar
   html += '<div class="compras-toolbar">';
   html += '<button class="compras-add-btn" onclick="abrirModalCompra(null)">+ Nueva compra</button>';
@@ -4004,28 +4005,14 @@ function toggleTema(){
     <div class="reporte-section">
       <div class="reporte-section-title">Contenido a incluir</div>
       <div class="reporte-checks">
-        <label class="reporte-check">
-          <input type="checkbox" id="rpTabla" checked>
-          <span>📋 Tabla de actividades y subactividades</span>
-        </label>
-        <label class="reporte-check">
-          <input type="checkbox" id="rpCuad" checked>
-          <span>👷 Resumen de cuadrillas (pico de simultaneidad)</span>
-        </label>
-        <label class="reporte-check">
-          <input type="checkbox" id="rpMaq" checked>
-          <span>🚜 Resumen de maquinaria</span>
-        </label>
-        <label class="reporte-check">
-          <input type="checkbox" id="rpOS" checked>
-          <span>🔷 Órdenes de Servicio INGEMAX</span>
-        </label>
-        <label class="reporte-check">
-          <input type="checkbox" id="rpGantt" checked>
-          <span>📊 Cronograma Gantt (SVG vectorial)</span>
-        </label>
-      </div>
-    </div>
+        <label class="reporte-check"><input type="checkbox" id="rpGantt" checked><span>📊 Cronograma visual (Gantt SVG)</span></label>
+        <label class="reporte-check"><input type="checkbox" id="rpHorm" checked><span>🏗 Lista pedido de hormigón (m³ por sector)</span></label>
+        <label class="reporte-check"><input type="checkbox" id="rpOS" checked><span>🔷 Órdenes de Servicio INGEMAX</span></label>
+        <label class="reporte-check"><input type="checkbox" id="rpCuad" checked><span>👷 Cuadrillas — pico de simultaneidad</span></label>
+        <label class="reporte-check"><input type="checkbox" id="rpMaq" checked><span>🚜 Maquinaria — máximo simultáneo</span></label>
+        <label class="reporte-check"><input type="checkbox" id="rpTabla" checked><span>📋 Tabla detallada de actividades</span></label>
+        <label class="reporte-check"><input type="checkbox" id="rpCal"><span>📅 Calendario mensual</span></label>
+      </div>    </div>
 
     <div class="reporte-actions">
       <button class="reporte-btn-cancel" onclick="cerrarReporte()">Cancelar</button>
