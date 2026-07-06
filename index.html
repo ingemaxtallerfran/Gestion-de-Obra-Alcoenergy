@@ -906,14 +906,11 @@ function buildGanttSVG(tareas, desde, hasta){
   // Filtrar solo tareas raíz y sus hijos directos (2 niveles)
   var rootTasks = tareas.filter(function(t){ return !t.parentId; });
   var rows = [];
-  // Mostrar tareas raíz + hijos con cuadrilla (para ver colores)
   rootTasks.forEach(function(t){
     rows.push({task:t, depth:0});
-    // Hijos directos
     var hijos = tareas.filter(function(c){ return c.parentId === t.id; });
     hijos.forEach(function(c){
       rows.push({task:c, depth:1});
-      // Nietos (subactividades de pisos)
       var nietos = tareas.filter(function(n){ return n.parentId === c.id; });
       nietos.forEach(function(n){ rows.push({task:n, depth:2}); });
     });
@@ -1023,7 +1020,7 @@ function generarReporte(){
   var hasta  = document.getElementById('rpHasta').value;
   var inclGantt  = document.getElementById('rpGantt').checked;
   var inclCal    = document.getElementById('rpCal') && document.getElementById('rpCal').checked;
-  var inclHorm   = document.getElementById('rpHorm') ? document.getElementById('rpHorm').checked : false;
+  var inclHorm   = document.getElementById('rpHorm').checked;
   var inclTabla  = document.getElementById('rpTabla').checked;
   var inclCuad   = document.getElementById('rpCuad').checked;
   var inclMaq    = document.getElementById('rpMaq').checked;
@@ -1503,7 +1500,7 @@ function aplicarPlantilla(cuadrillaId){
   // Setear personas
   const persEl = document.getElementById('mPersonas');
   if(persEl) persEl.value = p.personas;
-  // Setear máquinas — usar _modalMaquinas (la misma variable que usa renderMaqList)
+  // Setear máquinas — usar _modalMaquinas (misma var que renderMaqList)
   _modalMaquinas = (p.maquinas||[]).map(m=>Object.assign({},m));
   if(typeof renderMaqList === 'function') renderMaqList();
 }
@@ -3474,35 +3471,6 @@ function toggleTema(){
         ${state.fechaLimite ? `<span><span style="width:10px;border-top:2px dashed var(--accent-orange);"></span>Fecha límite obra</span>` : ''}
       </div>
  
-      <div class="os-section">
-        <div class="os-section-hdr" id="osMainHdr">
-          <span>🔷 Libro de Órdenes de Servicio — INGEMAX S.A. <span style="background:rgba(255,255,255,.2);border-radius:20px;padding:2px 10px;font-size:10px;margin-left:8px;">${ORDENES_SERVICIO.length}</span></span>
-          <div class="os-hdr-btns">
-            <button class="os-hdr-btn" id="btnOSExpandir">Abrir todas</button>
-            <button class="os-hdr-btn" id="btnOSColapsar">Cerrar todas</button>
-            <button class="os-hdr-btn" id="btnOSToggle">▾ Ocultar panel</button>
-          </div>
-        </div>
-        <div class="os-body open" id="osBody">
-          ${ORDENES_SERVICIO.map(os=>`
-          <div class="os-row">
-            <div class="os-row-top" data-osid="${os.id}">
-              <span class="os-row-arrow">▸</span>
-              <span class="os-row-num">${os.id}</span>
-              <span class="os-row-nombre">${escHtml(os.nombre)}</span>
-              <span class="os-row-estado ${os.estado}">${os.estado==='realizado'?'Realizado':os.estado==='pendiente'?'Pendiente':'Sin fecha'}</span>
-            </div>
-            <div class="os-det" id="osdet_${os.id}" style="display:none;">
-              <div class="os-det-row">
-                ${(os.sectores||[]).map(s=>`<span class="os-tag-sector">${escHtml(sectorNombre(s))}</span>`).join('')}
-                ${os.inicio?`<span class="os-det-fecha">${fmt(parseD(os.inicio))}${os.fin&&os.fin!==os.inicio?' → '+fmt(parseD(os.fin)):''}</span>`:''}
-                ${os.nota?`<span class="os-det-nota">· ${escHtml(os.nota)}</span>`:''}
-                ${os.url?`<a href="${os.url}" target="_blank" class="os-ver-btn">Ver documento ↗</a>`:''}
-              </div>
-            </div>
-          </div>`).join('')}
-        </div>
-      </div>
       <div class="cf-listwrap">
         <div class="cf-list-h">Detalle de actividades y subactividades</div>
         ${hasTasks ? `
@@ -3533,8 +3501,46 @@ function toggleTema(){
 
       
       <!-- ÓRDENES DE SERVICIO -->
+      <div class="os-section">
+        <div class="os-section-hdr" id="osMainHdr">
+          <span>🔷 Libro de Órdenes de Servicio — INGEMAX S.A. <span style="background:rgba(255,255,255,.2);border-radius:20px;padding:2px 10px;font-size:10px;margin-left:8px;">${ORDENES_SERVICIO.length}</span></span>
+          <div class="os-hdr-btns">
+            <button class="os-hdr-btn" id="btnOSExpandir">Abrir todas</button>
+            <button class="os-hdr-btn" id="btnOSColapsar">Cerrar todas</button>
+            <button class="os-hdr-btn" id="btnOSToggle">▾ Ocultar panel</button>
+          </div>
+        </div>
+        <div class="os-body open" id="osBody">
+          ${ORDENES_SERVICIO.map(os=>`
+          <div class="os-row">
+            <div class="os-row-top" data-osid="${os.id}">
+              <span class="os-row-arrow">▸</span>
+              <span class="os-row-num">${os.id}</span>
+              <span class="os-row-nombre">${escHtml(os.nombre)}</span>
+              <span class="os-row-estado ${os.estado}">${os.estado==='realizado'?'Realizado':os.estado==='pendiente'?'Pendiente':'Sin fecha'}</span>
+            </div>
+            <div class="os-det" id="osdet_${os.id}" style="display:none;">
+              <div class="os-det-row">
+                ${(os.sectores||[]).map(s=>`<span class="os-tag-sector">${escHtml(sectorNombre(s))}</span>`).join('')}
+                ${os.inicio?`<span class="os-det-fecha">${fmt(parseD(os.inicio))}${os.fin&&os.fin!==os.inicio?' → '+fmt(parseD(os.fin)):''}</span>`:''}
+                ${os.nota?`<span class="os-det-nota">· ${escHtml(os.nota)}</span>`:''}
+                ${os.url?`<a href="${os.url}" target="_blank" class="os-ver-btn">Ver documento ↗</a>`:''}
+              </div>
+            </div>
+          </div>`).join('')}
+        </div>
+      </div>
+
     `;
  
+    // Inicializar vista especial (calendario/compras)
+    const vistaEsp = document.getElementById('vistaEspecial');
+    if(vistaEsp){
+      const tipoVista = vistaEsp.getAttribute('data-vista-tipo');
+      if(tipoVista==='calendario' && typeof renderCalendario==='function') renderCalendario(vistaEsp, state);
+      if(tipoVista==='compras' && typeof renderCompras==='function') renderCompras(vistaEsp, state);
+    }
+
     const _sa = (id,fn)=>{ const el=document.getElementById(id); if(el) el.onclick=fn; };
     const _sc = (id,fn)=>{ const el=document.getElementById(id); if(el) el.onchange=fn; };
     _sa('btnAdd', ()=>openModal(null,null));
@@ -3980,11 +3986,22 @@ function toggleTema(){
     <div class="reporte-section">
       <div class="reporte-section-title">Contenido a incluir</div>
       <div class="reporte-checks">
-        <label class="reporte-check"><input type="checkbox" id="rpGantt" checked><span>📊 Cronograma visual (Gantt SVG)</span></label>
-        <label class="reporte-check"><input type="checkbox" id="rpHorm" checked><span>🏗 Lista pedido de hormigón (m³ por sector)</span></label>
-        <label class="reporte-check"><input type="checkbox" id="rpTabla" checked><span>📋 Tabla detallada de actividades</span></label>
-        <label class="reporte-check"><input type="checkbox" id="rpCuad" checked><span>👷 Cuadrillas — pico de simultaneidad</span></label>
-        <label class="reporte-check"><input type="checkbox" id="rpMaq" checked><span>🚜 Maquinaria — máximo simultáneo</span></label>
+        <label class="reporte-check">
+          <input type="checkbox" id="rpTabla" checked>
+          <span>📋 Tabla de actividades y subactividades</span>
+        </label>
+        <label class="reporte-check">
+          <input type="checkbox" id="rpCuad" checked>
+          <span>👷 Resumen de cuadrillas (pico de simultaneidad)</span>
+        </label>
+        <label class="reporte-check">
+          <input type="checkbox" id="rpMaq" checked>
+          <span>🚜 Resumen de maquinaria</span>
+        </label>
+        <label class="reporte-check">
+          <input type="checkbox" id="rpGantt" checked>
+          <span>📊 Cronograma Gantt (SVG vectorial)</span>
+        </label>
       </div>
     </div>
 
