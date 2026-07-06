@@ -341,6 +341,23 @@
     z-index:300;
     border:none !important;
   }
+  /* Fullscreen que mantiene los controles */
+  #ganttZone.fs-zone{
+    position:fixed;inset:0;z-index:300;
+    background:var(--negro,#0f0f0f);
+    padding:12px;
+    display:flex;flex-direction:column;
+    overflow:hidden;
+  }
+  #ganttZone.fs-zone .cf-gantt-wrap{
+    max-height:none !important;
+    flex:1;
+    min-height:0;
+  }
+  #ganttZone.fs-zone .cf-toolbar-section,
+  #ganttZone.fs-zone .cf-rangebar{
+    flex-shrink:0;
+  }
   .gantt-fs-btn{
     position:absolute;right:8px;top:8px;z-index:301;
     background:var(--gris2);border:1px solid var(--borde);
@@ -874,8 +891,9 @@ function mostrarDetalleTask(task, evt){
   var gridPers=document.createElement('div');
   gridPers.style.cssText='display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:14px;';
   if(task.personas) gridPers.appendChild(cellF('Personas', task.personas+' operarios'));
-  if(task.m3) gridPers.appendChild(cellF('Hormigón', task.m3+' m³', '#9CA3AF'));
-  if(task.personas || task.m3) panel.appendChild(gridPers);
+  if(task.cuadrilla==='hormigon') gridPers.appendChild(cellF('Hormigón', (task.m3?task.m3+' m³':'sin cargar'), '#9CA3AF'));
+  else if(task.m3) gridPers.appendChild(cellF('Hormigón', task.m3+' m³', '#9CA3AF'));
+  if(task.personas || task.m3 || task.cuadrilla==='hormigon') panel.appendChild(gridPers);
 
   // ── 3. MAQUINARIA (grande) ──
   if(task.maquinas && task.maquinas.length){
@@ -3536,6 +3554,7 @@ function toggleTema(){
  
       ${atRisk ? `<div class="cf-needpanel" style="margin-top:-6px;"><div class="cf-needchip" style="border-color:var(--accent-orange); color:var(--accent-orange);">⚠ El frente más largo termina el ${fmt(parseD(maxFin))}, después de la fecha límite (${fmt(parseD(state.fechaLimite))}).</div></div>` : ''}
  
+      <div id="ganttZone">
       <div class="cf-toolbar-section">
         <div class="cf-toolbar-label">Vista y zoom</div>
         <div class="cf-toolbar">
@@ -3597,6 +3616,7 @@ function toggleTema(){
           ${rowGroups.map(g=>`<div class="cf-groupspacer"></div>${g.rows.map(trackHtml).join('')}`).join('')}
         </div>
       </div></div>`:''}
+      </div><!-- /ganttZone -->
 
       <div class="cf-legend">
         ${state.cuadrillas.map(c=>`<span><span class="cf-dot" style="background:${c.color}"></span>${escHtml(c.nombre)}</span>`).join('')}
@@ -3737,16 +3757,18 @@ function toggleTema(){
     // ── Listeners OS ──
     // ── Fullscreen del gantt ──
     const btnFS = document.getElementById('btnGanttFS');
-    const ganttWrap = document.getElementById('cfGanttWrap');
-    if(btnFS && ganttWrap){
+    const ganttZone = document.getElementById('ganttZone');
+    if(btnFS && ganttZone){
       btnFS.onclick = ()=>{
-        const isFS = ganttWrap.classList.toggle('fullscreen');
-        btnFS.textContent = isFS ? '✕ Salir' : '⤢ Pantalla completa';
-        btnFS.style.position = isFS ? 'fixed' : 'absolute';
-        btnFS.style.right = '12px';
-        btnFS.style.top = isFS ? '12px' : '8px';
-        btnFS.style.zIndex = isFS ? '302' : '301';
+        const isFS = ganttZone.classList.toggle('fs-zone');
+        btnFS.textContent = isFS ? '✕ Salir de pantalla completa' : '⤢ Pantalla completa';
+        window._ganttFS = isFS;
       };
+      // Preservar estado FS tras re-render
+      if(window._ganttFS){
+        ganttZone.classList.add('fs-zone');
+        btnFS.textContent = '✕ Salir de pantalla completa';
+      }
     }
 
     root.querySelectorAll('[data-osid]').forEach(row=>{
