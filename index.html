@@ -906,13 +906,17 @@ function buildGanttSVG(tareas, desde, hasta){
   // Filtrar solo tareas raíz y sus hijos directos (2 niveles)
   var rootTasks = tareas.filter(function(t){ return !t.parentId; });
   var rows = [];
+  // Mostrar tareas raíz + hijos con cuadrilla (para ver colores)
   rootTasks.forEach(function(t){
     rows.push({task:t, depth:0});
-    if(!t.collapsed){
-      tareas.filter(function(c){ return c.parentId === t.id; }).forEach(function(c){
-        rows.push({task:c, depth:1});
-      });
-    }
+    // Hijos directos
+    var hijos = tareas.filter(function(c){ return c.parentId === t.id; });
+    hijos.forEach(function(c){
+      rows.push({task:c, depth:1});
+      // Nietos (subactividades de pisos)
+      var nietos = tareas.filter(function(n){ return n.parentId === c.id; });
+      nietos.forEach(function(n){ rows.push({task:n, depth:2}); });
+    });
   });
 
   var SVG_H = HEADER_H + rows.length * ROW_H + 10;
