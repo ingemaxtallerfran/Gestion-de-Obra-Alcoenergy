@@ -130,7 +130,7 @@
   .cf-gantt-wrap{
     border:1px solid var(--borde);border-radius:var(--radius);
     overflow:auto;
-    max-height:calc(100vh - 320px);
+    max-height:calc(100vh - 220px);
     min-height:300px;
     background:var(--gris2);
   }
@@ -287,6 +287,27 @@
   [data-theme="light"] .cf-needchip{ background:var(--gris1); }
   [data-theme="light"] .cf-table tr:hover td{ background:rgba(217,84,10,.05); }
   [data-theme="light"] .theme-toggle-btn{ background:var(--gris2); }
+
+  /* ── GANTT FULLSCREEN ── */
+  .cf-gantt-wrap.fullscreen{
+    position:fixed !important;
+    inset:0 !important;
+    max-height:100vh !important;
+    height:100vh !important;
+    border-radius:0 !important;
+    z-index:300;
+    border:none !important;
+  }
+  .gantt-fs-btn{
+    position:absolute;right:8px;top:8px;z-index:301;
+    background:var(--gris2);border:1px solid var(--borde);
+    color:var(--texto);border-radius:var(--rsm);
+    padding:5px 10px;font-size:13px;cursor:pointer;
+    font-family:'Barlow Condensed',sans-serif;font-weight:700;
+    transition:all .15s;
+  }
+  .gantt-fs-btn:hover{border-color:var(--naranja);color:var(--naranja);}
+  .cf-gantt-wrap.fullscreen .gantt-fs-btn{ background:var(--gris1); }
 
   /* ══ VISTA CALENDARIO ══ */
   .cal-wrap{ padding:4px 0 20px; }
@@ -3442,7 +3463,9 @@ function toggleTema(){
         <button class="cf-btn ghost mini" id="btnRangeAll">Obra completa</button>
       </div>      <div class="cf-hint">💡 Doble click en un nombre para renombrar · Arrastrá los bordes de una barra para cambiar fechas · Filtrá por rango con "Ver desde / hasta"</div>
  
-      <div class="cf-gantt-wrap"><div class="cf-gantt">
+      <div style="position:relative;">
+        <button class="gantt-fs-btn" id="btnGanttFS" title="Pantalla completa">⤢ Pantalla completa</button>
+        <div class="cf-gantt-wrap" id="cfGanttWrap"><div class="cf-gantt">
         <div class="cf-rowlabels">
           <div class="cf-rowlabel-h"></div>
           ${rowGroups.map(g=>`<div class="cf-grouphead" style="background:${g.headerColor}">${escHtml(g.headerLabel)}</div>${g.rows.map(rowLabelHtml).join('')}`).join('')}
@@ -3454,7 +3477,7 @@ function toggleTema(){
           </div>
           ${rowGroups.map(g=>`<div class="cf-groupspacer"></div>${g.rows.map(trackHtml).join('')}`).join('')}
         </div>
-      </div>
+      </div></div>
 
       <div class="cf-legend">
         ${state.cuadrillas.map(c=>`<span><span class="cf-dot" style="background:${c.color}"></span>${escHtml(c.nombre)}</span>`).join('')}
@@ -3564,6 +3587,20 @@ function toggleTema(){
     root.querySelectorAll('[data-addsub-task]').forEach(b=>b.onclick=()=>{ openModal(null, taskById(b.dataset.addsubTask)); });
     root.querySelectorAll('[data-addsub-sector]').forEach(b=>b.onclick=()=>{ openModal(null,null,b.dataset.addsubSector); });
     // ── Listeners OS ──
+    // ── Fullscreen del gantt ──
+    const btnFS = document.getElementById('btnGanttFS');
+    const ganttWrap = document.getElementById('cfGanttWrap');
+    if(btnFS && ganttWrap){
+      btnFS.onclick = ()=>{
+        const isFS = ganttWrap.classList.toggle('fullscreen');
+        btnFS.textContent = isFS ? '✕ Salir' : '⤢ Pantalla completa';
+        btnFS.style.position = isFS ? 'fixed' : 'absolute';
+        btnFS.style.right = '12px';
+        btnFS.style.top = isFS ? '12px' : '8px';
+        btnFS.style.zIndex = isFS ? '302' : '301';
+      };
+    }
+
     root.querySelectorAll('[data-osid]').forEach(row=>{
       row.onclick=()=>{
         const id=row.dataset.osid;
