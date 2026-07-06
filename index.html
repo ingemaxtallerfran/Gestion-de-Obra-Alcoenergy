@@ -1094,7 +1094,7 @@ function generarReporte(){
   var hasta  = document.getElementById('rpHasta').value;
   var inclGantt  = document.getElementById('rpGantt').checked;
   var inclCal    = document.getElementById('rpCal') && document.getElementById('rpCal').checked;
-  var inclHorm   = document.getElementById('rpHorm').checked;
+  var inclHorm   = document.getElementById('rpHorm') ? document.getElementById('rpHorm').checked : false;
   var inclTabla  = document.getElementById('rpTabla').checked;
   var inclCuad   = document.getElementById('rpCuad').checked;
   var inclMaq    = document.getElementById('rpMaq').checked;
@@ -4263,22 +4263,11 @@ function toggleTema(){
     <div class="reporte-section">
       <div class="reporte-section-title">Contenido a incluir</div>
       <div class="reporte-checks">
-        <label class="reporte-check">
-          <input type="checkbox" id="rpTabla" checked>
-          <span>📋 Tabla de actividades y subactividades</span>
-        </label>
-        <label class="reporte-check">
-          <input type="checkbox" id="rpCuad" checked>
-          <span>👷 Resumen de cuadrillas (pico de simultaneidad)</span>
-        </label>
-        <label class="reporte-check">
-          <input type="checkbox" id="rpMaq" checked>
-          <span>🚜 Resumen de maquinaria</span>
-        </label>
-        <label class="reporte-check">
-          <input type="checkbox" id="rpGantt" checked>
-          <span>📊 Cronograma Gantt (SVG vectorial)</span>
-        </label>
+        <label class="reporte-check"><input type="checkbox" id="rpGantt" checked><span>📊 Cronograma visual (Gantt SVG)</span></label>
+        <label class="reporte-check"><input type="checkbox" id="rpHorm" checked><span>🏗 Lista pedido de hormigón (m³ por sector)</span></label>
+        <label class="reporte-check"><input type="checkbox" id="rpTabla" checked><span>📋 Tabla detallada de actividades</span></label>
+        <label class="reporte-check"><input type="checkbox" id="rpCuad" checked><span>👷 Cuadrillas — pico de simultaneidad</span></label>
+        <label class="reporte-check"><input type="checkbox" id="rpMaq" checked><span>🚜 Maquinaria — máximo simultáneo</span></label>
       </div>
     </div>
 
