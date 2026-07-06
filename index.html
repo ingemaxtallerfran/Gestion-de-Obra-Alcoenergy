@@ -130,7 +130,7 @@
   .cf-gantt-wrap{
     border:1px solid var(--borde);border-radius:var(--radius);
     overflow:auto;
-    max-height:calc(100vh - 220px);
+    max-height:calc(100vh - 150px);
     min-height:300px;
     background:var(--gris2);
   }
@@ -287,6 +287,49 @@
   [data-theme="light"] .cf-needchip{ background:var(--gris1); }
   [data-theme="light"] .cf-table tr:hover td{ background:rgba(217,84,10,.05); }
   [data-theme="light"] .theme-toggle-btn{ background:var(--gris2); }
+  /* ── CARDS DE RESUMEN (nuevas) ── */
+  .cf-resumen-panels{ align-items:stretch; }
+  .cf-resumen-semana, .cf-resumen-cuad{ display:flex; flex-direction:column; min-height:130px; }
+  .cf-resumen-hdr{ display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; gap:10px; }
+  .cf-fecha-hoy{ font-family:'Barlow Condensed',sans-serif; font-size:19px; font-weight:800;
+    color:var(--naranja,#E8651A); letter-spacing:.02em; text-transform:capitalize; }
+  .cf-resumen-titulo{ font-family:'Barlow Condensed',sans-serif; font-size:15px; font-weight:800;
+    color:var(--texto,#f0f0f0); letter-spacing:.03em; }
+  .cf-resumen-tag{ font-family:'Barlow Condensed',sans-serif; font-size:10px; font-weight:700;
+    letter-spacing:.1em; text-transform:uppercase; color:var(--gris5,#888); }
+  .cf-resumen-body{ flex:1; overflow-y:auto; max-height:180px; }
+  .cf-resumen-vacio{ font-family:'Barlow Condensed',sans-serif; font-size:13px; color:var(--gris5,#888); padding:8px 0; }
+
+  /* Resumen semanal por sector */
+  .rs-sector{ margin-bottom:10px; }
+  .rs-sector-nombre{ font-family:'Barlow Condensed',sans-serif; font-size:11px; font-weight:800;
+    letter-spacing:.08em; text-transform:uppercase; color:var(--naranja,#E8651A);
+    margin-bottom:4px; padding-bottom:3px; border-bottom:1px solid var(--borde,#2e2e2e); }
+  .rs-act{ display:flex; align-items:center; gap:7px; font-family:'Barlow Condensed',sans-serif;
+    font-size:13px; color:var(--texto,#f0f0f0); padding:2px 0; }
+  .rs-dot{ width:8px; height:8px; border-radius:50%; flex-shrink:0; }
+  .rs-pers{ margin-left:auto; font-size:11px; font-weight:700; color:var(--gris5,#888); }
+
+  /* Toggle Hoy/Semana */
+  .cuad-toggle{ display:flex; gap:0; border:1px solid var(--borde,#2e2e2e); border-radius:7px; overflow:hidden; }
+  .cuad-toggle button{ font-family:'Barlow Condensed',sans-serif; font-size:11px; font-weight:700;
+    padding:5px 12px; background:transparent; border:none; color:var(--gris5,#888); cursor:pointer;
+    letter-spacing:.04em; transition:all .15s; }
+  .cuad-toggle button.active{ background:var(--naranja,#E8651A); color:#fff; }
+
+  /* Items de cuadrilla */
+  .cuad-item{ display:flex; align-items:center; gap:9px; padding:6px 0;
+    border-bottom:1px solid var(--borde,#2e2e2e); }
+  .cuad-item:last-child{ border-bottom:none; }
+  .cuad-dot{ width:9px; height:9px; border-radius:50%; flex-shrink:0; }
+  .cuad-info{ flex:1; min-width:0; }
+  .cuad-cuadrilla{ font-family:'Barlow Condensed',sans-serif; font-size:13px; font-weight:800;
+    color:var(--texto,#f0f0f0); }
+  .cuad-detalle{ font-family:'Barlow Condensed',sans-serif; font-size:11px; color:var(--gris5,#888);
+    white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .cuad-pers{ font-family:'Barlow Condensed',sans-serif; font-size:15px; font-weight:800;
+    color:var(--naranja,#E8651A); flex-shrink:0; }
+
 
   /* ── GANTT FULLSCREEN ── */
   .cf-gantt-wrap.fullscreen{
@@ -766,16 +809,16 @@ function mostrarDetalleTask(task, evt){
     panel.id = 'taskDetailPanel';
     panel.style.cssText = 'position:fixed;z-index:400;background:var(--gris1,#1a1a1a);'
       +'border:1px solid var(--borde,#2e2e2e);border-top:3px solid var(--naranja,#E8651A);'
-      +'border-radius:10px;padding:16px;max-width:340px;min-width:240px;'
+      +'border-radius:12px;padding:18px;max-width:380px;min-width:280px;'
       +'box-shadow:0 8px 32px rgba(0,0,0,.5);font-family:Barlow Condensed,sans-serif;';
     document.body.appendChild(panel);
     document.addEventListener('click', function(e){
-      if(!panel.contains(e.target) && !e.target.closest('.cf-bar')) panel.style.display='none';
+      if(!panel.contains(e.target) && !e.target.closest('.cf-bar') && !e.target.closest('[data-taskid]')) panel.style.display='none';
     });
   }
   var x = evt.clientX+12, y = evt.clientY+12;
-  if(x+360>window.innerWidth) x=evt.clientX-360;
-  if(y+300>window.innerHeight) y=evt.clientY-300;
+  if(x+400>window.innerWidth) x=evt.clientX-400;
+  if(y+340>window.innerHeight) y=Math.max(12, evt.clientY-340);
   panel.style.left=x+'px'; panel.style.top=y+'px'; panel.style.display='block';
 
   var cuadNombre='';
@@ -786,91 +829,101 @@ function mostrarDetalleTask(task, evt){
     if(cuad){cuadNombre=cuad.nombre; color=colores[task.cuadrilla]||'#888';}
   }
 
-  // Construir con DOM en vez de strings para evitar problemas de comillas
   panel.innerHTML='';
 
   // Header
   var hdr=document.createElement('div');
-  hdr.style.cssText='display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:12px;';
+  hdr.style.cssText='display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:14px;';
   var tit=document.createElement('div');
-  tit.style.cssText='font-size:16px;font-weight:800;color:var(--texto,#f0f0f0);line-height:1.2;max-width:260px;';
+  tit.style.cssText='font-size:18px;font-weight:800;color:var(--texto,#f0f0f0);line-height:1.15;max-width:300px;';
   tit.textContent=task.nombre;
   var cls=document.createElement('button');
   cls.textContent='✕';
-  cls.style.cssText='background:none;border:none;color:#888;cursor:pointer;font-size:18px;padding:0 0 0 8px;';
+  cls.style.cssText='background:none;border:none;color:#888;cursor:pointer;font-size:19px;padding:0 0 0 8px;line-height:1;';
   cls.onclick=function(){panel.style.display='none';};
   hdr.appendChild(tit); hdr.appendChild(cls); panel.appendChild(hdr);
 
   // Badge cuadrilla
   if(cuadNombre){
     var badge=document.createElement('div');
-    badge.style.cssText='display:inline-block;background:'+color+'22;border:1px solid '+color+'55;color:'+color+';border-radius:20px;padding:2px 10px;font-size:11px;font-weight:700;margin-bottom:10px;';
+    badge.style.cssText='display:inline-block;background:'+color+'22;border:1px solid '+color+'55;color:'+color+';border-radius:20px;padding:3px 12px;font-size:12px;font-weight:700;margin-bottom:14px;';
     badge.textContent=cuadNombre;
     panel.appendChild(badge);
   }
 
-  // Grid de datos
-  var grid=document.createElement('div');
-  grid.style.cssText='display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:10px;';
-  function addCell(label,val,color2){
+  // ── 1. FECHAS + DURACIÓN ──
+  var dur = Math.round((new Date(task.fin+'T00:00:00')-new Date(task.inicio+'T00:00:00'))/86400000)+1;
+  var gridFechas=document.createElement('div');
+  gridFechas.style.cssText='display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:12px;';
+  function cellF(label,val,c2){
     var cell=document.createElement('div');
     var lbl=document.createElement('div');
     lbl.style.cssText='font-size:9px;color:#888;text-transform:uppercase;letter-spacing:.08em;margin-bottom:2px;';
     lbl.textContent=label;
     var v=document.createElement('div');
-    v.style.cssText='font-size:14px;font-weight:700;color:'+(color2||'var(--texto,#f0f0f0)')+';';
+    v.style.cssText='font-size:15px;font-weight:800;color:'+(c2||'var(--texto,#f0f0f0)')+';';
     v.textContent=val;
-    cell.appendChild(lbl); cell.appendChild(v); grid.appendChild(cell);
+    cell.appendChild(lbl); cell.appendChild(v); return cell;
   }
-  addCell('Inicio', fmtDateES(task.inicio));
-  addCell('Fin', fmtDateES(task.fin));
-  if(task.personas) addCell('Personas', task.personas+'p');
-  if(task.m3) addCell('Hormigón', task.m3+' m³', '#6B7280');
-  panel.appendChild(grid);
+  gridFechas.appendChild(cellF('Inicio', fmtDateES(task.inicio)));
+  gridFechas.appendChild(cellF('Fin', fmtDateES(task.fin)));
+  gridFechas.appendChild(cellF('Duración', dur+' días'));
+  panel.appendChild(gridFechas);
 
-  // Maquinaria
+  // ── 2. PERSONAS + HORMIGÓN ──
+  var gridPers=document.createElement('div');
+  gridPers.style.cssText='display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:14px;';
+  if(task.personas) gridPers.appendChild(cellF('Personas', task.personas+' operarios'));
+  if(task.m3) gridPers.appendChild(cellF('Hormigón', task.m3+' m³', '#9CA3AF'));
+  if(task.personas || task.m3) panel.appendChild(gridPers);
+
+  // ── 3. MAQUINARIA (grande) ──
   if(task.maquinas && task.maquinas.length){
     var maqSec=document.createElement('div');
-    maqSec.style.marginBottom='8px';
+    maqSec.style.cssText='margin-bottom:14px;padding:10px 12px;background:var(--gris2,#252525);border-radius:8px;';
     var maqLbl=document.createElement('div');
-    maqLbl.style.cssText='font-size:9px;color:#888;text-transform:uppercase;letter-spacing:.08em;margin-bottom:4px;';
-    maqLbl.textContent='Maquinaria';
+    maqLbl.style.cssText='font-size:10px;color:#888;text-transform:uppercase;letter-spacing:.08em;margin-bottom:8px;font-weight:700;';
+    maqLbl.textContent='🚜 Maquinaria';
     maqSec.appendChild(maqLbl);
     task.maquinas.forEach(function(m){
       var row=document.createElement('div');
-      row.style.cssText='font-size:12px;color:var(--texto2,#aaa);';
-      row.textContent='· '+m.cant+'× '+m.tipo;
+      row.style.cssText='display:flex;align-items:center;gap:8px;font-size:14px;color:var(--texto,#f0f0f0);padding:4px 0;font-weight:600;';
+      var cant=document.createElement('span');
+      cant.style.cssText='display:inline-flex;align-items:center;justify-content:center;min-width:24px;height:24px;background:var(--naranja,#E8651A);color:#fff;border-radius:6px;font-size:12px;font-weight:800;';
+      cant.textContent=m.cant;
+      var tipo=document.createElement('span');
+      tipo.textContent=m.tipo;
+      row.appendChild(cant); row.appendChild(tipo);
       maqSec.appendChild(row);
     });
     panel.appendChild(maqSec);
   }
 
-  // Descripción
+  // ── 4. DESCRIPCIÓN ──
   if(task.descripcion){
     var dSec=document.createElement('div');
     dSec.style.marginBottom='8px';
     var dLbl=document.createElement('div');
-    dLbl.style.cssText='font-size:9px;color:#888;text-transform:uppercase;letter-spacing:.08em;margin-bottom:4px;';
+    dLbl.style.cssText='font-size:10px;color:#888;text-transform:uppercase;letter-spacing:.08em;margin-bottom:4px;font-weight:700;';
     dLbl.textContent='Descripción';
     var dVal=document.createElement('div');
-    dVal.style.cssText='font-size:12px;color:var(--texto2,#aaa);line-height:1.4;';
+    dVal.style.cssText='font-size:13px;color:var(--texto2,#aaa);line-height:1.4;';
     dVal.textContent=task.descripcion;
     dSec.appendChild(dLbl); dSec.appendChild(dVal); panel.appendChild(dSec);
   }
 
-  // Notas
+  // ── 5. NOTAS ──
   if(task.notas){
     var nSec=document.createElement('div');
     var nLbl=document.createElement('div');
-    nLbl.style.cssText='font-size:9px;color:#888;text-transform:uppercase;letter-spacing:.08em;margin-bottom:4px;';
+    nLbl.style.cssText='font-size:10px;color:#888;text-transform:uppercase;letter-spacing:.08em;margin-bottom:4px;font-weight:700;';
     nLbl.textContent='Notas';
     var nVal=document.createElement('div');
-    nVal.style.cssText='font-size:12px;color:var(--naranja,#E8651A);line-height:1.4;';
+    nVal.style.cssText='font-size:13px;color:var(--naranja,#E8651A);line-height:1.4;';
     nVal.textContent=task.notas;
     nSec.appendChild(nLbl); nSec.appendChild(nVal); panel.appendChild(nSec);
   }
 }
-
 function abrirReporte(){
   var ov=document.getElementById('reporteOverlay');
   if(!ov)return;
@@ -3133,6 +3186,62 @@ function toggleTema(){
   // ── Helpers Planos ──
   function guardarPlanos(){ save(); }
 
+  // ── Helpers para las cards de resumen ──
+  function _rangoSemanaActual(){
+    const hoy = new Date(); hoy.setHours(0,0,0,0);
+    const dow = hoy.getDay(); // 0=dom
+    const lunes = new Date(hoy); lunes.setDate(hoy.getDate() - (dow===0?6:dow-1));
+    const domingo = new Date(lunes); domingo.setDate(lunes.getDate()+6);
+    return { inicio: iso(lunes), fin: iso(domingo) };
+  }
+  function fechaHoyLarga(){
+    const dias = ['Domingo','Lunes','Martes','Miércoles','Jueves','Viernes','Sábado'];
+    const hoy = new Date();
+    return dias[hoy.getDay()] + ' ' + String(hoy.getDate()).padStart(2,'0') + '/' + String(hoy.getMonth()+1).padStart(2,'0');
+  }
+  function resumenSemanalPorSector(){
+    const {inicio, fin} = _rangoSemanaActual();
+    // Tareas activas esta semana (con cuadrilla, no las madre)
+    const activas = state.tasks.filter(t=>t.cuadrilla && t.inicio && t.fin && t.inicio<=fin && t.fin>=inicio);
+    // Agrupar por sector
+    const porSector = {};
+    activas.forEach(t=>{
+      const so = sectorObj(t.sector);
+      const nombre = so ? so.nombre : (t.sector||'Sin sector');
+      if(!porSector[nombre]) porSector[nombre] = [];
+      porSector[nombre].push(t);
+    });
+    return porSector;
+  }
+  function cuadrillasActivas(modo){
+    // modo: 'hoy' o 'semana'
+    let inicio, fin;
+    if(modo==='hoy'){
+      const hoy = new Date(); hoy.setHours(0,0,0,0);
+      inicio = fin = iso(hoy);
+    } else {
+      const r = _rangoSemanaActual();
+      inicio = r.inicio; fin = r.fin;
+    }
+    const result = [];
+    state.cuadrillas.forEach(c=>{
+      const tareas = state.tasks.filter(t=>t.cuadrilla===c.id && t.inicio && t.fin && t.inicio<=fin && t.fin>=inicio);
+      if(tareas.length > 0){
+        tareas.forEach(t=>{
+          const so = sectorObj(t.sector);
+          result.push({
+            cuadrilla: c.nombre,
+            color: c.color,
+            sector: so ? so.nombre : (t.sector||'—'),
+            actividad: t.nombre,
+            personas: t.personas || 0
+          });
+        });
+      }
+    });
+    return result;
+  }
+
   function peaksByCuadrilla(){
     const map = {};
     state.cuadrillas.forEach(c=>{
@@ -3381,17 +3490,46 @@ function toggleTema(){
         </div>
       </div>
  
-      <div class="cf-summary-panels">
-        <div class="cf-summary-box">
-          <div class="cf-summary-box-title">👷 Cuadrillas — pico de simultaneidad</div>
-          <div class="cf-summary-chips">
-            ${state.cuadrillas.map(c=>`<div class="cf-needchip"><span class="cf-dot" style="background:${c.color}"></span>${escHtml(c.nombre)}: <span class="peak">${peaks[c.id]||0}</span></div>`).join('')}
+      <div class="cf-summary-panels cf-resumen-panels">
+        <div class="cf-summary-box cf-resumen-semana">
+          <div class="cf-resumen-hdr">
+            <div class="cf-fecha-hoy">${fechaHoyLarga()}</div>
+            <div class="cf-resumen-tag">Esta semana</div>
+          </div>
+          <div class="cf-resumen-body">
+            ${(()=>{
+              const rs = resumenSemanalPorSector();
+              const sectores = Object.keys(rs);
+              if(sectores.length===0) return '<div class="cf-resumen-vacio">No hay actividades esta semana.</div>';
+              return sectores.map(sec=>`<div class="rs-sector">
+                <div class="rs-sector-nombre">${escHtml(sec)}</div>
+                ${rs[sec].map(t=>`<div class="rs-act"><span class="rs-dot" style="background:${(cuadrillaInfo(t.cuadrilla)||{}).color||'#888'}"></span>${escHtml(t.nombre)}${t.personas?`<span class="rs-pers">${t.personas}p</span>`:''}</div>`).join('')}
+              </div>`).join('');
+            })()}
           </div>
         </div>
-        <div class="cf-summary-box">
-          <div class="cf-summary-box-title">🚜 Máquinas — pico de simultaneidad</div>
-          <div class="cf-summary-chips">
-            ${Object.entries(peakMaquinas()).map(([tipo,pk])=>`<div class="cf-needchip"><span class="cf-dot" style="background:${maqColor(tipo)}"></span>${escHtml(tipo)}: <span class="peak">${pk}</span></div>`).join('')}
+        <div class="cf-summary-box cf-resumen-cuad">
+          <div class="cf-resumen-hdr">
+            <div class="cf-resumen-titulo">👷 Cuadrillas</div>
+            <div class="cuad-toggle">
+              <button id="btnCuadHoy" class="${window._cuadModo!=='semana'?'active':''}">Hoy</button>
+              <button id="btnCuadSemana" class="${window._cuadModo==='semana'?'active':''}">Esta semana</button>
+            </div>
+          </div>
+          <div class="cf-resumen-body">
+            ${(()=>{
+              const modo = window._cuadModo==='semana'?'semana':'hoy';
+              const cuads = cuadrillasActivas(modo);
+              if(cuads.length===0) return '<div class="cf-resumen-vacio">Sin cuadrillas activas '+(modo==='hoy'?'hoy':'esta semana')+'.</div>';
+              return cuads.map(c=>`<div class="cuad-item">
+                <span class="cuad-dot" style="background:${c.color}"></span>
+                <div class="cuad-info">
+                  <div class="cuad-cuadrilla">${escHtml(c.cuadrilla)}</div>
+                  <div class="cuad-detalle">${escHtml(c.sector)} · ${escHtml(c.actividad)}</div>
+                </div>
+                <div class="cuad-pers">${c.personas}p</div>
+              </div>`).join('');
+            })()}
           </div>
         </div>
       </div>
@@ -3427,21 +3565,17 @@ function toggleTema(){
           <div class="cf-field-inline" style="margin-left:auto;"><span>Meta</span><input type="date" id="inpLimite" value="${state.fechaLimite||''}" /></div>
         </div>
       </div>
-      <div class="cf-toolbar-section">
-        <div class="cf-toolbar-label">Acciones</div>
-        <div class="cf-toolbar">
-          <button class="cf-btn" id="btnAdd">+ Agregar actividad</button>
-          <button class="cf-btn ghost mini" id="btnAddSector">+ Sector</button>
-          <button class="cf-btn ghost mini" id="btnAddCuadrilla">+ Cuadrilla</button>
-          <button class="cf-btn ghost mini" id="btnReset" style="margin-left:auto;border-color:#ef4444;color:#ef4444;">Vaciar todo</button>
-        </div>
-      </div>
       <div class="cf-rangebar">
         <div class="cf-field-inline"><span>Ver desde</span><input type="date" id="inpRangoInicio" value="${state.rangoInicio||''}" /></div>
         <div class="cf-field-inline"><span>hasta</span><input type="date" id="inpRangoFin" value="${state.rangoFin||''}" /></div>
         <button class="cf-btn ghost mini" id="btnRange90">Prox. 90 dias</button>
         <button class="cf-btn ghost mini" id="btnRangeAll">Obra completa</button>
-      </div>      <div class="cf-hint">💡 Doble click en un nombre para renombrar · Arrastrá los bordes de una barra para cambiar fechas · Filtrá por rango con "Ver desde / hasta"</div>
+        <span style="flex:1;"></span>
+        ${IS_EDITOR?`<button class="cf-btn" id="btnAdd">+ Actividad</button>
+        <button class="cf-btn ghost mini" id="btnAddSector">+ Sector</button>
+        <button class="cf-btn ghost mini" id="btnAddCuadrilla">+ Cuadrilla</button>
+        <button class="cf-btn ghost mini" id="btnReset" style="border-color:#ef4444;color:#ef4444;">Vaciar</button>`:''}
+      </div>
  
       ${(()=>{
         if(state.vista==='calendario') return '<div id="vistaEspecial" data-vista-tipo="calendario"></div>';
@@ -3531,8 +3665,29 @@ function toggleTema(){
         </div>
       </div>
 
+      <div class="cf-summary-panels" style="margin-top:12px;">
+        <div class="cf-summary-box">
+          <div class="cf-summary-box-title">👷 Cuadrillas — pico de simultaneidad</div>
+          <div class="cf-summary-chips">
+            ${state.cuadrillas.map(c=>`<div class="cf-needchip"><span class="cf-dot" style="background:${c.color}"></span>${escHtml(c.nombre)}: <span class="peak">${peaks[c.id]||0}</span></div>`).join('')}
+          </div>
+        </div>
+        <div class="cf-summary-box">
+          <div class="cf-summary-box-title">🚜 Máquinas — pico de simultaneidad</div>
+          <div class="cf-summary-chips">
+            ${Object.entries(peakMaquinas()).map(([tipo,pk])=>`<div class="cf-needchip"><span class="cf-dot" style="background:${maqColor(tipo)}"></span>${escHtml(tipo)}: <span class="peak">${pk}</span></div>`).join('')}
+          </div>
+        </div>
+      </div>
+
     `;
  
+    // Toggle Hoy/Esta semana en card de cuadrillas
+    const btnCuadHoy = document.getElementById('btnCuadHoy');
+    const btnCuadSemana = document.getElementById('btnCuadSemana');
+    if(btnCuadHoy) btnCuadHoy.onclick = ()=>{ window._cuadModo='hoy'; render(); };
+    if(btnCuadSemana) btnCuadSemana.onclick = ()=>{ window._cuadModo='semana'; render(); };
+
     // Inicializar vista especial (calendario/compras)
     const vistaEsp = document.getElementById('vistaEspecial');
     if(vistaEsp){
@@ -3939,6 +4094,7 @@ function toggleTema(){
 
   // Exponer state y cuadrillas para funciones globales (plantillas)
   window._stateRef = state; // referencia inmediata
+  if(typeof window._cuadModo==='undefined') window._cuadModo='hoy';
   // Setear sector default para el calendario
   if(state.grupos && state.grupos[0] && state.grupos[0].sectores[0]){
     document.getElementById('cfRoot')._filSector = state.grupos[0].sectores[0].id;
