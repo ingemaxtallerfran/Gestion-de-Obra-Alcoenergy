@@ -287,6 +287,16 @@
   [data-theme="light"] .cf-needchip{ background:var(--gris1); }
   [data-theme="light"] .cf-table tr:hover td{ background:rgba(217,84,10,.05); }
   [data-theme="light"] .theme-toggle-btn{ background:var(--gris2); }
+  /* ── DRAG & DROP SECTORES ── */
+  .cf-drag-handle{ cursor:grab; color:var(--gris5,#888); font-size:13px; margin-right:2px;
+    user-select:none; flex-shrink:0; opacity:.5; transition:opacity .15s; }
+  .sectorrow:hover .cf-drag-handle{ opacity:1; }
+  .sectorrow[draggable="true"]{ cursor:default; }
+  .sectorrow.dragging{ opacity:.4; background:rgba(232,101,26,.1); }
+  .sectorrow.drag-over-top{ box-shadow:inset 0 3px 0 var(--naranja,#E8651A); }
+  .sectorrow.drag-over-bottom{ box-shadow:inset 0 -3px 0 var(--naranja,#E8651A); }
+  .cf-grouphead.drop-target{ box-shadow:inset 0 0 0 2px var(--naranja,#E8651A); }
+
   /* ── TOOLBAR UNIFICADO ── */
   .cf-toolbar-unified{ padding:10px 14px !important; }
   .cf-toolbar-unified .cf-toolbar{ display:flex; flex-wrap:wrap; align-items:center; gap:8px; }
@@ -3146,10 +3156,32 @@ function toggleTema(){
         // Preservar datos que el GAS viejo no guarda
         const planosLocal = state.planos || [];
         const comprasLocal = state.compras || [];
+        const gruposLocal = state.grupos;
         state = Object.assign(state, d);
         // Si el Sheet no trajo planos/compras, usar los locales
         if(!state.planos || state.planos.length === 0) state.planos = planosLocal;
         if(!state.compras || state.compras.length === 0) state.compras = comprasLocal;
+        // Grupos: si el Sheet los trae, usarlos pero asegurar que TODOS los sectores
+        // que tienen tareas estén en algún grupo (agregar los que falten)
+        if(!state.grupos || !state.grupos.length){
+          state.grupos = gruposLocal;
+        } else {
+          // Recolectar todos los IDs de sector que están en los grupos del Sheet
+          const idsEnGrupos = new Set();
+          state.grupos.forEach(g=>g.sectores.forEach(s=>idsEnGrupos.add(s.id)));
+          // Sectores que tienen tareas pero no están en ningún grupo
+          const sectoresConTareas = new Set(state.tasks.map(t=>t.sector).filter(Boolean));
+          sectoresConTareas.forEach(secId=>{
+            if(!idsEnGrupos.has(secId)){
+              // Buscar el nombre en gruposLocal o usar el id
+              let nombre = secId;
+              gruposLocal.forEach(g=>g.sectores.forEach(s=>{ if(s.id===secId) nombre=s.nombre; }));
+              // Agregar al último grupo (OSBL normalmente) o crear
+              const target = state.grupos.find(g=>g.id==='osbl') || state.grupos[state.grupos.length-1];
+              target.sectores.push({id:secId, nombre});
+            }
+          });
+        }
         render();
         if(el) el.textContent = 'Sheet (' + d.tasks.length + ' tareas)';
       } else {
@@ -3392,7 +3424,7 @@ function toggleTema(){
               hasKids:hasChildren(fr.task.id), collapsed:fr.task.collapsed }));
           }
         });
-        rowGroups.push({ headerLabel:g.nombre, headerColor:g.color, rows });
+        rowGroups.push({ headerLabel:g.nombre, headerColor:g.color, grupoId:g.id, rows });
       });
     } else if(state.vista==='cuadrilla') {
       rowGroups.push({ headerLabel:'Cuadrillas — carga de trabajo simultánea', headerColor:'var(--accent-orange)',
@@ -3426,7 +3458,8 @@ function toggleTema(){
  
     function rowLabelHtml(r){
       if(r.type==='sector'){
-        return `<div class="cf-rowlabel sectorrow">
+        return `<div class="cf-rowlabel sectorrow" ${IS_EDITOR?`draggable="true" data-drag-sector="${r.sector.id}"`:''}>
+          ${IS_EDITOR?'<span class="cf-drag-handle" title="Arrastrar para mover">⠿</span>':''}
           <span class="cf-toggle" data-toggle-sector="${r.sector.id}">${r.sector.collapsed?'▸':'▾'}</span>
           <span class="cf-dot" style="background:${r.grupoColor}"></span>
           <span class="rowname" data-rename-sector="${r.sector.id}" title="Doble click para renombrar">${escHtml(r.sector.nombre)}</span>
@@ -3597,7 +3630,7 @@ function toggleTema(){
         <div class="cf-gantt-wrap" id="cfGanttWrap"><div class="cf-gantt">
         <div class="cf-rowlabels">
           <div class="cf-rowlabel-h"></div>
-          ${rowGroups.map(g=>`<div class="cf-grouphead" style="background:${g.headerColor}">${escHtml(g.headerLabel)}</div>${g.rows.map(rowLabelHtml).join('')}`).join('')}
+          ${rowGroups.map(g=>`<div class="cf-grouphead" ${g.grupoId&&IS_EDITOR?`data-drop-grupo="${g.grupoId}"`:''} style="background:${g.headerColor}">${escHtml(g.headerLabel)}</div>${g.rows.map(rowLabelHtml).join('')}`).join('')}
         </div>
         <div class="cf-timeline" id="cfTimeline" data-min="${iso(minDate)}" data-daywidth="${dw}"
           style="width:${timelineWidth}px; background-image:linear-gradient(90deg, var(--grid-line) 1px, transparent 1px); background-size:${gridCell}px 100%; background-blend-mode:soft-light;">
@@ -3744,6 +3777,82 @@ function toggleTema(){
     root.querySelectorAll('[data-del]').forEach(b=>b.onclick=()=>{ deleteWithChildren(b.dataset.del); save(); render(); });
     root.querySelectorAll('[data-toggle]').forEach(b=>b.onclick=()=>{ const t=taskById(b.dataset.toggle); t.collapsed=!t.collapsed; save(); render(); });
     root.querySelectorAll('[data-toggle-sector]').forEach(b=>b.onclick=()=>{ const s=sectorObj(b.dataset.toggleSector); s.collapsed=!s.collapsed; save(); render(); });
+
+    // ── DRAG & DROP DE SECTORES ──
+    if(IS_EDITOR){
+      let dragSectorId = null;
+      // Helper: encontrar grupo y posición de un sector
+      const findSectorLoc = (secId)=>{
+        for(let gi=0; gi<state.grupos.length; gi++){
+          const si = state.grupos[gi].sectores.findIndex(s=>s.id===secId);
+          if(si>=0) return {gi, si};
+        }
+        return null;
+      };
+
+      root.querySelectorAll('[data-drag-sector]').forEach(row=>{
+        row.addEventListener('dragstart', (e)=>{
+          dragSectorId = row.dataset.dragSector;
+          row.classList.add('dragging');
+          e.dataTransfer.effectAllowed = 'move';
+          e.dataTransfer.setData('text/plain', dragSectorId);
+        });
+        row.addEventListener('dragend', ()=>{
+          row.classList.remove('dragging');
+          root.querySelectorAll('.drag-over-top,.drag-over-bottom').forEach(el=>el.classList.remove('drag-over-top','drag-over-bottom'));
+          root.querySelectorAll('.drop-target').forEach(el=>el.classList.remove('drop-target'));
+        });
+        row.addEventListener('dragover', (e)=>{
+          e.preventDefault();
+          if(row.dataset.dragSector===dragSectorId) return;
+          const rect = row.getBoundingClientRect();
+          const mitad = rect.top + rect.height/2;
+          row.classList.remove('drag-over-top','drag-over-bottom');
+          if(e.clientY < mitad) row.classList.add('drag-over-top');
+          else row.classList.add('drag-over-bottom');
+        });
+        row.addEventListener('dragleave', ()=>{
+          row.classList.remove('drag-over-top','drag-over-bottom');
+        });
+        row.addEventListener('drop', (e)=>{
+          e.preventDefault();
+          e.stopPropagation();
+          const targetId = row.dataset.dragSector;
+          if(!dragSectorId || dragSectorId===targetId) return;
+          const from = findSectorLoc(dragSectorId);
+          const to = findSectorLoc(targetId);
+          if(!from || !to) return;
+          const rect = row.getBoundingClientRect();
+          const antes = e.clientY < (rect.top + rect.height/2);
+          // Sacar el sector de su posición
+          const [sec] = state.grupos[from.gi].sectores.splice(from.si, 1);
+          // Recalcular destino (puede haber cambiado el índice si es el mismo grupo)
+          const to2 = findSectorLoc(targetId);
+          let insertIdx = to2.si + (antes?0:1);
+          state.grupos[to2.gi].sectores.splice(insertIdx, 0, sec);
+          save(); render();
+        });
+      });
+
+      // Soltar sobre el header de grupo → mover al final de ese grupo
+      root.querySelectorAll('[data-drop-grupo]').forEach(head=>{
+        head.addEventListener('dragover', (e)=>{ e.preventDefault(); head.classList.add('drop-target'); });
+        head.addEventListener('dragleave', ()=>{ head.classList.remove('drop-target'); });
+        head.addEventListener('drop', (e)=>{
+          e.preventDefault();
+          head.classList.remove('drop-target');
+          const grupoId = head.dataset.dropGrupo;
+          if(!dragSectorId) return;
+          const from = findSectorLoc(dragSectorId);
+          if(!from) return;
+          const giDest = state.grupos.findIndex(g=>g.id===grupoId);
+          if(giDest<0) return;
+          const [sec] = state.grupos[from.gi].sectores.splice(from.si, 1);
+          state.grupos[giDest].sectores.push(sec);
+          save(); render();
+        });
+      });
+    }
     root.querySelectorAll('[data-addsub-task]').forEach(b=>b.onclick=()=>{ openModal(null, taskById(b.dataset.addsubTask)); });
     root.querySelectorAll('[data-addsub-sector]').forEach(b=>b.onclick=()=>{ openModal(null,null,b.dataset.addsubSector); });
     // ── Listeners OS ──
