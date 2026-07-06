@@ -287,6 +287,14 @@
   [data-theme="light"] .cf-needchip{ background:var(--gris1); }
   [data-theme="light"] .cf-table tr:hover td{ background:rgba(217,84,10,.05); }
   [data-theme="light"] .theme-toggle-btn{ background:var(--gris2); }
+  /* ── TOOLBAR UNIFICADO ── */
+  .cf-toolbar-unified{ padding:10px 14px !important; }
+  .cf-toolbar-unified .cf-toolbar{ display:flex; flex-wrap:wrap; align-items:center; gap:8px; }
+  .cf-toolbar-unified .cf-field-inline{ gap:5px; }
+  .cf-toolbar-unified .cf-field-inline span{ font-size:10px; }
+  .cf-toolbar-unified .cf-field-inline input[type=date]{ padding:5px 7px; font-size:11px; }
+  .cf-toolbar-unified .cf-segmented button{ padding:6px 11px; }
+
   /* ── CARDS DE RESUMEN (nuevas) ── */
   .cf-resumen-panels{ align-items:stretch; }
   .cf-resumen-semana, .cf-resumen-cuad{ display:flex; flex-direction:column; min-height:130px; }
@@ -349,13 +357,21 @@
     display:flex;flex-direction:column;
     overflow:hidden;
   }
+  /* El div position:relative que envuelve botón FS + gantt */
+  #ganttZone.fs-zone #ganttInner{
+    flex:1 1 auto;
+    min-height:0;
+    display:flex;
+    flex-direction:column;
+  }
   #ganttZone.fs-zone .cf-gantt-wrap{
     max-height:none !important;
-    flex:1;
+    height:auto !important;
+    flex:1 1 auto;
     min-height:0;
+    overflow:auto !important;
   }
-  #ganttZone.fs-zone .cf-toolbar-section,
-  #ganttZone.fs-zone .cf-rangebar{
+  #ganttZone.fs-zone .cf-toolbar-section{
     flex-shrink:0;
   }
   .gantt-fs-btn{
@@ -3488,6 +3504,7 @@ function toggleTema(){
         </div>
         <div class="cf-brand-right" style="display:flex;align-items:center;gap:10px;">
           <div class="cf-client-badge"><span class="lbl">Obra de</span><img src="${ALCO_LOGO}" alt="AlcoEnergy"/></div>
+          <button id="btnComprasTop" style="background:rgba(255,255,255,.06);border:1px solid var(--borde,#2e2e2e);color:var(--texto,#f0f0f0);border-radius:7px;padding:6px 14px;font-family:Barlow Condensed,sans-serif;font-size:12px;font-weight:800;cursor:pointer;letter-spacing:.06em;text-transform:uppercase;display:flex;align-items:center;gap:6px;white-space:nowrap;">🛒 Compras</button>
           <button onclick="abrirReporte()" style="background:rgba(232,101,26,.15);border:1px solid rgba(232,101,26,.45);color:var(--naranja,#E8651A);border-radius:7px;padding:6px 14px;font-family:Barlow Condensed,sans-serif;font-size:12px;font-weight:800;cursor:pointer;letter-spacing:.06em;text-transform:uppercase;display:flex;align-items:center;gap:6px;white-space:nowrap;">🖨 Reporte</button>
           <button onclick="abrirPlanos()" style="background:rgba(124,58,237,.15);border:1px solid rgba(124,58,237,.45);color:#A78BFA;border-radius:7px;padding:6px 14px;font-family:Barlow Condensed,sans-serif;font-size:12px;font-weight:800;cursor:pointer;letter-spacing:.06em;text-transform:uppercase;display:flex;align-items:center;gap:6px;white-space:nowrap;">📋 Planos</button>
           <span id="cfEditorBadge"></span>
@@ -3555,19 +3572,17 @@ function toggleTema(){
       ${atRisk ? `<div class="cf-needpanel" style="margin-top:-6px;"><div class="cf-needchip" style="border-color:var(--accent-orange); color:var(--accent-orange);">⚠ El frente más largo termina el ${fmt(parseD(maxFin))}, después de la fecha límite (${fmt(parseD(state.fechaLimite))}).</div></div>` : ''}
  
       <div id="ganttZone">
-      <div class="cf-toolbar-section">
-        <div class="cf-toolbar-label">Vista y zoom</div>
+      <div class="cf-toolbar-section cf-toolbar-unified">
         <div class="cf-toolbar">
           <div class="cf-segmented">
-            <button data-vista="sector" class="${state.vista==='sector'?'active':''}">Por Sector</button>
-            <button data-vista="cuadrilla" class="${state.vista==='cuadrilla'?'active':''}">Por Cuadrilla</button>
-            <button data-vista="maquina" class="${state.vista==='maquina'?'active':''}">Por Máquina</button>
-            <button data-vista="calendario" class="${state.vista==='calendario'?'active':''}">📅 Calendario</button>
-            <button data-vista="compras" class="${state.vista==='compras'?'active':''}">🛒 Compras</button>
+            <button data-vista="sector" class="${state.vista==='sector'?'active':''}">Sector</button>
+            <button data-vista="cuadrilla" class="${state.vista==='cuadrilla'?'active':''}">Cuadrilla</button>
+            <button data-vista="maquina" class="${state.vista==='maquina'?'active':''}">Máquina</button>
+            <button data-vista="calendario" class="${state.vista==='calendario'?'active':''}">📅</button>
           </div>
           <div class="cf-segmented zoom">
             <button data-zoom="dia" class="${state.zoom==='dia'?'active':''}">Día</button>
-            <button data-zoom="semana" class="${state.zoom==='semana'?'active':''}">Semana</button>
+            <button data-zoom="semana" class="${state.zoom==='semana'?'active':''}">Sem</button>
             <button data-zoom="mes" class="${state.zoom==='mes'?'active':''}">Mes</button>
           </div>
           ${state.vista==='sector'?`
@@ -3577,23 +3592,20 @@ function toggleTema(){
             <button id="btnLvlTodo">Todo</button>
           </div>
           <div class="cf-segmented nivel">
-            <button id="btnOpenAll">Abrir todo</button>
-            <button id="btnCloseAll">Cerrar todo</button>
-            <button id="btnCrewSummary" class="${state.showCuadrillas?'active':''}">Cuadrillas</button>
+            <button id="btnOpenAll">Abrir</button>
+            <button id="btnCloseAll">Cerrar</button>
           </div>`:''}
-          <div class="cf-field-inline" style="margin-left:auto;"><span>Meta</span><input type="date" id="inpLimite" value="${state.fechaLimite||''}" /></div>
+          <div class="cf-field-inline"><span>Desde</span><input type="date" id="inpRangoInicio" value="${state.rangoInicio||''}" /></div>
+          <div class="cf-field-inline"><span>Hasta</span><input type="date" id="inpRangoFin" value="${state.rangoFin||''}" /></div>
+          <button class="cf-btn ghost mini" id="btnRange90">90 días</button>
+          <button class="cf-btn ghost mini" id="btnRangeAll">Todo</button>
+          <div class="cf-field-inline"><span>Meta</span><input type="date" id="inpLimite" value="${state.fechaLimite||''}" /></div>
+          ${IS_EDITOR?`<span style="flex:1;"></span>
+          <button class="cf-btn" id="btnAdd">+ Actividad</button>
+          <button class="cf-btn ghost mini" id="btnAddSector">+ Sector</button>
+          <button class="cf-btn ghost mini" id="btnAddCuadrilla">+ Cuadrilla</button>
+          <button class="cf-btn ghost mini" id="btnReset" style="border-color:#ef4444;color:#ef4444;">Vaciar</button>`:''}
         </div>
-      </div>
-      <div class="cf-rangebar">
-        <div class="cf-field-inline"><span>Ver desde</span><input type="date" id="inpRangoInicio" value="${state.rangoInicio||''}" /></div>
-        <div class="cf-field-inline"><span>hasta</span><input type="date" id="inpRangoFin" value="${state.rangoFin||''}" /></div>
-        <button class="cf-btn ghost mini" id="btnRange90">Prox. 90 dias</button>
-        <button class="cf-btn ghost mini" id="btnRangeAll">Obra completa</button>
-        <span style="flex:1;"></span>
-        ${IS_EDITOR?`<button class="cf-btn" id="btnAdd">+ Actividad</button>
-        <button class="cf-btn ghost mini" id="btnAddSector">+ Sector</button>
-        <button class="cf-btn ghost mini" id="btnAddCuadrilla">+ Cuadrilla</button>
-        <button class="cf-btn ghost mini" id="btnReset" style="border-color:#ef4444;color:#ef4444;">Vaciar</button>`:''}
       </div>
  
       ${(()=>{
@@ -3601,7 +3613,7 @@ function toggleTema(){
         if(state.vista==='compras') return '<div id="vistaEspecial" data-vista-tipo="compras"></div>';
         return '';
       })()}
-      ${state.vista!=='calendario'&&state.vista!=='compras'?`<div style="position:relative;">
+      ${state.vista!=='calendario'&&state.vista!=='compras'?`<div id="ganttInner" style="position:relative;">
         <button class="gantt-fs-btn" id="btnGanttFS" title="Pantalla completa">⤢ Pantalla completa</button>
         <div class="cf-gantt-wrap" id="cfGanttWrap"><div class="cf-gantt">
         <div class="cf-rowlabels">
@@ -3725,6 +3737,8 @@ function toggleTema(){
     _sc('inpProyecto', (e)=>{ state.proyecto=e.target.value; save(); });
     _sc('inpLimite', (e)=>{ state.fechaLimite=e.target.value; save(); render(); });
     root.querySelectorAll('[data-vista]').forEach(b=>b.onclick=()=>{ state.vista=b.dataset.vista; save(); render(); });
+    const btnComprasTop = document.getElementById('btnComprasTop');
+    if(btnComprasTop) btnComprasTop.onclick = ()=>{ state.vista='compras'; save(); render(); };
     root.querySelectorAll('[data-zoom]').forEach(b=>b.onclick=()=>{ state.zoom=b.dataset.zoom; save(); render(); });
     const lvlS = document.getElementById('btnLvlSectores'); if(lvlS) lvlS.onclick = ()=>setAllCollapsed(true,true);
     const lvlF = document.getElementById('btnLvlFrentes'); if(lvlF) lvlF.onclick = ()=>setAllCollapsed(true,false);
