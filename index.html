@@ -350,36 +350,7 @@
     border:none !important;
   }
   /* Fullscreen que mantiene los controles */
-  #ganttZone.fs-zone{
-    position:fixed !important;
-    top:0 !important; left:0 !important; right:0 !important; bottom:0 !important;
-    width:100vw !important; height:100vh !important;
-    z-index:9999 !important;
-    background:var(--negro,#0f0f0f) !important;
-    padding:10px !important;
-    margin:0 !important;
-    display:flex !important;
-    flex-direction:column !important;
-    overflow:hidden !important;
-  }
-  #ganttZone.fs-zone .cf-toolbar-section{
-    flex:0 0 auto !important;
-    margin-bottom:8px !important;
-  }
-  #ganttZone.fs-zone #ganttInner{
-    flex:1 1 auto !important;
-    min-height:0 !important;
-    display:flex !important;
-    flex-direction:column !important;
-    position:relative !important;
-  }
-  #ganttZone.fs-zone .cf-gantt-wrap{
-    flex:1 1 auto !important;
-    min-height:0 !important;
-    max-height:none !important;
-    height:100% !important;
-    overflow:auto !important;
-  }
+  
   .gantt-fs-btn{
     position:absolute;right:8px;top:8px;z-index:301;
     background:var(--gris2);border:1px solid var(--borde);
@@ -3577,7 +3548,6 @@ function toggleTema(){
  
       ${atRisk ? `<div class="cf-needpanel" style="margin-top:-6px;"><div class="cf-needchip" style="border-color:var(--accent-orange); color:var(--accent-orange);">⚠ El frente más largo termina el ${fmt(parseD(maxFin))}, después de la fecha límite (${fmt(parseD(state.fechaLimite))}).</div></div>` : ''}
  
-      <div id="ganttZone">
       <div class="cf-toolbar-section cf-toolbar-unified">
         <div class="cf-toolbar">
           <div class="cf-segmented">
@@ -3619,7 +3589,7 @@ function toggleTema(){
         if(state.vista==='compras') return '<div id="vistaEspecial" data-vista-tipo="compras"></div>';
         return '';
       })()}
-      ${state.vista!=='calendario'&&state.vista!=='compras'?`<div id="ganttInner" style="position:relative;">
+      ${state.vista!=='calendario'&&state.vista!=='compras'?`<div style="position:relative;">
         <button class="gantt-fs-btn" id="btnGanttFS" title="Pantalla completa">⤢ Pantalla completa</button>
         <div class="cf-gantt-wrap" id="cfGanttWrap"><div class="cf-gantt">
         <div class="cf-rowlabels">
@@ -3634,7 +3604,6 @@ function toggleTema(){
           ${rowGroups.map(g=>`<div class="cf-groupspacer"></div>${g.rows.map(trackHtml).join('')}`).join('')}
         </div>
       </div></div></div>`:''}
-      </div><!-- /ganttZone -->
 
       <div class="cf-legend">
         ${state.cuadrillas.map(c=>`<span><span class="cf-dot" style="background:${c.color}"></span>${escHtml(c.nombre)}</span>`).join('')}
@@ -3777,18 +3746,16 @@ function toggleTema(){
     // ── Listeners OS ──
     // ── Fullscreen del gantt ──
     const btnFS = document.getElementById('btnGanttFS');
-    const ganttZone = document.getElementById('ganttZone');
-    if(btnFS && ganttZone){
+    const ganttWrap = document.getElementById('cfGanttWrap');
+    if(btnFS && ganttWrap){
       btnFS.onclick = ()=>{
-        const isFS = ganttZone.classList.toggle('fs-zone');
-        btnFS.textContent = isFS ? '✕ Salir de pantalla completa' : '⤢ Pantalla completa';
-        window._ganttFS = isFS;
+        const isFS = ganttWrap.classList.toggle('fullscreen');
+        btnFS.textContent = isFS ? '✕ Salir' : '⤢ Pantalla completa';
+        btnFS.style.position = isFS ? 'fixed' : 'absolute';
+        btnFS.style.right = '12px';
+        btnFS.style.top = isFS ? '12px' : '8px';
+        btnFS.style.zIndex = isFS ? '302' : '301';
       };
-      // Preservar estado FS tras re-render
-      if(window._ganttFS){
-        ganttZone.classList.add('fs-zone');
-        btnFS.textContent = '✕ Salir de pantalla completa';
-      }
     }
 
     root.querySelectorAll('[data-osid]').forEach(row=>{
