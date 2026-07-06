@@ -1621,7 +1621,8 @@ function renderCalendario(container, st){
         if(fechaStr >= t.inicio && fechaStr <= t.fin){
           var color = t.cuadrilla ? (colores[t.cuadrilla]||'#888') : '#64748b';
           var label = t.nombre.length>18 ? t.nombre.slice(0,17)+'…' : t.nombre;
-          html += '<div class="cal-evento" style="background:'+color+';" title="'+escHGlob(t.nombre)+'">'+escHGlob(label)+'</div>';
+          html += '<div class="cal-evento" style="background:'+color+';cursor:pointer;" '
+          +'data-taskid="'+t.id+'" title="'+escHGlob(t.nombre)+'">'+escHGlob(label)+'</div>';
         }
       });
       html += '</div>';
@@ -1632,6 +1633,15 @@ function renderCalendario(container, st){
   }
   html += '</div>';
   container.innerHTML = html;
+  // Listener para mostrar detalle al tocar una actividad
+  container.querySelectorAll('[data-taskid]').forEach(function(el){
+    el.onclick = function(e){
+      e.stopPropagation();
+      var task = null;
+      if(window._stateRef) task = window._stateRef.tasks.find(function(t){return t.id===el.dataset.taskid;});
+      if(task && typeof mostrarDetalleTask==='function') mostrarDetalleTask(task, e);
+    };
+  });
 }
 function _calSetSector(v){
   var c = document.getElementById('cfRoot');
@@ -3090,13 +3100,19 @@ function toggleTema(){
         };
         return Object.assign({}, t, {inicio: fixDate(t.inicio), fin: fixDate(t.fin)});
       }).filter(t=>t.inicio && t.fin);
-      // Siempre usar el Sheet si tiene datos — las fechas modificadas están ahí
+      // Merge inteligente: Sheet actualiza tasks y meta, pero preserva planos/compras locales
       if(d && d.tasks && d.tasks.length > 0){
+        // Preservar datos que el GAS viejo no guarda
+        const planosLocal = state.planos || [];
+        const comprasLocal = state.compras || [];
         state = Object.assign(state, d);
+        // Si el Sheet no trajo planos/compras, usar los locales
+        if(!state.planos || state.planos.length === 0) state.planos = planosLocal;
+        if(!state.compras || state.compras.length === 0) state.compras = comprasLocal;
         render();
-        if(el) el.textContent = 'Sheet cargado (' + d.tasks.length + ' tareas)';
+        if(el) el.textContent = 'Sheet (' + d.tasks.length + ' tareas)';
       } else {
-        if(el) el.textContent = 'Datos locales — Sheet vacío';
+        if(el) el.textContent = 'Sin conexión — datos locales';
       }
     } catch(e){
       if(el) el.textContent = 'Sin conexion — datos locales';
@@ -3363,16 +3379,6 @@ function toggleTema(){
         }).join('')}</div>`;
     }
  
-    // Vistas especiales que no usan el template del gantt
-    if(state.vista === 'calendario'){
-      renderCalendario(root, state);
-      return;
-    }
-    if(state.vista === 'compras'){
-      renderCompras(root, state);
-      return;
-    }
-
     root.innerHTML = `
       <div class="cf-brandbar">
         <div class="cf-brand-left">
@@ -3463,7 +3469,12 @@ function toggleTema(){
         <button class="cf-btn ghost mini" id="btnRangeAll">Obra completa</button>
       </div>      <div class="cf-hint">💡 Doble click en un nombre para renombrar · Arrastrá los bordes de una barra para cambiar fechas · Filtrá por rango con "Ver desde / hasta"</div>
  
-      <div style="position:relative;">
+      ${(()=>{
+        if(state.vista==='calendario') return '<div id="vistaEspecial" data-vista-tipo="calendario"></div>';
+        if(state.vista==='compras') return '<div id="vistaEspecial" data-vista-tipo="compras"></div>';
+        return '';
+      })()}
+      ${state.vista!=='calendario'&&state.vista!=='compras'?`<div style="position:relative;">
         <button class="gantt-fs-btn" id="btnGanttFS" title="Pantalla completa">⤢ Pantalla completa</button>
         <div class="cf-gantt-wrap" id="cfGanttWrap"><div class="cf-gantt">
         <div class="cf-rowlabels">
@@ -3477,7 +3488,7 @@ function toggleTema(){
           </div>
           ${rowGroups.map(g=>`<div class="cf-groupspacer"></div>${g.rows.map(trackHtml).join('')}`).join('')}
         </div>
-      </div></div>
+      </div></div>`:''}
 
       <div class="cf-legend">
         ${state.cuadrillas.map(c=>`<span><span class="cf-dot" style="background:${c.color}"></span>${escHtml(c.nombre)}</span>`).join('')}
