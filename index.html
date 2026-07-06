@@ -523,7 +523,7 @@
   @media print {
     body > *:not(#printSheet){ display:none !important; }
     #printSheet{ display:block !important; }
-    @page{ size:A3 landscape; margin:12mm; }
+    @page{ size:A4 landscape; margin:15mm; }
   }
   #printSheet{display:none;font-family:'Barlow Condensed',sans-serif;}
   .ps-header{display:flex;justify-content:space-between;align-items:flex-start;
@@ -1097,35 +1097,6 @@ function generarReporte(){
     } else {
       html += '<div style="color:#aaa;font-size:11px;padding:10px 0 20px;">No hay actividades de hormigón con m³ cargados en el período.</div>';
     }
-  }
-
-  // ── ÓRDENES DE SERVICIO ──
-  if(inclOS && typeof ORDENES_SERVICIO !== 'undefined'){
-    html += '<div style="margin-bottom:28px;">'
-      +'<div style="font-size:11px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;'
-      +'color:#6D28D9;border-left:3px solid #6D28D9;padding-left:8px;margin-bottom:10px;">Órdenes de Servicio INGEMAX</div>'
-      +'<table style="width:100%;border-collapse:collapse;font-size:11px;">'
-      +'<thead><tr style="border-bottom:2px solid #ddd;">'
-      +'<th style="text-align:left;padding:5px 8px;font-size:9px;color:#888;text-transform:uppercase;width:50px;">OS</th>'
-      +'<th style="text-align:left;padding:5px 8px;font-size:9px;color:#888;text-transform:uppercase;">Descripción</th>'
-      +'<th style="text-align:left;padding:5px 8px;font-size:9px;color:#888;text-transform:uppercase;">Fechas</th>'
-      +'<th style="text-align:left;padding:5px 8px;font-size:9px;color:#888;text-transform:uppercase;">Estado</th>'
-      +'</tr></thead><tbody>';
-    ORDENES_SERVICIO.forEach(function(os){
-      var estadoColor = os.estado==='realizado'?'#16a34a':os.estado==='pendiente'?'#E8651A':'#888';
-      var estadoLabel = os.estado==='realizado'?'Realizado':os.estado==='pendiente'?'Pendiente':'Sin fecha';
-      html += '<tr style="border-bottom:1px solid #f0f0f0;">'
-        +'<td style="padding:6px 8px;font-weight:800;color:#6D28D9;">'+os.id+'</td>'
-        +'<td style="padding:6px 8px;color:#222;">'+escHGlob(os.nombre)+'</td>'
-        +'<td style="padding:6px 8px;color:#666;white-space:nowrap;font-size:10px;">'
-        +(os.inicio?fmtDateES(os.inicio)+(os.fin&&os.fin!==os.inicio?' → '+fmtDateES(os.fin):''):'—')
-        +(os.nota?'<br><em style="color:#9333EA;font-size:9px;">'+escHGlob(os.nota)+'</em>':'')
-        +'</td>'
-        +'<td style="padding:6px 8px;"><span style="font-size:9px;font-weight:700;padding:2px 8px;'
-        +'border-radius:20px;background:'+estadoColor+'22;color:'+estadoColor+';border:1px solid '+estadoColor+'44;">'+estadoLabel+'</span></td>'
-        +'</tr>';
-    });
-    html += '</tbody></table></div>';
   }
 
   // ── CUADRILLAS ──
@@ -1807,7 +1778,9 @@ function toggleTema(){
     {id:'hormigon', nombre:'Hormigonadores', color:'var(--c-hormigon)',
       plantilla:{ personas:10, maquinas:[
         {tipo:'Vibrador', cant:1},
+        {tipo:'Bomba de hormigon', cant:1},
         {tipo:'Regla vibratoria', cant:1},
+        {tipo:'Equipo de alisado', cant:1},
       ]}},
     {id:'detalle', nombre:'Detalles de Obra', color:'var(--c-detalle)',
       plantilla:{ personas:8, maquinas:[] }},
@@ -3498,6 +3471,35 @@ function toggleTema(){
         ${state.fechaLimite ? `<span><span style="width:10px;border-top:2px dashed var(--accent-orange);"></span>Fecha límite obra</span>` : ''}
       </div>
  
+      <div class="os-section">
+        <div class="os-section-hdr" id="osMainHdr">
+          <span>🔷 Libro de Órdenes de Servicio — INGEMAX S.A. <span style="background:rgba(255,255,255,.2);border-radius:20px;padding:2px 10px;font-size:10px;margin-left:8px;">${ORDENES_SERVICIO.length}</span></span>
+          <div class="os-hdr-btns">
+            <button class="os-hdr-btn" id="btnOSExpandir">Abrir todas</button>
+            <button class="os-hdr-btn" id="btnOSColapsar">Cerrar todas</button>
+            <button class="os-hdr-btn" id="btnOSToggle">▾ Ocultar panel</button>
+          </div>
+        </div>
+        <div class="os-body open" id="osBody">
+          ${ORDENES_SERVICIO.map(os=>`
+          <div class="os-row">
+            <div class="os-row-top" data-osid="${os.id}">
+              <span class="os-row-arrow">▸</span>
+              <span class="os-row-num">${os.id}</span>
+              <span class="os-row-nombre">${escHtml(os.nombre)}</span>
+              <span class="os-row-estado ${os.estado}">${os.estado==='realizado'?'Realizado':os.estado==='pendiente'?'Pendiente':'Sin fecha'}</span>
+            </div>
+            <div class="os-det" id="osdet_${os.id}" style="display:none;">
+              <div class="os-det-row">
+                ${(os.sectores||[]).map(s=>`<span class="os-tag-sector">${escHtml(sectorNombre(s))}</span>`).join('')}
+                ${os.inicio?`<span class="os-det-fecha">${fmt(parseD(os.inicio))}${os.fin&&os.fin!==os.inicio?' → '+fmt(parseD(os.fin)):''}</span>`:''}
+                ${os.nota?`<span class="os-det-nota">· ${escHtml(os.nota)}</span>`:''}
+                ${os.url?`<a href="${os.url}" target="_blank" class="os-ver-btn">Ver documento ↗</a>`:''}
+              </div>
+            </div>
+          </div>`).join('')}
+        </div>
+      </div>
       <div class="cf-listwrap">
         <div class="cf-list-h">Detalle de actividades y subactividades</div>
         ${hasTasks ? `
@@ -3528,36 +3530,6 @@ function toggleTema(){
 
       
       <!-- ÓRDENES DE SERVICIO -->
-      <div class="os-section">
-        <div class="os-section-hdr" id="osMainHdr">
-          <span>🔷 Libro de Órdenes de Servicio — INGEMAX S.A. <span style="background:rgba(255,255,255,.2);border-radius:20px;padding:2px 10px;font-size:10px;margin-left:8px;">${ORDENES_SERVICIO.length}</span></span>
-          <div class="os-hdr-btns">
-            <button class="os-hdr-btn" id="btnOSExpandir">Abrir todas</button>
-            <button class="os-hdr-btn" id="btnOSColapsar">Cerrar todas</button>
-            <button class="os-hdr-btn" id="btnOSToggle">▾ Ocultar panel</button>
-          </div>
-        </div>
-        <div class="os-body open" id="osBody">
-          ${ORDENES_SERVICIO.map(os=>`
-          <div class="os-row">
-            <div class="os-row-top" data-osid="${os.id}">
-              <span class="os-row-arrow">▸</span>
-              <span class="os-row-num">${os.id}</span>
-              <span class="os-row-nombre">${escHtml(os.nombre)}</span>
-              <span class="os-row-estado ${os.estado}">${os.estado==='realizado'?'Realizado':os.estado==='pendiente'?'Pendiente':'Sin fecha'}</span>
-            </div>
-            <div class="os-det" id="osdet_${os.id}" style="display:none;">
-              <div class="os-det-row">
-                ${(os.sectores||[]).map(s=>`<span class="os-tag-sector">${escHtml(sectorNombre(s))}</span>`).join('')}
-                ${os.inicio?`<span class="os-det-fecha">${fmt(parseD(os.inicio))}${os.fin&&os.fin!==os.inicio?' → '+fmt(parseD(os.fin)):''}</span>`:''}
-                ${os.nota?`<span class="os-det-nota">· ${escHtml(os.nota)}</span>`:''}
-                ${os.url?`<a href="${os.url}" target="_blank" class="os-ver-btn">Ver documento ↗</a>`:''}
-              </div>
-            </div>
-          </div>`).join('')}
-        </div>
-      </div>
-
     `;
  
     const _sa = (id,fn)=>{ const el=document.getElementById(id); if(el) el.onclick=fn; };
@@ -4005,14 +3977,28 @@ function toggleTema(){
     <div class="reporte-section">
       <div class="reporte-section-title">Contenido a incluir</div>
       <div class="reporte-checks">
-        <label class="reporte-check"><input type="checkbox" id="rpGantt" checked><span>📊 Cronograma visual (Gantt SVG)</span></label>
-        <label class="reporte-check"><input type="checkbox" id="rpHorm" checked><span>🏗 Lista pedido de hormigón (m³ por sector)</span></label>
-        <label class="reporte-check"><input type="checkbox" id="rpOS" checked><span>🔷 Órdenes de Servicio INGEMAX</span></label>
-        <label class="reporte-check"><input type="checkbox" id="rpCuad" checked><span>👷 Cuadrillas — pico de simultaneidad</span></label>
-        <label class="reporte-check"><input type="checkbox" id="rpMaq" checked><span>🚜 Maquinaria — máximo simultáneo</span></label>
-        <label class="reporte-check"><input type="checkbox" id="rpTabla" checked><span>📋 Tabla detallada de actividades</span></label>
-        <label class="reporte-check"><input type="checkbox" id="rpCal"><span>📅 Calendario mensual</span></label>
-      </div>    </div>
+        <label class="reporte-check">
+          <input type="checkbox" id="rpTabla" checked>
+          <span>📋 Tabla de actividades y subactividades</span>
+        </label>
+        <label class="reporte-check">
+          <input type="checkbox" id="rpCuad" checked>
+          <span>👷 Resumen de cuadrillas (pico de simultaneidad)</span>
+        </label>
+        <label class="reporte-check">
+          <input type="checkbox" id="rpMaq" checked>
+          <span>🚜 Resumen de maquinaria</span>
+        </label>
+        <label class="reporte-check">
+          <input type="checkbox" id="rpOS" checked>
+          <span>🔷 Órdenes de Servicio INGEMAX</span>
+        </label>
+        <label class="reporte-check">
+          <input type="checkbox" id="rpGantt" checked>
+          <span>📊 Cronograma Gantt (SVG vectorial)</span>
+        </label>
+      </div>
+    </div>
 
     <div class="reporte-actions">
       <button class="reporte-btn-cancel" onclick="cerrarReporte()">Cancelar</button>
