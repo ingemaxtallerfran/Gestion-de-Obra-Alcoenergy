@@ -287,6 +287,88 @@
   [data-theme="light"] .cf-needchip{ background:var(--gris1); }
   [data-theme="light"] .cf-table tr:hover td{ background:rgba(217,84,10,.05); }
   [data-theme="light"] .theme-toggle-btn{ background:var(--gris2); }
+
+  /* ══ VISTA CALENDARIO ══ */
+  .cal-wrap{ padding:4px 0 20px; }
+  .cal-filtros{ display:flex; gap:8px; flex-wrap:wrap; margin-bottom:16px; align-items:center; }
+  .cal-filtro-label{ font-family:'Barlow Condensed',sans-serif; font-size:10px; font-weight:700;
+    letter-spacing:.1em; text-transform:uppercase; color:var(--gris5); }
+  .cal-filtro-select{ background:var(--gris2); border:1px solid var(--borde); color:var(--texto);
+    padding:7px 12px; border-radius:var(--rsm); font-family:'Barlow Condensed',sans-serif;
+    font-size:13px; outline:none; -webkit-appearance:none; }
+  .cal-filtro-select:focus{ border-color:var(--naranja); }
+  .cal-mes-wrap{ margin-bottom:24px; }
+  .cal-mes-titulo{ font-family:'Barlow Condensed',sans-serif; font-size:16px; font-weight:800;
+    letter-spacing:.06em; text-transform:uppercase; color:var(--texto);
+    margin-bottom:10px; padding-bottom:6px; border-bottom:2px solid var(--naranja); }
+  .cal-grid{ display:grid; grid-template-columns:repeat(7,1fr); gap:3px; }
+  .cal-dow{ font-family:'Barlow Condensed',sans-serif; font-size:9px; font-weight:700;
+    letter-spacing:.08em; text-transform:uppercase; color:var(--gris5);
+    text-align:center; padding:4px 0; }
+  .cal-dia{ background:var(--gris1); border:1px solid var(--borde); border-radius:6px;
+    min-height:72px; padding:5px; transition:border-color .15s; overflow:hidden; }
+  .cal-dia.vacio{ background:transparent; border-color:transparent; }
+  .cal-dia.hoy{ border-color:var(--naranja); }
+  .cal-dia.fin-semana{ background:rgba(0,0,0,.2); }
+  .cal-num{ font-family:'Barlow Condensed',sans-serif; font-size:13px; font-weight:700;
+    color:var(--texto2); margin-bottom:3px; }
+  .cal-dia.hoy .cal-num{ color:var(--naranja); }
+  .cal-evento{ font-family:'Barlow Condensed',sans-serif; font-size:9px; font-weight:700;
+    padding:2px 5px; border-radius:3px; margin-bottom:2px; white-space:nowrap;
+    overflow:hidden; text-overflow:ellipsis; color:#fff; cursor:pointer; }
+  [data-theme="light"] .cal-dia{ box-shadow:0 1px 3px rgba(0,0,0,.06); }
+  [data-theme="light"] .cal-dia.fin-semana{ background:rgba(0,0,0,.03); }
+
+  /* ══ LISTA DE COMPRAS ══ */
+  .compras-wrap{ padding:4px 0 20px; }
+  .compras-toolbar{ display:flex; gap:8px; margin-bottom:14px; flex-wrap:wrap; align-items:center; }
+  .compras-tabla{ width:100%; border-collapse:collapse; }
+  .compras-tabla th{ text-align:left; font-family:'Barlow Condensed',sans-serif; font-size:10px;
+    font-weight:700; letter-spacing:.08em; text-transform:uppercase; color:var(--gris5);
+    padding:8px 10px; border-bottom:2px solid var(--borde); }
+  .compras-tabla td{ padding:10px 10px; border-bottom:1px solid var(--borde);
+    font-family:'Barlow Condensed',sans-serif; font-size:13px; color:var(--texto);
+    vertical-align:middle; }
+  .compras-tabla tr:hover td{ background:rgba(232,101,26,.04); }
+  .compras-tabla tr.recibido td{ opacity:.65; }
+  .compras-estado{ display:inline-block; font-size:10px; font-weight:700; padding:3px 9px;
+    border-radius:20px; font-family:'Barlow Condensed',sans-serif; letter-spacing:.04em; }
+  .compras-estado.sin-cotizar{ background:rgba(255,255,255,.06); color:var(--gris5); border:1px solid var(--borde); }
+  .compras-estado.pedido{ background:rgba(232,101,26,.12); color:var(--naranja); border:1px solid rgba(232,101,26,.3); }
+  .compras-estado.recibido{ background:rgba(34,197,94,.12); color:#16a34a; border:1px solid rgba(34,197,94,.25); }
+  .compras-add-btn{ font-family:'Barlow Condensed',sans-serif; font-size:13px; font-weight:800;
+    background:var(--naranja); border:none; color:#fff; padding:9px 18px;
+    border-radius:var(--rsm); cursor:pointer; letter-spacing:.05em; text-transform:uppercase; }
+  .compra-edit-btn{ background:transparent; border:1px solid var(--borde); color:var(--gris5);
+    border-radius:var(--rsm); padding:3px 8px; cursor:pointer; font-size:11px; }
+  .compra-edit-btn:hover{ border-color:var(--naranja); color:var(--naranja); }
+  .compra-del-btn{ background:transparent; border:none; color:var(--gris5); cursor:pointer; font-size:14px; padding:3px 6px; }
+  .compra-del-btn:hover{ color:#ef4444; }
+  /* Modal compra */
+  .compra-modal-overlay{ position:fixed; inset:0; background:rgba(0,0,0,.85); z-index:500;
+    display:none; align-items:flex-end; justify-content:center; }
+  .compra-modal-overlay.open{ display:flex; }
+  .compra-modal{ background:var(--gris1); border-top:3px solid var(--naranja); border-radius:14px 14px 0 0;
+    width:100%; max-width:560px; padding:20px 18px 40px; animation:slideUp .2s ease; }
+  .compra-modal h3{ font-family:'Barlow Condensed',sans-serif; font-size:20px; font-weight:800; margin-bottom:16px; }
+  .compra-field{ margin-bottom:12px; display:flex; flex-direction:column; gap:5px; }
+  .compra-field label{ font-family:'Barlow Condensed',sans-serif; font-size:10px; font-weight:700;
+    letter-spacing:.08em; text-transform:uppercase; color:var(--gris5); }
+  .compra-field input,.compra-field select,.compra-field textarea{
+    background:var(--gris2); border:1px solid var(--borde); color:var(--texto);
+    padding:10px 12px; border-radius:var(--rsm); font-family:'Barlow',sans-serif;
+    font-size:14px; outline:none; width:100%; }
+  .compra-field input:focus,.compra-field select:focus,.compra-field textarea:focus{ border-color:var(--naranja); }
+  .compra-modal-btns{ display:flex; gap:8px; margin-top:16px; }
+  .compra-btn-ok{ flex:1; background:var(--naranja); border:none; color:#fff; padding:12px;
+    border-radius:var(--rsm); font-family:'Barlow Condensed',sans-serif; font-size:15px;
+    font-weight:800; cursor:pointer; letter-spacing:.04em; text-transform:uppercase; }
+  .compra-btn-cancel{ background:var(--gris2); border:1px solid var(--borde); color:var(--texto2);
+    padding:12px 16px; border-radius:var(--rsm); font-family:'Barlow Condensed',sans-serif;
+    font-size:14px; font-weight:700; cursor:pointer; }
+  .compra-btn-del{ background:rgba(239,68,68,.1); border:1px solid rgba(239,68,68,.3); color:#f87171;
+    padding:12px 16px; border-radius:var(--rsm); font-family:'Barlow Condensed',sans-serif;
+    font-size:14px; font-weight:700; cursor:pointer; }
   /* ══════════════════════════════════
      RESPONSIVE MOBILE (< 768px)
   ══════════════════════════════════ */
@@ -1071,6 +1153,30 @@ function generarReporte(){
     }
   }
 
+  // ── PEDIDO DE HORMIGÓN ──
+  if(inclTabla && tareas.length>0){
+    var hormiTareas = tareas.filter(function(t){ return t.cuadrilla==='hormigon' && t.m3>0; });
+    if(hormiTareas.length > 0){
+      var totalM3 = hormiTareas.reduce(function(sum,t){ return sum+(t.m3||0); }, 0);
+      html += '<div class="ps-section"><div class="ps-section-title">Pedido de Hormigón · Total: '+totalM3.toFixed(1)+' m³</div>'
+        +'<table class="ps-table"><thead><tr><th>Sector</th><th>Actividad</th><th>Inicio</th><th>Fin</th><th style="text-align:right;">m³</th></tr></thead><tbody>';
+      // Agrupar por semana
+      hormiTareas.sort(function(a,b){ return a.inicio.localeCompare(b.inicio); });
+      hormiTareas.forEach(function(t){
+        html += '<tr>'
+          +'<td style="font-size:10px;color:#888;">'+escHGlob(t.sector||'')+'</td>'
+          +'<td style="font-weight:700;">'+escHGlob(t.nombre)+'</td>'
+          +'<td>'+fmtDateES(t.inicio)+'</td>'
+          +'<td>'+fmtDateES(t.fin)+'</td>'
+          +'<td style="text-align:right;font-weight:800;color:#6B7280;">'+t.m3+' m³</td>'
+          +'</tr>';
+      });
+      html += '<tr style="border-top:2px solid #eee;"><td colspan="4" style="font-weight:800;text-align:right;">TOTAL</td>'
+        +'<td style="text-align:right;font-weight:800;font-size:16px;color:#6B7280;">'+totalM3.toFixed(1)+' m³</td></tr>';
+      html += '</tbody></table></div>';
+    }
+  }
+
   // ── ÓRDENES DE SERVICIO ──
   if(inclOS && typeof ORDENES_SERVICIO!=='undefined'){
     html+='<div class="ps-section"><div class="ps-section-title">Órdenes de Servicio INGEMAX</div>';
@@ -1416,6 +1522,224 @@ function aplicarPlantilla(cuadrillaId){
   // Setear máquinas
   window._modalMaquinas = (p.maquinas||[]).map(m=>Object.assign({},m));
   if(typeof renderMaqList === 'function') renderMaqList();
+}
+
+// ════════════════════════════════════════
+//  VISTA CALENDARIO
+// ════════════════════════════════════════
+function renderCalendario(container, st){
+  var sectores = [];
+  st.grupos.forEach(function(g){ g.sectores.forEach(function(s){ sectores.push({id:s.id, nombre:s.nombre, grupoColor:g.color}); }); });
+  var colores = {suelo:'#D97706',encofrado:'#3B82F6',hormigon:'#6B7280',detalle:'#16A34A'};
+
+  // Filtros
+  var filSector = container._filSector || '';
+  var filCuad   = container._filCuad || '';
+
+  var html = '<div class="cal-wrap">';
+  html += '<div class="cal-filtros">';
+  html += '<span class="cal-filtro-label">Sector</span>';
+  html += '<select class="cal-filtro-select" id="calFiltroSector" onchange="_calSetSector(this.value)">';
+  html += '<option value="">Todos</option>';
+  sectores.forEach(function(s){
+    html += '<option value="'+s.id+'"'+(filSector===s.id?' selected':'')+'>'+escHGlob(s.nombre)+'</option>';
+  });
+  html += '</select>';
+  html += '<span class="cal-filtro-label">Cuadrilla</span>';
+  html += '<select class="cal-filtro-select" id="calFiltroCuad" onchange="_calSetCuad(this.value)">';
+  html += '<option value="">Todas</option>';
+  st.cuadrillas.forEach(function(c){
+    html += '<option value="'+c.id+'"'+(filCuad===c.id?' selected':'')+'>'+escHGlob(c.nombre)+'</option>';
+  });
+  html += '</select>';
+  html += '</div>';
+
+  // Filtrar tareas
+  var tareas = st.tasks.filter(function(t){
+    if(!t.inicio||!t.fin) return false;
+    if(filSector && t.sector !== filSector) return false;
+    if(filCuad && t.cuadrilla !== filCuad) return false;
+    if(t.parentId && !t.cuadrilla) return false; // solo tareas con cuadrilla o raíz
+    return true;
+  });
+
+  // Calcular rango de meses
+  if(!tareas.length){ html += '<div style="color:var(--gris5);padding:20px;text-align:center;font-family:Barlow Condensed,sans-serif;">No hay actividades para mostrar.</div></div>'; container.innerHTML = html; return; }
+
+  var minD = new Date(tareas.reduce(function(m,t){ return t.inicio<m?t.inicio:m; }, tareas[0].inicio)+'T00:00:00');
+  var maxD = new Date(tareas.reduce(function(m,t){ return t.fin>m?t.fin:m; }, tareas[0].fin)+'T00:00:00');
+  // Ir mes a mes
+  var cur = new Date(minD.getFullYear(), minD.getMonth(), 1);
+  var end = new Date(maxD.getFullYear(), maxD.getMonth()+1, 0);
+
+  var MESES = ['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
+  var DIAS  = ['Dom','Lun','Mar','Mié','Jue','Vie','Sáb'];
+  var hoy = new Date(); hoy.setHours(0,0,0,0);
+
+  while(cur <= end){
+    var year = cur.getFullYear();
+    var month = cur.getMonth();
+    var primerDia = new Date(year, month, 1).getDay(); // 0=dom
+    var diasEnMes = new Date(year, month+1, 0).getDate();
+
+    html += '<div class="cal-mes-wrap">';
+    html += '<div class="cal-mes-titulo">'+MESES[month]+' '+year+'</div>';
+    html += '<div class="cal-grid">';
+    DIAS.forEach(function(d){ html += '<div class="cal-dow">'+d+'</div>'; });
+    // Celdas vacías al inicio
+    for(var v=0; v<primerDia; v++) html += '<div class="cal-dia vacio"></div>';
+    // Días
+    for(var dia=1; dia<=diasEnMes; dia++){
+      var fechaStr = year+'-'+String(month+1).padStart(2,'0')+'-'+String(dia).padStart(2,'0');
+      var esHoy = (new Date(year,month,dia).getTime()===hoy.getTime());
+      var esFinde = (new Date(year,month,dia).getDay()===0||new Date(year,month,dia).getDay()===6);
+      html += '<div class="cal-dia'+(esHoy?' hoy':'')+(esFinde?' fin-semana':'')+'">';
+      html += '<div class="cal-num">'+dia+'</div>';
+      // Eventos del día
+      tareas.forEach(function(t){
+        if(fechaStr >= t.inicio && fechaStr <= t.fin){
+          var color = t.cuadrilla ? (colores[t.cuadrilla]||'#888') : '#64748b';
+          var label = t.nombre.length>18 ? t.nombre.slice(0,17)+'…' : t.nombre;
+          html += '<div class="cal-evento" style="background:'+color+';" title="'+escHGlob(t.nombre)+'">'+escHGlob(label)+'</div>';
+        }
+      });
+      html += '</div>';
+    }
+    html += '</div></div>';
+    // Siguiente mes
+    cur = new Date(year, month+1, 1);
+  }
+  html += '</div>';
+  container.innerHTML = html;
+}
+function _calSetSector(v){
+  var c = document.getElementById('cfRoot');
+  if(c){ c._filSector = v; if(window._stateRef){ renderCalendario(c, window._stateRef); } }
+}
+function _calSetCuad(v){
+  var c = document.getElementById('cfRoot');
+  if(c){ c._filCuad = v; if(window._stateRef){ renderCalendario(c, window._stateRef); } }
+}
+
+// ════════════════════════════════════════
+//  VISTA COMPRAS
+// ════════════════════════════════════════
+function renderCompras(container, st){
+  var compras = st.compras || [];
+  var html = '<div class="compras-wrap">';
+  // Toolbar
+  html += '<div class="compras-toolbar">';
+  html += '<button class="compras-add-btn" onclick="abrirModalCompra(null)">+ Nueva compra</button>';
+  html += '<select class="cal-filtro-select" id="compraFiltroEstado" onchange="_compraFiltrar()">';
+  html += '<option value="">Todos los estados</option>';
+  html += '<option value="sin-cotizar">Sin cotizar</option>';
+  html += '<option value="pedido">Pedido</option>';
+  html += '<option value="recibido">Recibido</option>';
+  html += '</select>';
+  html += '<span style="margin-left:auto;font-family:Barlow Condensed,sans-serif;font-size:12px;color:var(--gris5);">';
+  html += compras.length + ' ítems · ' + compras.filter(function(c){return c.estado==='recibido';}).length + ' recibidos</span>';
+  html += '</div>';
+
+  if(!compras.length){
+    html += '<div style="color:var(--gris5);padding:40px;text-align:center;font-family:Barlow Condensed,sans-serif;">No hay ítems cargados. Usá "+ Nueva compra" para agregar.</div>';
+  } else {
+    html += '<table class="compras-tabla"><thead><tr>';
+    html += '<th>#</th><th>Ítem</th><th>Cantidad</th><th>Proveedor</th><th>Estado</th><th>Observación / Ubicación</th><th></th>';
+    html += '</tr></thead><tbody id="comprasTbody">';
+    var estadoFiltro = (typeof _compraFiltroActual !== 'undefined') ? _compraFiltroActual : '';
+    compras.forEach(function(c, i){
+      if(estadoFiltro && c.estado !== estadoFiltro) return;
+      var estadoLabel = c.estado==='sin-cotizar'?'Sin cotizar':c.estado==='pedido'?'Pedido':'Recibido';
+      html += '<tr class="'+(c.estado==='recibido'?'recibido':'')+'">';
+      html += '<td style="color:var(--gris5);font-size:11px;">'+(i+1)+'</td>';
+      html += '<td style="font-weight:700;">'+escHGlob(c.item)+'</td>';
+      html += '<td>'+escHGlob(c.cantidad||'—')+'</td>';
+      html += '<td style="color:var(--texto2);">'+escHGlob(c.proveedor||'—')+'</td>';
+      html += '<td><span class="compras-estado '+c.estado+'">'+estadoLabel+'</span></td>';
+      html += '<td style="color:var(--texto2);font-size:12px;">'+escHGlob(c.observacion||'')+'</td>';
+      html += '<td style="white-space:nowrap;">';
+      html += '<button class="compra-edit-btn" data-compra-idx="'+i+'">✎</button> ';
+      html += '<button class="compra-del-btn" data-compra-del="'+i+'">✕</button>';
+      html += '</td></tr>';
+    });
+    html += '</tbody></table>';
+  }
+  html += '</div>';
+  container.innerHTML = html;
+
+  // Listeners
+  container.querySelectorAll('[data-compra-idx]').forEach(function(btn){
+    btn.onclick = function(){ abrirModalCompra(parseInt(btn.dataset.compraIdx)); };
+  });
+  container.querySelectorAll('[data-compra-del]').forEach(function(btn){
+    btn.onclick = function(){
+      if(!confirm('¿Eliminar este ítem?')) return;
+      var idx = parseInt(btn.dataset.compraDel);
+      window._stateRef.compras.splice(idx,1);
+      if(typeof save==='function') save();
+      renderCompras(container, window._stateRef);
+    };
+  });
+}
+
+var _compraFiltroActual = '';
+function _compraFiltrar(){
+  var sel = document.getElementById('compraFiltroEstado');
+  _compraFiltroActual = sel ? sel.value : '';
+  var c = document.getElementById('cfRoot');
+  if(c && window._stateRef) renderCompras(c, window._stateRef);
+}
+
+var _compraEditIdx = null;
+function abrirModalCompra(idx){
+  _compraEditIdx = idx;
+  var ov = document.getElementById('compraModalOv');
+  if(!ov) return;
+  var compras = window._stateRef ? (window._stateRef.compras||[]) : [];
+  var c = (idx !== null && idx >= 0) ? compras[idx] : null;
+  document.getElementById('cItem').value = c ? c.item : '';
+  document.getElementById('cCantidad').value = c ? c.cantidad : '';
+  document.getElementById('cProveedor').value = c ? c.proveedor : '';
+  document.getElementById('cEstado').value = c ? c.estado : 'sin-cotizar';
+  document.getElementById('cObservacion').value = c ? c.observacion : '';
+  document.getElementById('cObsRow').style.display = (c && c.estado==='recibido') ? 'flex' : 'none';
+  document.getElementById('cDelBtn').style.display = (idx !== null) ? 'block' : 'none';
+  document.getElementById('cModalTitle').textContent = (idx !== null) ? 'Editar ítem' : 'Nueva compra';
+  ov.classList.add('open');
+}
+function cerrarModalCompra(){
+  var ov = document.getElementById('compraModalOv');
+  if(ov) ov.classList.remove('open');
+}
+function guardarCompra(){
+  var item = document.getElementById('cItem').value.trim();
+  if(!item){ alert('Completá el ítem.'); return; }
+  var c = {
+    item: item,
+    cantidad: document.getElementById('cCantidad').value.trim(),
+    proveedor: document.getElementById('cProveedor').value.trim(),
+    estado: document.getElementById('cEstado').value,
+    observacion: document.getElementById('cObservacion').value.trim(),
+  };
+  if(!window._stateRef.compras) window._stateRef.compras = [];
+  if(_compraEditIdx !== null && _compraEditIdx >= 0){
+    window._stateRef.compras[_compraEditIdx] = c;
+  } else {
+    window._stateRef.compras.push(c);
+  }
+  if(typeof save==='function') save();
+  cerrarModalCompra();
+  var cont = document.getElementById('cfRoot');
+  if(cont && window._stateRef) renderCompras(cont, window._stateRef);
+}
+function eliminarCompra(){
+  if(_compraEditIdx === null) return;
+  if(!confirm('¿Eliminar este ítem?')) return;
+  window._stateRef.compras.splice(_compraEditIdx, 1);
+  if(typeof save==='function') save();
+  cerrarModalCompra();
+  var cont = document.getElementById('cfRoot');
+  if(cont && window._stateRef) renderCompras(cont, window._stateRef);
 }
 
 function toggleTema(){
@@ -2686,7 +3010,7 @@ function toggleTema(){
     || window.location.protocol === 'file:';
 
   let state = { proyecto:'Alcoenergy — Obra Civil', fechaLimite:'2027-02-28', vista:'sector', zoom:'semana',
-    rangoInicio:'', rangoFin:'', showCuadrillas:false, planos:[{"sector": "molienda", "nombre": "Planta de Niveles PB (Rev 03)", "tipo": "PDF", "url": "https://drive.google.com/file/d/1MFCZzU6Gtrx3ruarNp00jP-jiRd5nFbI/view"}, {"sector": "molienda", "nombre": "Pases y Elementos Empotrados (Rev 01)", "tipo": "PDF", "url": "https://drive.google.com/file/d/1qMxb5FS88DAFlW3sIp3PKYfV8Mi5M6VQ/view"}, {"sector": "molienda", "nombre": "Planta de Niveles PB (Rev 01)", "tipo": "PDF", "url": "https://drive.google.com/file/d/1TcHYDujqlB6psRBqJ219VYPolpHpT2_i/view"}, {"sector": "molienda", "nombre": "Canaletas Molienda-Fermentadores (Rev 01)", "tipo": "PDF", "url": "https://drive.google.com/file/d/1ztNfSYK2fau5VmTih5mZdA4U9_1mym5O/view"}, {"sector": "molienda", "nombre": "Relevamiento Detalle Constructivo (Rev 01)", "tipo": "PDF", "url": "https://drive.google.com/file/d/12oqkfXL1avDz8cAtre2j7iwOjx6_TaRq/view"}, {"sector": "fermentadores", "nombre": "Canaletas Molienda-Fermentadores (Rev 01)", "tipo": "PDF", "url": "https://drive.google.com/file/d/1ztNfSYK2fau5VmTih5mZdA4U9_1mym5O/view"}, {"sector": "destilacion_ed", "nombre": "Columnas de Mosto - Cimentaciones (Rev 01)", "tipo": "PDF", "url": "https://drive.google.com/file/d/1t8Y7rRAS-sB0sRR3XDKsbhG0dV6hWRLY/view"}, {"sector": "destilacion_ed", "nombre": "Muertos de Hormigón / Anclaje (Rev 01)", "tipo": "PDF", "url": "https://drive.google.com/file/d/1HZE0WIlNhqu_8Ak7Ut_rFnvr8KIFQvPw/view"}, {"sector": "destilacion_ed", "nombre": "Armaduras de Muertos de Anclaje", "tipo": "PDF", "url": "https://drive.google.com/file/d/15uebr7J2i3F6aOGC5Xnnwc-zlIpn8MUe/view"}, {"sector": "destilacion_ed", "nombre": "Planta de Niveles Destilación (Rev 01)", "tipo": "PDF", "url": "https://drive.google.com/file/d/115Ihln3oB2_GhGR3q7XB5zIlP8FXtGMb/view"}, {"sector": "destilacion_ed", "nombre": "Canaletas Destilación (Rev 01)", "tipo": "PDF", "url": "https://drive.google.com/file/d/1T6LZ1Kdu1z1rfhlKAlfpHSl6az5JrVyv/view"}, {"sector": "destilacion_ed", "nombre": "Detalle de Juntas Destilación (Rev 01)", "tipo": "PDF", "url": "https://drive.google.com/file/d/1xWpBgTMmfSMfa_dLxwKKDV30NiRseJxq/view"}, {"sector": "destilacion_ed", "nombre": "Relevamiento Situación Inicial", "tipo": "PDF", "url": "https://drive.google.com/file/d/1syEfJoVFtJc0vNwWKZ3mTqyfw_NZegcj/view"}, {"sector": "refrigeracion", "nombre": "Planta de Niveles Refrigeración (Rev 01)", "tipo": "PDF", "url": "https://drive.google.com/file/d/1LpffwFXlmvD_6onedPPlpdYzr-x5UVBp/view"}, {"sector": "refrigeracion", "nombre": "Niveles de Válvulas Refrigeración (Rev 01)", "tipo": "PDF", "url": "https://drive.google.com/file/d/1b2jfGMmIKd9T1G905GLre65w3ZmO8jHm/view"}, {"sector": "refrigeracion", "nombre": "Cámaras de Desagüe de Canaletas (Rev 01)", "tipo": "PDF", "url": "https://drive.google.com/file/d/1N7MDF3N5pyirh824LqYwtQ5RVqyLgTvW/view"}, {"sector": "refrigeracion", "nombre": "Canaletas Refrigeración (Rev 01)", "tipo": "PDF", "url": "https://drive.google.com/file/d/133IOGig1sNvN6V8K_irmuwMCQjQEym2Q/view"}, {"sector": "refrigeracion", "nombre": "Detalle de Juntas Refrigeración", "tipo": "PDF", "url": "https://drive.google.com/file/d/1A6Qd8mAp0m_fY0WHRT5lRMS6a2jMmR-f/view"}, {"sector": "refrigeracion", "nombre": "Relevamiento Situación Inicial Refrigeración", "tipo": "PDF", "url": "https://drive.google.com/file/d/17pPyrg4tKeKkTbs4kl85EL_jQp8KGo-3/view"}, {"sector": "subproductos", "nombre": "Planta de Niveles Subproductos (Rev 01)", "tipo": "PDF", "url": "https://drive.google.com/file/d/1mfE4ouaY7InRbapQniprtJksih-fnEHN/view"}, {"sector": "subproductos", "nombre": "Canaletas Subproductos (Rev 01)", "tipo": "PDF", "url": "https://drive.google.com/file/d/1RhQG6_c1j4SzrybrMl91aV-A8ub74E9q/view"}, {"sector": "subproductos", "nombre": "Detalle de Juntas Subproductos (Rev 01)", "tipo": "PDF", "url": "https://drive.google.com/file/d/1ODHe6oQ0Q6U6e7CIullz-o3QnfAza4o1/view"}, {"sector": "subproductos", "nombre": "Desagüe Pluvial Provisional (Rev 01)", "tipo": "PDF", "url": "https://drive.google.com/file/d/1QiGFV-mt0RorGf3xA8tPZF3nHIpBrgQx/view"}, {"sector": "subproductos", "nombre": "Relevamiento Situación Inicial Subproductos", "tipo": "PDF", "url": "https://drive.google.com/file/d/1f_rXfEEES5mfw1-7rfMRXp_ILHHdEXPp/view"}, {"sector": "caneros", "nombre": "Layout Ubicación de Áreas (Esquema OS)", "tipo": "PDF", "url": "https://drive.google.com/file/d/13en6MONYntskTFnVEOVy45C9TwE6npUl/view"}, {"sector": "caneros", "nombre": "Pases de Válvulas de Desagüe", "tipo": "PDF", "url": "https://drive.google.com/file/d/1NnZZzSyew2eaN7ERl0U3V0rZRHjySMBr/view"}],
+    rangoInicio:'', rangoFin:'', showCuadrillas:false, compras:[], planos:[{"sector": "molienda", "nombre": "Planta de Niveles PB (Rev 03)", "tipo": "PDF", "url": "https://drive.google.com/file/d/1MFCZzU6Gtrx3ruarNp00jP-jiRd5nFbI/view"}, {"sector": "molienda", "nombre": "Pases y Elementos Empotrados (Rev 01)", "tipo": "PDF", "url": "https://drive.google.com/file/d/1qMxb5FS88DAFlW3sIp3PKYfV8Mi5M6VQ/view"}, {"sector": "molienda", "nombre": "Planta de Niveles PB (Rev 01)", "tipo": "PDF", "url": "https://drive.google.com/file/d/1TcHYDujqlB6psRBqJ219VYPolpHpT2_i/view"}, {"sector": "molienda", "nombre": "Canaletas Molienda-Fermentadores (Rev 01)", "tipo": "PDF", "url": "https://drive.google.com/file/d/1ztNfSYK2fau5VmTih5mZdA4U9_1mym5O/view"}, {"sector": "molienda", "nombre": "Relevamiento Detalle Constructivo (Rev 01)", "tipo": "PDF", "url": "https://drive.google.com/file/d/12oqkfXL1avDz8cAtre2j7iwOjx6_TaRq/view"}, {"sector": "fermentadores", "nombre": "Canaletas Molienda-Fermentadores (Rev 01)", "tipo": "PDF", "url": "https://drive.google.com/file/d/1ztNfSYK2fau5VmTih5mZdA4U9_1mym5O/view"}, {"sector": "destilacion_ed", "nombre": "Columnas de Mosto - Cimentaciones (Rev 01)", "tipo": "PDF", "url": "https://drive.google.com/file/d/1t8Y7rRAS-sB0sRR3XDKsbhG0dV6hWRLY/view"}, {"sector": "destilacion_ed", "nombre": "Muertos de Hormigón / Anclaje (Rev 01)", "tipo": "PDF", "url": "https://drive.google.com/file/d/1HZE0WIlNhqu_8Ak7Ut_rFnvr8KIFQvPw/view"}, {"sector": "destilacion_ed", "nombre": "Armaduras de Muertos de Anclaje", "tipo": "PDF", "url": "https://drive.google.com/file/d/15uebr7J2i3F6aOGC5Xnnwc-zlIpn8MUe/view"}, {"sector": "destilacion_ed", "nombre": "Planta de Niveles Destilación (Rev 01)", "tipo": "PDF", "url": "https://drive.google.com/file/d/115Ihln3oB2_GhGR3q7XB5zIlP8FXtGMb/view"}, {"sector": "destilacion_ed", "nombre": "Canaletas Destilación (Rev 01)", "tipo": "PDF", "url": "https://drive.google.com/file/d/1T6LZ1Kdu1z1rfhlKAlfpHSl6az5JrVyv/view"}, {"sector": "destilacion_ed", "nombre": "Detalle de Juntas Destilación (Rev 01)", "tipo": "PDF", "url": "https://drive.google.com/file/d/1xWpBgTMmfSMfa_dLxwKKDV30NiRseJxq/view"}, {"sector": "destilacion_ed", "nombre": "Relevamiento Situación Inicial", "tipo": "PDF", "url": "https://drive.google.com/file/d/1syEfJoVFtJc0vNwWKZ3mTqyfw_NZegcj/view"}, {"sector": "refrigeracion", "nombre": "Planta de Niveles Refrigeración (Rev 01)", "tipo": "PDF", "url": "https://drive.google.com/file/d/1LpffwFXlmvD_6onedPPlpdYzr-x5UVBp/view"}, {"sector": "refrigeracion", "nombre": "Niveles de Válvulas Refrigeración (Rev 01)", "tipo": "PDF", "url": "https://drive.google.com/file/d/1b2jfGMmIKd9T1G905GLre65w3ZmO8jHm/view"}, {"sector": "refrigeracion", "nombre": "Cámaras de Desagüe de Canaletas (Rev 01)", "tipo": "PDF", "url": "https://drive.google.com/file/d/1N7MDF3N5pyirh824LqYwtQ5RVqyLgTvW/view"}, {"sector": "refrigeracion", "nombre": "Canaletas Refrigeración (Rev 01)", "tipo": "PDF", "url": "https://drive.google.com/file/d/133IOGig1sNvN6V8K_irmuwMCQjQEym2Q/view"}, {"sector": "refrigeracion", "nombre": "Detalle de Juntas Refrigeración", "tipo": "PDF", "url": "https://drive.google.com/file/d/1A6Qd8mAp0m_fY0WHRT5lRMS6a2jMmR-f/view"}, {"sector": "refrigeracion", "nombre": "Relevamiento Situación Inicial Refrigeración", "tipo": "PDF", "url": "https://drive.google.com/file/d/17pPyrg4tKeKkTbs4kl85EL_jQp8KGo-3/view"}, {"sector": "subproductos", "nombre": "Planta de Niveles Subproductos (Rev 01)", "tipo": "PDF", "url": "https://drive.google.com/file/d/1mfE4ouaY7InRbapQniprtJksih-fnEHN/view"}, {"sector": "subproductos", "nombre": "Canaletas Subproductos (Rev 01)", "tipo": "PDF", "url": "https://drive.google.com/file/d/1RhQG6_c1j4SzrybrMl91aV-A8ub74E9q/view"}, {"sector": "subproductos", "nombre": "Detalle de Juntas Subproductos (Rev 01)", "tipo": "PDF", "url": "https://drive.google.com/file/d/1ODHe6oQ0Q6U6e7CIullz-o3QnfAza4o1/view"}, {"sector": "subproductos", "nombre": "Desagüe Pluvial Provisional (Rev 01)", "tipo": "PDF", "url": "https://drive.google.com/file/d/1QiGFV-mt0RorGf3xA8tPZF3nHIpBrgQx/view"}, {"sector": "subproductos", "nombre": "Relevamiento Situación Inicial Subproductos", "tipo": "PDF", "url": "https://drive.google.com/file/d/1f_rXfEEES5mfw1-7rfMRXp_ILHHdEXPp/view"}, {"sector": "caneros", "nombre": "Layout Ubicación de Áreas (Esquema OS)", "tipo": "PDF", "url": "https://drive.google.com/file/d/13en6MONYntskTFnVEOVy45C9TwE6npUl/view"}, {"sector": "caneros", "nombre": "Pases de Válvulas de Desagüe", "tipo": "PDF", "url": "https://drive.google.com/file/d/1NnZZzSyew2eaN7ERl0U3V0rZRHjySMBr/view"}],
     grupos:GRUPOS_BASE, cuadrillas:CUADRILLAS_BASE.slice(), tasks:seedTasks() };
   let drag = null;
  
@@ -3018,6 +3342,16 @@ function toggleTema(){
         }).join('')}</div>`;
     }
  
+    // Vistas especiales que no usan el template del gantt
+    if(state.vista === 'calendario'){
+      renderCalendario(root, state);
+      return;
+    }
+    if(state.vista === 'compras'){
+      renderCompras(root, state);
+      return;
+    }
+
     root.innerHTML = `
       <div class="cf-brandbar">
         <div class="cf-brand-left">
@@ -3070,6 +3404,8 @@ function toggleTema(){
             <button data-vista="sector" class="${state.vista==='sector'?'active':''}">Por Sector</button>
             <button data-vista="cuadrilla" class="${state.vista==='cuadrilla'?'active':''}">Por Cuadrilla</button>
             <button data-vista="maquina" class="${state.vista==='maquina'?'active':''}">Por Máquina</button>
+            <button data-vista="calendario" class="${state.vista==='calendario'?'active':''}">📅 Calendario</button>
+            <button data-vista="compras" class="${state.vista==='compras'?'active':''}">🛒 Compras</button>
           </div>
           <div class="cf-segmented zoom">
             <button data-zoom="dia" class="${state.zoom==='dia'?'active':''}">Día</button>
@@ -3573,6 +3909,10 @@ function toggleTema(){
 
   // Exponer state y cuadrillas para funciones globales (plantillas)
   window._stateRef = state; // referencia inmediata
+  // Setear sector default para el calendario
+  if(state.grupos && state.grupos[0] && state.grupos[0].sectores[0]){
+    document.getElementById('cfRoot')._filSector = state.grupos[0].sectores[0].id;
+  }
   window.IS_EDITOR_GLOBAL = IS_EDITOR;
   const _origLoad = load;
   load = async function(){
@@ -3642,6 +3982,44 @@ function toggleTema(){
     <div class="reporte-actions">
       <button class="reporte-btn-cancel" onclick="cerrarReporte()">Cancelar</button>
       <button class="reporte-btn-print" onclick="generarReporte()">🖨 Generar e Imprimir</button>
+    </div>
+  </div>
+</div>
+
+<!-- ── MODAL COMPRAS ── -->
+<div class="compra-modal-overlay" id="compraModalOv" onclick="if(event.target===this)cerrarModalCompra()">
+  <div class="compra-modal">
+    <h3 id="cModalTitle">Nueva compra</h3>
+    <div class="compra-field">
+      <label>Ítem / Material *</label>
+      <input id="cItem" placeholder="Ej: Hierro Ø16mm, Cemento Portland, etc.">
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+      <div class="compra-field">
+        <label>Cantidad</label>
+        <input id="cCantidad" placeholder="Ej: 500 kg, 20 bolsas">
+      </div>
+      <div class="compra-field">
+        <label>Proveedor</label>
+        <input id="cProveedor" placeholder="Ej: Ferreinsumos SA">
+      </div>
+    </div>
+    <div class="compra-field">
+      <label>Estado</label>
+      <select id="cEstado" onchange="document.getElementById('cObsRow').style.display=this.value==='recibido'?'flex':'none'">
+        <option value="sin-cotizar">Sin cotizar</option>
+        <option value="pedido">Pedido</option>
+        <option value="recibido">Recibido</option>
+      </select>
+    </div>
+    <div class="compra-field" id="cObsRow" style="display:none;">
+      <label>Observación / Dónde está</label>
+      <textarea id="cObservacion" rows="2" placeholder="Ej: Deposito sector B, pallet 3"></textarea>
+    </div>
+    <div class="compra-modal-btns">
+      <button class="compra-btn-del" id="cDelBtn" style="display:none;" onclick="eliminarCompra()">Eliminar</button>
+      <button class="compra-btn-cancel" onclick="cerrarModalCompra()">Cancelar</button>
+      <button class="compra-btn-ok" onclick="guardarCompra()">Guardar</button>
     </div>
   </div>
 </div>
