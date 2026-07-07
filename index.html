@@ -960,7 +960,7 @@ function cerrarReporte(){
 }
 
 
-function buildGanttSVG(tareas, desde, hasta){
+function buildGanttSVG(tareas, desde, hasta, modo){
   if(!tareas || tareas.length === 0) return '';
 
   // Calcular rango de fechas
@@ -977,18 +977,34 @@ function buildGanttSVG(tareas, desde, hasta){
   var HEADER_H = 36;
   var colores = {suelo:'#D97706', encofrado:'#3B82F6', hormigon:'#6B7280', detalle:'#16A34A'};
 
-  // Filtrar solo tareas raíz y sus hijos directos (2 niveles)
-  var rootTasks = tareas.filter(function(t){ return !t.parentId; });
   var rows = [];
-  rootTasks.forEach(function(t){
-    rows.push({task:t, depth:0});
-    var hijos = tareas.filter(function(c){ return c.parentId === t.id; });
-    hijos.forEach(function(c){
-      rows.push({task:c, depth:1});
-      var nietos = tareas.filter(function(n){ return n.parentId === c.id; });
-      nietos.forEach(function(n){ rows.push({task:n, depth:2}); });
+  if(modo === 'cuadrilla'){
+    // Agrupar por cuadrilla: header + sus tareas
+    var st = window._stateRef;
+    var cuads = st ? st.cuadrillas : [];
+    cuads.forEach(function(c){
+      var tsCuad = tareas.filter(function(t){ return t.cuadrilla === c.id; });
+      if(tsCuad.length === 0) return;
+      rows.push({grupoCuad:c.nombre, grupoColor:c.color, depth:0, esGrupo:true});
+      tsCuad.sort(function(a,b){ return (a.inicio||'').localeCompare(b.inicio||''); });
+      tsCuad.forEach(function(t){
+        var secNombre = '';
+        if(st){ for(var gi=0;gi<st.grupos.length;gi++){ var s=st.grupos[gi].sectores.find(function(x){return x.id===t.sector;}); if(s){secNombre=s.nombre;break;} } }
+        rows.push({task:t, depth:1, cuadColor:c.color, sectorLabel:secNombre});
+      });
     });
-  });
+  } else {
+    var rootTasks = tareas.filter(function(t){ return !t.parentId; });
+    rootTasks.forEach(function(t){
+      rows.push({task:t, depth:0});
+      var hijos = tareas.filter(function(c){ return c.parentId === t.id; });
+      hijos.forEach(function(c){
+        rows.push({task:c, depth:1});
+        var nietos = tareas.filter(function(n){ return n.parentId === c.id; });
+        nietos.forEach(function(n){ rows.push({task:n, depth:2}); });
+      });
+    });
+  }
 
   var SVG_H = HEADER_H + rows.length * ROW_H + 10;
   var SVG_W = LABEL_W + CHART_W;
@@ -1030,8 +1046,21 @@ function buildGanttSVG(tareas, desde, hasta){
 
   // Filas
   rows.forEach(function(row, i){
-    var t = row.task;
     var y = HEADER_H + i * ROW_H;
+
+    // ── Header de cuadrilla (fila de grupo) ──
+    if(row.esGrupo){
+      svg += '<rect x="0" y="'+y+'" width="'+SVG_W+'" height="'+ROW_H+'" fill="#eef2f5"/>';
+      svg += '<line x1="0" y1="'+(y+ROW_H)+'" x2="'+SVG_W+'" y2="'+(y+ROW_H)+'" stroke="#ddd" stroke-width="0.5"/>';
+      var gc = (row.grupoColor||'').replace('var(--c-suelo)','#D97706').replace('var(--c-encofrado)','#3B82F6').replace('var(--c-hormigon)','#6B7280').replace('var(--c-detalle)','#16A34A');
+      if(gc.indexOf('var(')===0) gc='#E8651A';
+      svg += '<circle cx="10" cy="'+(y+11)+'" r="4" fill="'+gc+'"/>';
+      svg += '<text x="20" y="'+(y+14)+'" fill="#111" font-size="10" font-weight="700">'+escHGlob(row.grupoCuad)+'</text>';
+      svg += '<line x1="'+LABEL_W+'" y1="'+y+'" x2="'+LABEL_W+'" y2="'+(y+ROW_H)+'" stroke="#ddd" stroke-width="0.5"/>';
+      return;
+    }
+
+    var t = row.task;
     var isParent = row.depth === 0;
 
     // Fondo alternado
@@ -1043,8 +1072,11 @@ function buildGanttSVG(tareas, desde, hasta){
 
     // Label
     var labelX = 8 + row.depth * 14;
-    var labelText = t.nombre.length > 26 ? t.nombre.slice(0,25)+'…' : t.nombre;
-    svg += '<text x="'+labelX+'" y="'+(y+14)+'" fill="'+(isParent?'#111':'#444')+'" '
+    // En modo cuadrilla, mostrar "sector · actividad"
+    var nombreMostrar = row.sectorLabel ? (row.sectorLabel + ' · ' + t.nombre) : t.nombre;
+    var labelText = nombreMostrar.length > 30 ? nombreMostrar.slice(0,29)+'…' : nombreMostrar;
+    var labelColor = isParent ? '#111' : '#444';
+    svg += '<text x="'+labelX+'" y="'+(y+14)+'" fill="'+labelColor+'" '
       +'font-size="'+(isParent?'10':'9')+'" font-weight="'+(isParent?'700':'400')+'" '
       +'text-anchor="start">'+escHGlob(labelText)+'</text>';
 
@@ -1089,6 +1121,15 @@ function buildGanttSVG(tareas, desde, hasta){
   return svg;
 }
 
+function sectorObjGlobal(id){
+  var st = window._stateRef;
+  if(!st || !st.grupos) return null;
+  for(var i=0;i<st.grupos.length;i++){
+    var s = st.grupos[i].sectores.find(function(x){return x.id===id;});
+    if(s) return s;
+  }
+  return null;
+}
 function generarReporte(){
   var desde = document.getElementById('rpDesde').value;
   var hasta  = document.getElementById('rpHasta').value;
@@ -1098,6 +1139,8 @@ function generarReporte(){
   var inclTabla  = document.getElementById('rpTabla').checked;
   var inclCuad   = document.getElementById('rpCuad').checked;
   var inclMaq    = document.getElementById('rpMaq').checked;
+  var inclGanttCuad = document.getElementById('rpGanttCuad') ? document.getElementById('rpGanttCuad').checked : false;
+  var inclResSem = document.getElementById('rpResSem') ? document.getElementById('rpResSem').checked : false;
 
   var st = window._stateRef;
   if(!st){ alert('No hay datos cargados.'); return; }
@@ -1128,13 +1171,153 @@ function generarReporte(){
     +'<strong style="color:#E8651A;">'+tareas.length+' actividades</strong>'
     +'</div></div>';
 
-  // ── GANTT SVG ──
+  // ── GANTT SVG POR SECTOR ──
   if(inclGantt && tareas.length > 0){
-    var ganttSvg = buildGanttSVG(tareas, desde, hasta);
+    var ganttSvg = '';
+    try{ ganttSvg = buildGanttSVG(tareas, desde, hasta, 'sector'); }catch(e){ ganttSvg='<p style="color:red">Error: '+e.message+'</p>'; }
     html += '<div style="margin-bottom:28px;">'
       +'<div style="font-size:11px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;'
-      +'color:#E8651A;border-left:3px solid #E8651A;padding-left:8px;margin-bottom:10px;">Cronograma Visual</div>'
+      +'color:#E8651A;border-left:3px solid #E8651A;padding-left:8px;margin-bottom:10px;">Cronograma Visual — Por Sector</div>'
       +'<div style="width:100%;overflow:hidden;">'+ganttSvg+'</div></div>';
+  }
+
+  // ── GANTT SVG POR CUADRILLA ──
+  if(inclGanttCuad && tareas.length > 0){
+    var ganttCuadSvg = '';
+    try{ ganttCuadSvg = buildGanttSVG(tareas, desde, hasta, 'cuadrilla'); }catch(e){ ganttCuadSvg='<p style="color:red">Error: '+e.message+'</p>'; }
+    html += '<div style="margin-bottom:28px;">'
+      +'<div style="font-size:11px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;'
+      +'color:#E8651A;border-left:3px solid #E8651A;padding-left:8px;margin-bottom:10px;">Cronograma Visual — Por Cuadrilla</div>'
+      +'<div style="width:100%;overflow:hidden;">'+ganttCuadSvg+'</div></div>';
+  }
+
+  // ── RESUMEN DE LA SEMANA ──
+  if(inclResSem){
+    var rangoSem = (typeof _rangoSemanaActual==='function') ? _rangoSemanaActual() : null;
+    var resumenSec = (typeof resumenSemanalPorSector==='function') ? resumenSemanalPorSector() : {};
+    var cuadsSem = (typeof cuadrillasActivas==='function') ? cuadrillasActivas('semana') : [];
+
+    html += '<div style="margin-bottom:28px;page-break-inside:avoid;">'
+      +'<div style="font-size:11px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;'
+      +'color:#E8651A;border-left:3px solid #E8651A;padding-left:8px;margin-bottom:12px;">Resumen de la Semana Actual</div>';
+
+    html += '<div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;">';
+
+    // Columna 1: por sector
+    html += '<div>';
+    html += '<div style="font-size:12px;font-weight:800;color:#333;margin-bottom:8px;border-bottom:2px solid #eee;padding-bottom:4px;">Actividades por Sector</div>';
+    var secKeys = Object.keys(resumenSec);
+    if(secKeys.length===0){
+      html += '<div style="font-size:11px;color:#999;">Sin actividades esta semana.</div>';
+    } else {
+      secKeys.forEach(function(sec){
+        html += '<div style="margin-bottom:8px;">'
+          +'<div style="font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.06em;color:#E8651A;margin-bottom:3px;">'+escHGlob(sec)+'</div>';
+        resumenSec[sec].forEach(function(t){
+          html += '<div style="font-size:11px;color:#333;padding:1px 0;">• '+escHGlob(t.nombre)+(t.personas?' <span style="color:#888;">('+t.personas+'p)</span>':'')+'</div>';
+        });
+        html += '</div>';
+      });
+    }
+    html += '</div>';
+
+    // Columna 2: cuadrillas
+    html += '<div>';
+    html += '<div style="font-size:12px;font-weight:800;color:#333;margin-bottom:8px;border-bottom:2px solid #eee;padding-bottom:4px;">Cuadrillas Esta Semana</div>';
+    if(cuadsSem.length===0){
+      html += '<div style="font-size:11px;color:#999;">Sin cuadrillas activas.</div>';
+    } else {
+      cuadsSem.forEach(function(c){
+        html += '<div style="display:flex;align-items:center;gap:8px;padding:4px 0;border-bottom:1px solid #f5f5f5;">'
+          +'<div style="flex:1;">'
+          +'<div style="font-size:11px;font-weight:800;color:#333;">'+escHGlob(c.cuadrilla)+'</div>'
+          +'<div style="font-size:10px;color:#888;">'+escHGlob(c.sector)+' · '+escHGlob(c.actividad)+'</div>'
+          +'</div>'
+          +'<div style="font-size:13px;font-weight:800;color:#E8651A;">'+c.personas+'p</div>'
+          +'</div>';
+      });
+    }
+    html += '</div>';
+
+    html += '</div></div>';
+  }
+
+  // ── GANTT SVG POR CUADRILLA ──
+  if(inclGanttCuad && tareas.length > 0){
+    var ganttSvgC = '';
+    try{ ganttSvgC = buildGanttSVG(tareas, desde, hasta, 'cuadrilla'); }catch(e){ ganttSvgC='<p style="color:red">Error: '+e.message+'</p>'; }
+    html += '<div style="margin-bottom:28px;">'
+      +'<div style="font-size:11px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;'
+      +'color:#E8651A;border-left:3px solid #E8651A;padding-left:8px;margin-bottom:10px;">Cronograma Visual — Por Cuadrilla</div>'
+      +'<div style="width:100%;overflow:hidden;">'+ganttSvgC+'</div></div>';
+  }
+
+  // ── RESUMEN DE LA SEMANA ──
+  if(inclResSem){
+    // Semana actual
+    var hoyR = new Date(); hoyR.setHours(0,0,0,0);
+    var dowR = hoyR.getDay();
+    var lunesR = new Date(hoyR); lunesR.setDate(hoyR.getDate()-(dowR===0?6:dowR-1));
+    var domingoR = new Date(lunesR); domingoR.setDate(lunesR.getDate()+6);
+    var iniSem = lunesR.toISOString().slice(0,10);
+    var finSem = domingoR.toISOString().slice(0,10);
+    var fmtSemana = fmtDateES(iniSem)+' al '+fmtDateES(finSem);
+
+    // Tareas activas esta semana
+    var activasSem = st.tasks.filter(function(t){ return t.cuadrilla && t.inicio && t.fin && t.inicio<=finSem && t.fin>=iniSem; });
+
+    html += '<div style="margin-bottom:28px;page-break-inside:avoid;">'
+      +'<div style="font-size:11px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;'
+      +'color:#E8651A;border-left:3px solid #E8651A;padding-left:8px;margin-bottom:12px;">Resumen de la Semana · '+fmtSemana+'</div>'
+      +'<div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;">';
+
+    // Columna 1: por sector
+    html += '<div><div style="font-size:10px;font-weight:800;color:#888;text-transform:uppercase;margin-bottom:8px;">Actividades por sector</div>';
+    var porSectorR = {};
+    activasSem.forEach(function(t){
+      var so = sectorObjGlobal(t.sector);
+      var nom = so ? so.nombre : (t.sector||'Sin sector');
+      if(!porSectorR[nom]) porSectorR[nom]=[];
+      porSectorR[nom].push(t);
+    });
+    var secKeys = Object.keys(porSectorR);
+    if(secKeys.length===0){ html += '<div style="font-size:11px;color:#aaa;">Sin actividades esta semana.</div>'; }
+    else {
+      secKeys.forEach(function(sec){
+        html += '<div style="margin-bottom:8px;">'
+          +'<div style="font-size:10px;font-weight:800;color:#E8651A;text-transform:uppercase;border-bottom:1px solid #eee;padding-bottom:2px;margin-bottom:3px;">'+escHGlob(sec)+'</div>';
+        porSectorR[sec].forEach(function(t){
+          html += '<div style="font-size:11px;color:#333;padding:1px 0;">· '+escHGlob(t.nombre)+(t.personas?' <span style="color:#888;">('+t.personas+'p)</span>':'')+'</div>';
+        });
+        html += '</div>';
+      });
+    }
+    html += '</div>';
+
+    // Columna 2: por cuadrilla
+    html += '<div><div style="font-size:10px;font-weight:800;color:#888;text-transform:uppercase;margin-bottom:8px;">Cuadrillas esta semana</div>';
+    var cuadsR = (st.cuadrillas||[]);
+    var huboCuad = false;
+    cuadsR.forEach(function(c){
+      var tc = activasSem.filter(function(t){ return t.cuadrilla===c.id; });
+      if(tc.length===0) return;
+      huboCuad = true;
+      var colores2 = {suelo:'#D97706',encofrado:'#3B82F6',hormigon:'#6B7280',detalle:'#16A34A'};
+      var col = colores2[c.id]||'#888';
+      tc.forEach(function(t){
+        var so = sectorObjGlobal(t.sector);
+        var secN = so ? so.nombre : (t.sector||'—');
+        html += '<div style="display:flex;align-items:center;gap:6px;font-size:11px;padding:2px 0;border-bottom:1px solid #f5f5f5;">'
+          +'<span style="width:8px;height:8px;border-radius:50%;background:'+col+';flex-shrink:0;"></span>'
+          +'<span style="flex:1;"><strong>'+escHGlob(c.nombre)+'</strong> · '+escHGlob(secN)+' · '+escHGlob(t.nombre)+'</span>'
+          +'<span style="font-weight:800;color:#E8651A;">'+(t.personas||0)+'p</span>'
+          +'</div>';
+      });
+    });
+    if(!huboCuad){ html += '<div style="font-size:11px;color:#aaa;">Sin cuadrillas activas esta semana.</div>'; }
+    html += '</div>';
+
+    html += '</div></div>';
   }
 
   // ── TABLA HORMIGÓN ──
@@ -4263,7 +4446,9 @@ function toggleTema(){
     <div class="reporte-section">
       <div class="reporte-section-title">Contenido a incluir</div>
       <div class="reporte-checks">
-        <label class="reporte-check"><input type="checkbox" id="rpGantt" checked><span>📊 Cronograma visual (Gantt SVG)</span></label>
+        <label class="reporte-check"><input type="checkbox" id="rpGantt" checked><span>📊 Gantt por sector</span></label>
+        <label class="reporte-check"><input type="checkbox" id="rpGanttCuad"><span>👷 Gantt por cuadrilla</span></label>
+        <label class="reporte-check"><input type="checkbox" id="rpResSem"><span>📆 Resumen de la semana actual</span></label>
         <label class="reporte-check"><input type="checkbox" id="rpHorm" checked><span>🏗 Lista pedido de hormigón (m³ por sector)</span></label>
         <label class="reporte-check"><input type="checkbox" id="rpTabla" checked><span>📋 Tabla detallada de actividades</span></label>
         <label class="reporte-check"><input type="checkbox" id="rpCuad" checked><span>👷 Cuadrillas — pico de simultaneidad</span></label>
