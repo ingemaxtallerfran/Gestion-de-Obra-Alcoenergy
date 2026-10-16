@@ -3756,7 +3756,6 @@ function toggleTema(){
           <div class="cf-client-badge"><span class="lbl">Obra de</span><img src="${ALCO_LOGO}" alt="AlcoEnergy"/></div>
           <button id="btnDtTop" style="background:rgba(22,163,74,.15);border:1px solid rgba(22,163,74,.45);color:#4ADE80;border-radius:7px;padding:6px 14px;font-family:Barlow Condensed,sans-serif;font-size:12px;font-weight:800;cursor:pointer;letter-spacing:.06em;">📊 OBRAS Y CERTIF.</button>
           <button id="btnViajesTop" style="background:rgba(59,130,246,.15);border:1px solid rgba(59,130,246,.45);color:#60A5FA;border-radius:7px;padding:6px 14px;font-family:Barlow Condensed,sans-serif;font-size:12px;font-weight:800;cursor:pointer;letter-spacing:.06em;">✈ VIAJES</button>
-          <button id="btnComprasTop" style="background:rgba(255,255,255,.06);border:1px solid var(--borde,#2e2e2e);color:var(--texto,#f0f0f0);border-radius:7px;padding:6px 14px;font-family:Barlow Condensed,sans-serif;font-size:12px;font-weight:800;cursor:pointer;letter-spacing:.06em;text-transform:uppercase;display:flex;align-items:center;gap:6px;white-space:nowrap;">🛒 Compras</button>
           <button onclick="abrirReporte()" style="background:rgba(232,101,26,.15);border:1px solid rgba(232,101,26,.45);color:var(--naranja,#E8651A);border-radius:7px;padding:6px 14px;font-family:Barlow Condensed,sans-serif;font-size:12px;font-weight:800;cursor:pointer;letter-spacing:.06em;text-transform:uppercase;display:flex;align-items:center;gap:6px;white-space:nowrap;">🖨 Reporte</button>
           <button onclick="abrirPlanos()" style="background:rgba(124,58,237,.15);border:1px solid rgba(124,58,237,.45);color:#A78BFA;border-radius:7px;padding:6px 14px;font-family:Barlow Condensed,sans-serif;font-size:12px;font-weight:800;cursor:pointer;letter-spacing:.06em;text-transform:uppercase;display:flex;align-items:center;gap:6px;white-space:nowrap;">📋 Planos</button>
           <span id="cfEditorBadge"></span>
@@ -3991,8 +3990,6 @@ function toggleTema(){
     _sc('inpProyecto', (e)=>{ state.proyecto=e.target.value; save(); });
     _sc('inpLimite', (e)=>{ state.fechaLimite=e.target.value; save(); render(); });
     root.querySelectorAll('[data-vista]').forEach(b=>b.onclick=()=>{ state.vista=b.dataset.vista; save(); render(); });
-    const btnComprasTop = document.getElementById('btnComprasTop');
-    if(btnComprasTop) btnComprasTop.onclick = ()=>{ state.vista='compras'; save(); render(); };
     const btnViajesTop = document.getElementById('btnViajesTop');
     if(btnViajesTop) btnViajesTop.onclick = ()=>{ state.vista='viajes'; save(); render(); };
     const btnDtTop = document.getElementById('btnDtTop');
