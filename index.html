@@ -811,6 +811,36 @@
   .cf-maq-add .qty-inp{ width:60px; text-align:center; }
   .cf-maq-add .tipo-inp{ flex:1; }
   .cf-maq-add button{ background:var(--naranja); border:none; color:#fff; font-family:'Barlow Condensed',sans-serif; font-size:14px; font-weight:800; padding:8px 14px; border-radius:var(--rsm); cursor:pointer; }
+  .vj-wrap{ padding:4px 0 24px; font-family:'Barlow Condensed',sans-serif; }
+  .vj-bar{ display:flex; gap:8px; flex-wrap:wrap; align-items:center; margin:8px 0 14px; }
+  .vj-btn{ background:var(--gris2,#252525); border:1px solid var(--borde,#2e2e2e); color:var(--texto,#f0f0f0);
+    padding:7px 14px; border-radius:7px; cursor:pointer; font-family:inherit; font-size:13px; font-weight:700; letter-spacing:.04em; }
+  .vj-btn.pri{ background:var(--naranja,#E8651A); border-color:var(--naranja,#E8651A); color:#fff; }
+  .vj-mes{ font-size:20px; font-weight:800; min-width:170px; text-align:center; text-transform:uppercase; letter-spacing:.06em; }
+  .vj-grid{ display:grid; grid-template-columns:repeat(7,minmax(0,1fr)); gap:3px; }
+  .vj-dow{ font-size:11px; font-weight:700; text-align:center; color:var(--gris5,#888); letter-spacing:.1em; text-transform:uppercase; padding:4px 0; }
+  .vj-dia{ min-height:84px; background:var(--gris1,#1a1a1a); border:1px solid var(--borde,#2e2e2e); border-radius:6px; padding:3px 4px; cursor:pointer; overflow:hidden; }
+  .vj-dia.vacio{ background:transparent; border-color:transparent; cursor:default; }
+  .vj-dia.finde{ opacity:.7; }
+  .vj-dia.hoy{ border-color:var(--naranja,#E8651A); box-shadow:inset 0 0 0 1px var(--naranja,#E8651A); }
+  .vj-num{ font-size:12px; font-weight:700; color:var(--gris5,#888); }
+  .vj-chip{ font-size:11px; font-weight:700; color:#fff; border-radius:4px; padding:1px 5px; margin-top:2px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; cursor:pointer; }
+  .vj-chip.prov{ opacity:.65; border:1px dashed #fff; }
+  .vj-mark{ font-size:10px; font-weight:700; margin-top:2px; padding:1px 4px; border-radius:4px; background:rgba(107,114,128,.35); color:var(--texto,#f0f0f0); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .vj-mark.lim{ background:rgba(239,68,68,.35); }
+  .vj-list{ margin-top:22px; display:grid; gap:10px; }
+  .vj-card{ background:var(--gris1,#1a1a1a); border:1px solid var(--borde,#2e2e2e); border-left:4px solid var(--naranja,#E8651A); border-radius:8px; padding:10px 14px; }
+  .vj-card h4{ margin:0 0 3px; font-size:16px; font-weight:800; }
+  .vj-card .sub{ font-size:13px; color:var(--gris5,#888); }
+  .vj-card .obra{ margin-top:6px; font-size:12px; color:var(--texto,#f0f0f0); opacity:.85; }
+  .vj-ov{ position:fixed; inset:0; background:rgba(0,0,0,.6); z-index:500; display:flex; align-items:center; justify-content:center; padding:16px; }
+  .vj-modal{ background:var(--gris1,#1a1a1a); border:1px solid var(--borde,#2e2e2e); border-top:3px solid var(--naranja,#E8651A);
+    border-radius:12px; padding:18px; width:100%; max-width:440px; max-height:92vh; overflow:auto; font-family:'Barlow Condensed',sans-serif; color:var(--texto,#f0f0f0); }
+  .vj-modal label{ display:block; font-size:11px; font-weight:700; letter-spacing:.1em; text-transform:uppercase; color:var(--gris5,#888); margin:10px 0 3px; }
+  .vj-modal input,.vj-modal select,.vj-modal textarea{ width:100%; box-sizing:border-box; background:var(--gris2,#252525); border:1px solid var(--borde,#2e2e2e);
+    color:var(--texto,#f0f0f0); padding:8px 10px; border-radius:7px; font-family:inherit; font-size:15px; }
+  .vj-row{ display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+  @media (max-width:640px){ .vj-dia{ min-height:58px; } .vj-chip,.vj-mark{ font-size:9px; padding:0 3px; } }
 </style>
  
 <div class="cf-root" id="cfRoot"><div class="cf-loading" id="cfLoading">Cargando cronograma...</div></div>
@@ -3700,6 +3730,7 @@ function toggleTema(){
         </div>
         <div class="cf-brand-right" style="display:flex;align-items:center;gap:10px;">
           <div class="cf-client-badge"><span class="lbl">Obra de</span><img src="${ALCO_LOGO}" alt="AlcoEnergy"/></div>
+          <button id="btnViajesTop" style="background:rgba(59,130,246,.15);border:1px solid rgba(59,130,246,.45);color:#60A5FA;border-radius:7px;padding:6px 14px;font-family:Barlow Condensed,sans-serif;font-size:12px;font-weight:800;cursor:pointer;letter-spacing:.06em;">✈ VIAJES</button>
           <button id="btnComprasTop" style="background:rgba(255,255,255,.06);border:1px solid var(--borde,#2e2e2e);color:var(--texto,#f0f0f0);border-radius:7px;padding:6px 14px;font-family:Barlow Condensed,sans-serif;font-size:12px;font-weight:800;cursor:pointer;letter-spacing:.06em;text-transform:uppercase;display:flex;align-items:center;gap:6px;white-space:nowrap;">🛒 Compras</button>
           <button onclick="abrirReporte()" style="background:rgba(232,101,26,.15);border:1px solid rgba(232,101,26,.45);color:var(--naranja,#E8651A);border-radius:7px;padding:6px 14px;font-family:Barlow Condensed,sans-serif;font-size:12px;font-weight:800;cursor:pointer;letter-spacing:.06em;text-transform:uppercase;display:flex;align-items:center;gap:6px;white-space:nowrap;">🖨 Reporte</button>
           <button onclick="abrirPlanos()" style="background:rgba(124,58,237,.15);border:1px solid rgba(124,58,237,.45);color:#A78BFA;border-radius:7px;padding:6px 14px;font-family:Barlow Condensed,sans-serif;font-size:12px;font-weight:800;cursor:pointer;letter-spacing:.06em;text-transform:uppercase;display:flex;align-items:center;gap:6px;white-space:nowrap;">📋 Planos</button>
@@ -3806,9 +3837,10 @@ function toggleTema(){
       ${(()=>{
         if(state.vista==='calendario') return '<div id="vistaEspecial" data-vista-tipo="calendario"></div>';
         if(state.vista==='compras') return '<div id="vistaEspecial" data-vista-tipo="compras"></div>';
+        if(state.vista==='viajes') return '<div id="vistaEspecial" data-vista-tipo="viajes"></div>';
         return '';
       })()}
-      ${state.vista!=='calendario'&&state.vista!=='compras'?`<div style="position:relative;">
+      ${state.vista!=='calendario'&&state.vista!=='compras'&&state.vista!=='viajes'?`<div style="position:relative;">
         <button class="gantt-fs-btn" id="btnGanttFS" title="Pantalla completa">⤢ Pantalla completa</button>
         <div class="cf-gantt-wrap" id="cfGanttWrap"><div class="cf-gantt">
         <div class="cf-rowlabels">
@@ -3920,6 +3952,7 @@ function toggleTema(){
       const tipoVista = vistaEsp.getAttribute('data-vista-tipo');
       if(tipoVista==='calendario' && typeof renderCalendario==='function') renderCalendario(vistaEsp, state);
       if(tipoVista==='compras' && typeof renderCompras==='function') renderCompras(vistaEsp, state);
+      if(tipoVista==='viajes' && typeof renderViajes==='function') renderViajes(vistaEsp, state);
     }
 
     const _sa = (id,fn)=>{ const el=document.getElementById(id); if(el) el.onclick=fn; };
@@ -3933,6 +3966,8 @@ function toggleTema(){
     root.querySelectorAll('[data-vista]').forEach(b=>b.onclick=()=>{ state.vista=b.dataset.vista; save(); render(); });
     const btnComprasTop = document.getElementById('btnComprasTop');
     if(btnComprasTop) btnComprasTop.onclick = ()=>{ state.vista='compras'; save(); render(); };
+    const btnViajesTop = document.getElementById('btnViajesTop');
+    if(btnViajesTop) btnViajesTop.onclick = ()=>{ state.vista='viajes'; save(); render(); };
     root.querySelectorAll('[data-zoom]').forEach(b=>b.onclick=()=>{ state.zoom=b.dataset.zoom; save(); render(); });
     const lvlS = document.getElementById('btnLvlSectores'); if(lvlS) lvlS.onclick = ()=>setAllCollapsed(true,true);
     const lvlF = document.getElementById('btnLvlFrentes'); if(lvlF) lvlF.onclick = ()=>setAllCollapsed(true,false);
@@ -4398,6 +4433,7 @@ function toggleTema(){
 
   // Exponer state y cuadrillas para funciones globales (plantillas)
   window._stateRef = state; // referencia inmediata
+  window._saveState = function(){ return save(); };
   if(typeof window._cuadModo==='undefined') window._cuadModo='hoy';
   // Setear sector default para el calendario
   if(state.grupos && state.grupos[0] && state.grupos[0].sectores[0]){
@@ -4510,7 +4546,186 @@ function toggleTema(){
     </div>
     <div id="planosSectores"></div>
   </div>
-    +'<button id="taskDetailClose" '
+</div>
 
+<script>
+// ════════════════════════════════════════
+//  VISTA VIAJES — calendario de la dirección técnica
+// ════════════════════════════════════════
+var VJ_ESTADOS = {planificado:'Tentativo', confirmado:'Confirmado', realizado:'Realizado'};
+var VJ_MESES = ['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
+var VJ_PALETA = ['#E8651A','#3B82F6','#16A34A','#A855F7','#EAB308','#EC4899','#14B8A6','#EF4444'];
+var _vjMes = null; // {y, m}
+
+function _vjPersist(){
+  var st = window._stateRef; if(!st) return;
+  try{ localStorage.setItem('cf-viajes', JSON.stringify(st.viajes||[])); }catch(e){}
+  if(typeof window._saveState==='function') window._saveState();
+}
+function _vjColor(nombre){
+  var h = 0; String(nombre||'').split('').forEach(function(c){ h = (h*31 + c.charCodeAt(0))>>>0; });
+  return VJ_PALETA[h % VJ_PALETA.length];
+}
+function _vjPersonas(v){ return (v.personas||[]).filter(Boolean); }
+function _vjFmt(s){ if(!s) return ''; var p=s.split('-'); return p[2]+'/'+p[1]; }
+function _vjSectorNombre(st, id){
+  for(var i=0;i<st.grupos.length;i++){ var s=st.grupos[i].sectores.find(function(x){return x.id===id;}); if(s) return s.nombre; }
+  return id||'';
+}
+function _vjObraEnFechas(st, desde, hasta){
+  // Tareas hoja del cronograma que se solapan con el viaje, agrupadas por sector
+  var padres = {}; st.tasks.forEach(function(t){ if(t.parentId) padres[t.parentId]=true; });
+  var por = {};
+  st.tasks.forEach(function(t){
+    if(padres[t.id] || !t.inicio || !t.fin) return;
+    if(t.fin < desde || t.inicio > hasta) return;
+    var n = _vjSectorNombre(st, t.sector);
+    (por[n] = por[n] || []).push(t);
+  });
+  return por;
+}
+
+function renderViajes(container, st){
+  if(!st.viajes || !st.viajes.length){
+    try{ var loc = JSON.parse(localStorage.getItem('cf-viajes')||'[]'); if(loc.length) st.viajes = loc; }catch(e){}
+  }
+  if(!st.viajes) st.viajes = [];
+  var hoy = new Date(); hoy.setHours(0,0,0,0);
+  if(!_vjMes) _vjMes = {y:hoy.getFullYear(), m:hoy.getMonth()};
+  var y=_vjMes.y, m=_vjMes.m;
+  var primer = new Date(y,m,1).getDay(), dias = new Date(y,m+1,0).getDate();
+  var hoyStr = hoy.getFullYear()+'-'+String(hoy.getMonth()+1).padStart(2,'0')+'-'+String(hoy.getDate()).padStart(2,'0');
+
+  // Días con hormigonado (tareas con m3) → hito para decidir cuándo conviene estar en obra
+  var hormig = st.tasks.filter(function(t){ return t.m3>0 && t.inicio && t.fin; });
+
+  var h = '<div class="vj-wrap">';
+  h += '<div class="vj-bar">'
+    +'<button class="vj-btn" onclick="_vjIr(-1)">‹</button>'
+    +'<div class="vj-mes">'+VJ_MESES[m]+' '+y+'</div>'
+    +'<button class="vj-btn" onclick="_vjIr(1)">›</button>'
+    +'<button class="vj-btn" onclick="_vjIr(0)">Hoy</button>'
+    +'<span style="flex:1"></span>'
+    +'<button class="vj-btn" onclick="_vjIcs()">Exportar .ics</button>'
+    +'<button class="vj-btn pri" onclick="_vjEditar(null)">+ Nuevo viaje</button>'
+    +'</div>';
+  h += '<div class="vj-grid">';
+  ['Dom','Lun','Mar','Mié','Jue','Vie','Sáb'].forEach(function(d){ h += '<div class="vj-dow">'+d+'</div>'; });
+  for(var v=0; v<primer; v++) h += '<div class="vj-dia vacio"></div>';
+  for(var d=1; d<=dias; d++){
+    var f = y+'-'+String(m+1).padStart(2,'0')+'-'+String(d).padStart(2,'0');
+    var dow = new Date(y,m,d).getDay();
+    h += '<div class="vj-dia'+(f===hoyStr?' hoy':'')+((dow===0||dow===6)?' finde':'')+'" onclick="_vjEditar(null,\''+f+'\')">';
+    h += '<div class="vj-num">'+d+'</div>';
+    st.viajes.forEach(function(vj, i){
+      if(f>=vj.desde && f<=vj.hasta){
+        var pers = _vjPersonas(vj);
+        var col = _vjColor(pers[0]||vj.titulo);
+        var lbl = (pers.length? pers.join('/')+' · ' : '') + (vj.titulo||'Viaje');
+        h += '<div class="vj-chip'+(vj.estado==='planificado'?' prov':'')+'" style="background:'+col+(vj.estado==='realizado'?';opacity:.5':'')+'" '
+          +'title="'+escHGlob(lbl)+'" onclick="event.stopPropagation();_vjEditar('+i+')">'+escHGlob(lbl)+'</div>';
+      }
+    });
+    if(hormig.some(function(t){ return f>=t.inicio && f<=t.fin && new Date(f+'T00:00:00').getDay()!==0; }))
+      h += '<div class="vj-mark" title="Hormigonado en obra">🏗 Hormigonado</div>';
+    if(st.fechaLimite===f) h += '<div class="vj-mark lim">⚑ Fecha límite</div>';
+    h += '</div>';
+  }
+  h += '</div>';
+
+  // Lista de próximos / todos los viajes, con la obra que está en curso en esas fechas
+  var orden = st.viajes.map(function(v,i){ return {v:v,i:i}; }).sort(function(a,b){ return a.v.desde.localeCompare(b.v.desde); });
+  h += '<div class="vj-list">';
+  if(!orden.length) h += '<div style="color:var(--gris5,#888);text-align:center;padding:16px;">Todavía no hay viajes cargados. Tocá un día o “+ Nuevo viaje”.</div>';
+  orden.forEach(function(o){
+    var vj=o.v, pers=_vjPersonas(vj), obra=_vjObraEnFechas(st, vj.desde, vj.hasta), sec=Object.keys(obra);
+    h += '<div class="vj-card" style="border-left-color:'+_vjColor(pers[0]||vj.titulo)+(vj.estado==='realizado'?';opacity:.6':'')+'">'
+      +'<h4>'+escHGlob(vj.titulo||'Viaje')+' <span style="font-size:12px;color:var(--gris5,#888);font-weight:700;">· '+VJ_ESTADOS[vj.estado||'planificado']+'</span></h4>'
+      +'<div class="sub">'+_vjFmt(vj.desde)+(vj.hasta!==vj.desde?' → '+_vjFmt(vj.hasta):'')
+      +(pers.length?' · '+escHGlob(pers.join(', ')):'')+(vj.destino?' · '+escHGlob(vj.destino):'')+'</div>'
+      +(vj.notas?'<div class="sub" style="margin-top:3px;">'+escHGlob(vj.notas)+'</div>':'')
+      +(sec.length?'<div class="obra"><b>En obra esos días:</b> '+sec.map(function(n){
+          return escHGlob(n)+' ('+obra[n].slice(0,3).map(function(t){return escHGlob(t.nombre);}).join(', ')+(obra[n].length>3?'…':'')+')';
+        }).join(' · ')+'</div>':'')
+      +'<div style="margin-top:6px;"><button class="vj-btn" onclick="_vjEditar('+o.i+')">Editar</button></div></div>';
+  });
+  h += '</div></div>';
+  container.innerHTML = h;
+}
+
+function _vjIr(delta){
+  var hoy = new Date();
+  if(delta===0) _vjMes = {y:hoy.getFullYear(), m:hoy.getMonth()};
+  else { var d = new Date(_vjMes.y, _vjMes.m+delta, 1); _vjMes = {y:d.getFullYear(), m:d.getMonth()}; }
+  var c = document.getElementById('vistaEspecial'); if(c) renderViajes(c, window._stateRef);
+}
+
+function _vjEditar(idx, fechaDefault){
+  var st = window._stateRef; if(!st.viajes) st.viajes = [];
+  var vj = (idx!==null && idx!==undefined) ? st.viajes[idx] : {titulo:'',desde:fechaDefault||'',hasta:fechaDefault||'',personas:[],destino:'',estado:'planificado',notas:''};
+  var nombres = {}; st.viajes.forEach(function(x){ _vjPersonas(x).forEach(function(n){ nombres[n]=1; }); });
+  var sectores = []; st.grupos.forEach(function(g){ g.sectores.forEach(function(s){ sectores.push(s.nombre); }); });
+  var ov = document.createElement('div'); ov.className='vj-ov'; ov.id='vjOv';
+  ov.onclick = function(e){ if(e.target===ov) ov.remove(); };
+  ov.innerHTML = '<div class="vj-modal"><h3 style="margin:0 0 4px;font-size:20px;">'+(idx!==null&&idx!==undefined?'Editar viaje':'Nuevo viaje')+'</h3>'
+    +'<label>Motivo / título</label><input id="vjTit" value="'+escHGlob(vj.titulo)+'" placeholder="Ej: Visita Molienda – hormigonado">'
+    +'<div class="vj-row"><div><label>Desde</label><input type="date" id="vjDes" value="'+vj.desde+'"></div>'
+    +'<div><label>Hasta</label><input type="date" id="vjHas" value="'+vj.hasta+'"></div></div>'
+    +'<label>Quiénes viajan (separados por coma)</label><input id="vjPer" list="vjNombres" value="'+escHGlob(_vjPersonas(vj).join(', '))+'">'
+    +'<datalist id="vjNombres">'+Object.keys(nombres).map(function(n){return '<option value="'+escHGlob(n)+'">';}).join('')+'</datalist>'
+    +'<label>Destino / sector</label><input id="vjDest" list="vjSect" value="'+escHGlob(vj.destino)+'" placeholder="Obra, sector, ciudad…">'
+    +'<datalist id="vjSect">'+sectores.map(function(n){return '<option value="'+escHGlob(n)+'">';}).join('')+'</datalist>'
+    +'<label>Estado</label><select id="vjEst">'+Object.keys(VJ_ESTADOS).map(function(k){return '<option value="'+k+'"'+((vj.estado||'planificado')===k?' selected':'')+'>'+VJ_ESTADOS[k]+'</option>';}).join('')+'</select>'
+    +'<label>Notas</label><textarea id="vjNot" rows="3">'+escHGlob(vj.notas)+'</textarea>'
+    +'<div style="display:flex;gap:8px;margin-top:14px;">'
+    +'<button class="vj-btn pri" onclick="_vjGuardar('+(idx===null||idx===undefined?'null':idx)+')">Guardar</button>'
+    +'<button class="vj-btn" onclick="document.getElementById(\'vjOv\').remove()">Cancelar</button>'
+    +'<span style="flex:1"></span>'
+    +((idx!==null&&idx!==undefined)?'<button class="vj-btn" style="border-color:#ef4444;color:#ef4444;" onclick="_vjBorrar('+idx+')">Borrar</button>':'')
+    +'</div></div>';
+  document.body.appendChild(ov);
+}
+function _vjGuardar(idx){
+  var st = window._stateRef;
+  var vj = {
+    titulo: document.getElementById('vjTit').value.trim(),
+    desde: document.getElementById('vjDes').value,
+    hasta: document.getElementById('vjHas').value,
+    personas: document.getElementById('vjPer').value.split(',').map(function(s){return s.trim();}).filter(Boolean),
+    destino: document.getElementById('vjDest').value.trim(),
+    estado: document.getElementById('vjEst').value,
+    notas: document.getElementById('vjNot').value.trim()
+  };
+  if(!vj.titulo || !vj.desde){ alert('Completá al menos el motivo y la fecha de inicio.'); return; }
+  if(!vj.hasta || vj.hasta < vj.desde) vj.hasta = vj.desde;
+  if(idx===null) st.viajes.push(vj); else st.viajes[idx] = vj;
+  document.getElementById('vjOv').remove();
+  _vjPersist();
+  var c = document.getElementById('vistaEspecial'); if(c) renderViajes(c, st);
+}
+function _vjBorrar(idx){
+  if(!confirm('¿Borrar este viaje?')) return;
+  window._stateRef.viajes.splice(idx,1);
+  document.getElementById('vjOv').remove();
+  _vjPersist();
+  var c = document.getElementById('vistaEspecial'); if(c) renderViajes(c, window._stateRef);
+}
+function _vjIcs(){
+  var st = window._stateRef, L = ['BEGIN:VCALENDAR','VERSION:2.0','PRODID:-//Ingemax//Viajes DT//ES'];
+  var ymd = function(s){ return s.replace(/-/g,''); };
+  (st.viajes||[]).forEach(function(v,i){
+    var fin = new Date(v.hasta+'T00:00:00'); fin.setDate(fin.getDate()+1); // DTEND es exclusivo
+    var finS = fin.getFullYear()+String(fin.getMonth()+1).padStart(2,'0')+String(fin.getDate()).padStart(2,'0');
+    L.push('BEGIN:VEVENT','UID:viaje'+i+'-'+ymd(v.desde)+'@ingemax','DTSTAMP:'+ymd(new Date().toISOString().slice(0,10))+'T000000Z',
+      'DTSTART;VALUE=DATE:'+ymd(v.desde),'DTEND;VALUE=DATE:'+finS,
+      'SUMMARY:'+(v.titulo||'Viaje').replace(/[,;]/g,' ')+(_vjPersonas(v).length?' ('+_vjPersonas(v).join('/')+')':''),
+      'LOCATION:'+(v.destino||'').replace(/[,;]/g,' '),'DESCRIPTION:'+(v.notas||'').replace(/\n/g,' ').replace(/[,;]/g,' '),'END:VEVENT');
+  });
+  L.push('END:VCALENDAR');
+  var a = document.createElement('a');
+  a.href = URL.createObjectURL(new Blob([L.join('\r\n')], {type:'text/calendar'}));
+  a.download = 'viajes-ingemax-alcoenergy.ics'; a.click();
+}
+</script>
 </body>
 </html>
