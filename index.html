@@ -4762,32 +4762,7 @@ var DT_EST_CERT = {presentado:'Presentado', revision:'En revisión DT', aprobado
 var DT_MONEDA = {Gs:'₲', USD:'US$', ARS:'$'};
 var _dtTab = 'obras';
 
-function _dtSeed(){
-  var eng = [
-    ['Servicios Preliminares',241080000,170898000],['Base de Silo Ø18m – Silo SA1',764719097,693170432],
-    ['Base de Silo Ø18m – Silo SA2',994171325,922622660],['Base de Secadero y Hornalla CASP',116771250,115271250],
-    ['Techo para Tolva, Tolva y Casa de Máquinas',2425201216,917007065],['Base de Silo Ø9m – Silo Pulmón 1',102353556,91106292],
-    ['Base de Silo Ø9m – CASP – Silo Pulmón 2',102353556,91106292],['Servicios Generales',213100000,100740000],['Servicios Finales',40250000,0]
-  ].map(function(r){ return {nombre:r[0], contrato:r[1], acumulado:r[2]}; });
-  var engTot = eng.reduce(function(a,r){ return a+r.contrato; },0);
-  return {
-    obras:{},
-    contratistas:[
-      {id:'ct_arc', nombre:'ARC', alcance:'Obra civil ISBL / OSBL', moneda:'Gs', contrato:5789950197+564354535},
-      {id:'ct_eng', nombre:'Engesilo', alcance:'Obras civiles silos', moneda:'Gs', contrato:engTot}
-    ],
-    certificados:[
-      {id:'c_arc2', ct:'ct_arc', nro:2, desde:'2026-08-01', hasta:'2026-08-31', fecha:'2026-08-31', monto:'', estado:'revision', url:'',
-       notas:'Cargado del PDF “ARC_Certificado N°2_Ago-2026”. Falta confirmar el desglose por sector (Subproductos, Refrigeración, Destilación).',
-       rubros:[
-        {nombre:'ISBL – Molienda-Fermentación', contrato:836822499.45, acumulado:447433324.09},
-        {nombre:'ISBL – Resto (Subproductos, Refrigeración, Destilación)', contrato:5789950197-836822499.45, acumulado:4080101221.64-447433324.09},
-        {nombre:'OSBL – Galpón de Insumos y Mtto.', contrato:564354535, acumulado:531509035}]},
-      {id:'c_eng4', ct:'ct_eng', nro:4, desde:'2026-08-01', hasta:'2026-08-31', fecha:'2026-08-31', monto:'', estado:'aprobado', url:'',
-       notas:'Cargado del PDF “Certif_4_Engesilo” (firmado por Ingemax). Anticipo 25% y fondo de reparo 5% no cargados.', rubros:eng}
-    ]
-  };
-}
+function _dtSeed(){ return {obras:{}, contratistas:[], certificados:[]}; }
 function _dtInit(st){
   if(!st.dt){ try{ var l = JSON.parse(localStorage.getItem('cf-dt')||'null'); if(l) st.dt = l; }catch(e){} }
   if(!st.dt) st.dt = _dtSeed();
@@ -4831,6 +4806,18 @@ function _dtResumenSector(st, sid){
   });
   return {plan:Math.round(hecho/tot*100), ini:ini, fin:fin, activas:activas, prox:prox, n:hojas.length};
 }
+// % certificado y contratista tomados del último certificado cuyo rubro está vinculado a la obra (rubro.sectores)
+function _dtCertAuto(st, sid){
+  var certs = st.dt.certificados.slice().sort(function(a,b){ return (b.hasta||b.fecha||'').localeCompare(a.hasta||a.fecha||''); });
+  for(var i=0;i<certs.length;i++){
+    var c = certs[i], r = (c.rubros||[]).find(function(x){ return (x.sectores||[]).indexOf(sid)>-1; });
+    if(!r && (c.sectores||[]).indexOf(sid)>-1 && (c.rubros||[]).length){
+      r = {contrato:c.rubros.reduce(function(a,x){return a+(x.contrato||0);},0), acumulado:c.rubros.reduce(function(a,x){return a+(x.acumulado||0);},0)};
+    }
+    if(r && r.contrato>0) return {pct:Math.round(r.acumulado/r.contrato*1000)/10, ct:c.ct, nro:c.nro, fecha:c.hasta};
+  }
+  return null;
+}
 function _dtFechaCorta(s){ if(!s) return ''; var p=s.split('-'); return p[2]+'/'+p[1]+'/'+p[0].slice(2); }
 
 function renderDT(container, st){
@@ -4848,17 +4835,25 @@ function _dtHtmlObras(st){
   st.grupos.forEach(function(g){
     h += '<div class="dt-grp" style="border-color:'+(g.color||'#E8651A')+'">'+escHGlob(g.nombre||g.id)+'</div><div class="dt-cards">';
     g.sectores.forEach(function(s){
-      var r = _dtResumenSector(st, s.id), o = st.dt.obras[s.id] || {}, ct = o.ct ? _dtCt(st,o.ct) : null;
-      var estado = o.estado || (r ? (hoy<r.ini?'por_iniciar':hoy>r.fin?'terminada':'en_curso') : 'por_iniciar');
-      var cert = (o.cert===undefined||o.cert==='') ? null : Number(o.cert);
+      var r = _dtResumenSector(st, s.id), o = st.dt.obras[s.id] || {}, auto = _dtCertAuto(st, s.id);
+      var ct = o.ct ? _dtCt(st,o.ct) : (auto ? _dtCt(st,auto.ct) : null);
+      var cert = (o.cert===undefined||o.cert==='') ? (auto?auto.pct:null) : Number(o.cert);
+      var vencido = false;
+      var estado = o.estado;
+      if(!estado){
+        if(!r) estado = 'por_iniciar';
+        else if(hoy<r.ini) estado = 'por_iniciar';
+        else if(hoy>r.fin){ if(cert!==null && cert>=100) estado='terminada'; else { estado='demorada'; vencido=true; } }
+        else estado = 'en_curso';
+      }
       var sem = 'gris';
       if(cert!==null && r){ var d = r.plan - cert; sem = d>15?'rojo':d>5?'ambar':'verde'; }
       h += '<div class="dt-card sem-'+sem+'"><div class="dt-card-h"><b>'+escHGlob(s.nombre)+'</b>'
-        +'<span class="dt-badge est-'+estado+'">'+DT_EST_OBRA[estado]+'</span></div>'
+        +'<span class="dt-badge est-'+estado+'">'+(vencido?'Plazo vencido':DT_EST_OBRA[estado])+'</span></div>'
         +'<div class="dt-meta">'+(ct?'Contratista: <b>'+escHGlob(ct.nombre)+'</b>':'<i>Sin contratista asignado</i>')
         +(r?' · '+_dtFechaCorta(r.ini)+' → '+_dtFechaCorta(r.fin):' · sin tareas en el cronograma')+'</div>'
         +(r?'<div class="dt-bar"><span>Plan (tiempo) '+r.plan+'%</span><div><i style="width:'+r.plan+'%"></i></div></div>':'')
-        +'<div class="dt-bar"><span>Certificado '+(cert===null?'—':cert+'%')+'</span><div><i class="c" style="width:'+(cert||0)+'%"></i></div></div>'
+        +'<div class="dt-bar"><span>Certificado '+(cert===null?'—':cert+'%')+((o.cert===undefined||o.cert==='')&&auto?' · cert. N° '+auto.nro+' ('+_dtFechaCorta(auto.fecha)+')':'')+'</span><div><i class="c" style="width:'+(cert||0)+'%"></i></div></div>'
         +(r&&r.activas.length?'<div class="dt-meta"><b>Hoy en obra:</b> '+escHGlob(r.activas.slice(0,4).join(', '))+(r.activas.length>4?'…':'')+'</div>':'')
         +(r&&r.prox?'<div class="dt-meta"><b>Próximo:</b> '+escHGlob(r.prox.nombre)+' ('+_dtFechaCorta(r.prox.inicio)+')</div>':'')
         +(o.obs?'<div class="dt-obs">'+escHGlob(o.obs)+'</div>':'')
@@ -4899,10 +4894,11 @@ function _dtHtmlCert(st){
     +'<button class="vj-btn pri" onclick="_dtEditCert(null)">+ Certificado</button></div>';
   if(!st.dt.contratistas.length) return h+'<div class="dt-nota">Todavía no hay contratistas cargados.</div>';
   st.dt.contratistas.forEach(function(ct){
-    var certs = st.dt.certificados.filter(function(c){return c.ct===ct.id;}).sort(function(a,b){return (a.nro||0)-(b.nro||0);});
-    var ult = certs[certs.length-1];
-    var acum = ult ? _dtAcum(ult) : 0, pct = _dtPct(acum, ct.contrato);
-    var dias = ult && ult.hasta ? _dtDays(ult.hasta,_dtHoy()) : null;
+    var certs = st.dt.certificados.filter(function(c){return c.ct===ct.id;}).sort(function(a,b){return (b.hasta||b.fecha||'').localeCompare(a.hasta||a.fecha||'');});
+    var ult = certs[0], ultPorObra = {};
+    certs.forEach(function(c){ if(_dtTieneAcum(c) && !ultPorObra[c.obra||'']) ultPorObra[c.obra||''] = c; });
+    var acum = Object.keys(ultPorObra).reduce(function(a,k){ return a+_dtAcum(ultPorObra[k]); },0), pct = _dtPct(acum, ct.contrato);
+    var dias = ult && (ult.hasta||ult.fecha) ? _dtDays(ult.hasta||ult.fecha,_dtHoy()) : null;
     h += '<div class="vj-card" style="border-left-color:#3B82F6;margin-bottom:14px"><div style="display:flex;gap:8px;align-items:baseline;flex-wrap:wrap">'
       +'<h4 style="margin:0">'+escHGlob(ct.nombre)+'</h4><span class="sub">'+escHGlob(ct.alcance||'')+'</span><span style="flex:1"></span>'
       +'<button class="vj-btn" onclick="_dtEditCt(\''+ct.id+'\')">Editar</button></div>'
@@ -4913,14 +4909,14 @@ function _dtHtmlCert(st){
       +'<div><small>Último cert.</small><b'+(dias!==null&&dias>40?' style="color:#f59e0b"':'')+'>'+(ult?'N° '+ult.nro+(dias!==null?' · hace '+dias+' d':''):'—')+'</b></div></div>'
       +'<div class="dt-bar"><div><i class="c" style="width:'+Math.min(100,pct)+'%"></i></div></div>';
     if(certs.length){
-      h += '<table class="dt-tab"><tr><th>N°</th><th>Período</th><th>Del período</th><th>Acumulado</th><th>%</th><th>Estado</th><th></th></tr>';
+      h += '<table class="dt-tab"><tr><th>Obra</th><th>N°</th><th>Período</th><th>Del período</th><th>Acumulado</th><th>%</th><th>Estado</th><th></th></tr>';
       certs.forEach(function(c){
-        var a=_dtAcum(c), tot=_dtTotalContrato(c, ct);
-        h += '<tr><td>'+c.nro+'</td><td>'+_dtFechaCorta(c.desde)+' – '+_dtFechaCorta(c.hasta)+'</td><td>'+(c.monto===''||c.monto===undefined?'—':_dtFmt(c.monto,ct.moneda))+'</td>'
-          +'<td>'+_dtFmt(a,ct.moneda)+'</td><td>'+_dtPct(a,tot)+'%</td><td><span class="dt-badge ce-'+c.estado+'">'+DT_EST_CERT[c.estado]+'</span></td>'
+        var tiene=_dtTieneAcum(c), a=_dtAcum(c), tot=_dtTotalContrato(c, ct);
+        h += '<tr><td>'+escHGlob(c.obra||'')+'</td><td>'+c.nro+'</td><td>'+(c.desde?_dtFechaCorta(c.desde)+' – ':'')+_dtFechaCorta(c.hasta||c.fecha)+'</td><td>'+(c.monto===''||c.monto===undefined?'—':_dtFmt(c.monto,ct.moneda))+'</td>'
+          +'<td>'+(tiene?_dtFmt(a,ct.moneda):'—')+'</td><td>'+(tiene?_dtPct(a,tot)+'%':'—')+'</td><td><span class="dt-badge ce-'+c.estado+'">'+DT_EST_CERT[c.estado]+'</span></td>'
           +'<td>'+(c.url?'<a href="'+escHGlob(c.url)+'" target="_blank" rel="noopener">PDF</a> ':'')+'<button class="vj-btn" onclick="_dtEditCert(\''+c.id+'\')">Editar</button></td></tr>';
         if((c.rubros&&c.rubros.length)||c.notas){
-          h += '<tr><td colspan="7" style="padding:0 8px 8px"><details><summary>Detalle por rubro'+(c.notas?' y notas':'')+'</summary>'
+          h += '<tr><td colspan="8" style="padding:0 8px 8px"><details><summary>Detalle por rubro'+(c.notas?' y notas':'')+'</summary>'
             +(c.notas?'<div class="dt-obs">'+escHGlob(c.notas)+'</div>':'')
             +(c.rubros||[]).map(function(r){ return '<div class="dt-rub"><span>'+escHGlob(r.nombre)+'</span><span>'+_dtFmt(r.acumulado,ct.moneda)+' / '+_dtFmt(r.contrato,ct.moneda)+' · <b>'+_dtPct(r.acumulado,r.contrato)+'%</b></span></div>'; }).join('')
             +'</details></td></tr>';
@@ -4932,6 +4928,7 @@ function _dtHtmlCert(st){
   });
   return h;
 }
+function _dtTieneAcum(c){ return (c.rubros&&c.rubros.length>0) || (c.acumulado!==undefined && c.acumulado!==''); }
 function _dtAcum(c){
   if(c.acumulado!==undefined && c.acumulado!=='' && !(c.rubros&&c.rubros.length)) return _dtNum(c.acumulado);
   return (c.rubros||[]).reduce(function(a,r){ return a+(Number(r.acumulado)||0); },0);
@@ -4960,6 +4957,7 @@ function _dtEditCert(id){
   var rub = (c.rubros||[]).map(function(r){ return r.nombre+' | '+r.contrato+' | '+r.acumulado; }).join('\n');
   _dtModal(id?'Editar certificado':'Nuevo certificado',
     '<label>Contratista</label><select id="dxCt">'+dt.contratistas.map(function(k){ return '<option value="'+k.id+'"'+(c.ct===k.id?' selected':'')+'>'+escHGlob(k.nombre)+'</option>'; }).join('')+'</select>'
+    +'<label>Obra</label><input id="dxOb" value="'+escHGlob(c.obra||'')+'" placeholder="Ej: Obras Civiles Silos">'
     +'<div class="vj-row"><div><label>N° certificado</label><input id="dxNro" type="number" value="'+c.nro+'"></div>'
     +'<div><label>Estado</label><select id="dxEst">'+_dtOpts(DT_EST_CERT,c.estado)+'</select></div></div>'
     +'<div class="vj-row"><div><label>Período desde</label><input type="date" id="dxD" value="'+c.desde+'"></div><div><label>Período hasta</label><input type="date" id="dxH" value="'+c.hasta+'"></div></div>'
@@ -4969,10 +4967,11 @@ function _dtEditCert(id){
     +'<label>Link al PDF (Drive)</label><input id="dxU" value="'+escHGlob(c.url||'')+'">'
     +'<label>Notas</label><textarea id="dxN" rows="2">'+escHGlob(c.notas||'')+'</textarea>',
     function(){
-      var rubros = document.getElementById('dxR').value.split('\n').map(function(l){ var p=l.split('|'); return p.length>=3?{nombre:p[0].trim(), contrato:_dtNum(p[1]), acumulado:_dtNum(p[2])}:null; }).filter(Boolean);
+      var viejos = {}; (c.rubros||[]).forEach(function(r){ viejos[r.nombre]=r; });
+      var rubros = document.getElementById('dxR').value.split('\n').map(function(l){ var p=l.split('|'); if(p.length<3) return null; var n=p[0].trim(); var o={nombre:n, contrato:_dtNum(p[1]), acumulado:_dtNum(p[2])}; if(viejos[n]&&viejos[n].sectores) o.sectores=viejos[n].sectores; return o; }).filter(Boolean);
       var nro = parseInt(document.getElementById('dxNro').value,10);
       if(!nro){ alert('Falta el N° de certificado.'); return false; }
-      var o = {id:id||('c_'+Date.now()), ct:document.getElementById('dxCt').value, nro:nro, desde:document.getElementById('dxD').value, hasta:document.getElementById('dxH').value,
+      var o = {id:id||('c_'+Date.now()), obra:document.getElementById('dxOb').value.trim(), ct:document.getElementById('dxCt').value, nro:nro, desde:document.getElementById('dxD').value, hasta:document.getElementById('dxH').value,
         estado:document.getElementById('dxEst').value, monto:document.getElementById('dxM').value.trim()?_dtNum(document.getElementById('dxM').value):'',
         acumulado:document.getElementById('dxA').value.trim()?_dtNum(document.getElementById('dxA').value):'', url:document.getElementById('dxU').value.trim(), notas:document.getElementById('dxN').value.trim(), rubros:rubros};
       if(id) Object.assign(c,o); else dt.certificados.push(o);
