@@ -1011,6 +1011,9 @@
   .pd2-row.hecho .pd2-t{ text-decoration:line-through; color:var(--gris5,#888); }
   .pd2-vacio{ padding:10px 0; font-size:14px; color:var(--gris5,#888); }
   .pd2-link{ background:none; border:none; color:var(--gris5,#888); font:600 14px 'Barlow Condensed',sans-serif; cursor:pointer; padding:4px 0 10px; text-decoration:underline; }
+  .vj-est{ font:700 12px 'Barlow Condensed',sans-serif; letter-spacing:.04em; padding:1px 8px; border-radius:10px; border:1px solid var(--gris5,#888); color:var(--gris5,#888); }
+  .vj-est.confirmado{ border-color:var(--texto,#f0f0f0); color:var(--texto,#f0f0f0); }
+  .vj-est.planificado{ border-style:dashed; }
 </style>
  
 <div class="cf-root" id="cfRoot"><div class="cf-loading" id="cfLoading">Cargando cronograma...</div></div>
@@ -4783,7 +4786,9 @@ function toggleTema(){
 var VJ_ESTADOS = {planificado:'Tentativo', confirmado:'Confirmado', realizado:'Realizado'};
 var VJ_MESES = ['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
 var VJ_DIAS = ['dom','lun','mar','mié','jue','vie','sáb'];
-var VJ_PALETA = ['#E8651A','#3B82F6','#16A34A','#A855F7','#EAB308','#EC4899','#14B8A6','#EF4444'];
+// Colores fijos por persona (Alejandro con el naranja de Ingemax) y tonos sobrios para el resto
+var VJ_COLORES = {alejandro:'#E8651A', francisco:'#3D7A45', franco:'#2F6E9E', leandro:'#9A7B2F', tobias:'#475569'};
+var VJ_PALETA = ['#334155','#57534E','#3F6212','#1E3A8A','#7C2D12'];
 var _vjMes = null; // {y, m}
 var _vjVerRealizados = false;
 
@@ -4793,6 +4798,8 @@ function _vjPersist(){
   if(typeof window._saveState==='function') window._saveState();
 }
 function _vjColor(nombre){
+  var clave = String(nombre||'').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').split(' ')[0];
+  if(VJ_COLORES[clave]) return VJ_COLORES[clave];
   var h = 0; String(nombre||'').split('').forEach(function(c){ h = (h*31 + c.charCodeAt(0))>>>0; });
   return VJ_PALETA[h % VJ_PALETA.length];
 }
@@ -4807,7 +4814,7 @@ function _vjCard(vj, i){
   return '<div class="vj-card" style="border-left-color:'+_vjColor(pers[0]||vj.titulo)+'">'
     +'<div style="display:flex;gap:8px;align-items:baseline;flex-wrap:wrap">'
     +'<h4 style="margin:0">'+escHGlob(vj.titulo||'Viaje')+'</h4>'
-    +'<span class="dt-badge ce-'+(vj.estado==='confirmado'?'aprobado':vj.estado==='realizado'?'pagado':'revision')+'">'+VJ_ESTADOS[vj.estado||'planificado']+'</span>'
+    +'<span class="vj-est '+(vj.estado||'planificado')+'">'+VJ_ESTADOS[vj.estado||'planificado']+'</span>'
     +'<span style="flex:1"></span><button class="vj-btn" onclick="_vjEditar('+i+')">Editar</button></div>'
     +'<div class="vj-personas">'+pers.map(function(p){ return '<span style="background:'+_vjColor(p)+'">'+escHGlob(p)+'</span>'; }).join('')+'</div>'
     +'<div class="vj-fechas"><span>Ida <b>'+_vjFmtDia(vj.desde)+'</b></span><span>Vuelta <b>'+(vj.vueltaTbc?'a confirmar':_vjFmtDia(vj.hasta))+'</b></span></div>'
