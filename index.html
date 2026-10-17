@@ -994,6 +994,23 @@
   .av-item.ofi{ border-left-color:#8B5CF6; }
   .av-lugar{ font-size:11px; font-weight:800; text-transform:uppercase; letter-spacing:.06em; color:var(--gris5,#888); min-width:48px; margin-top:3px; }
   .av-txt{ flex:1; } .av-del{ background:none; border:none; color:var(--gris5,#888); font-size:18px; cursor:pointer; }
+  .pd2 .vj-h{ margin-right:auto; }
+  .pd2-sec{ background:var(--gris1,#1a1a1a); border:1px solid var(--borde,#2e2e2e); border-radius:10px; padding:6px 14px 10px; margin-bottom:14px; font-family:'Barlow Condensed',sans-serif; }
+  .pd2-h{ font-size:13px; font-weight:800; letter-spacing:.1em; text-transform:uppercase; color:var(--texto,#f0f0f0); padding:8px 0 6px; border-bottom:1px solid var(--borde,#2e2e2e); }
+  .pd2-h small{ color:var(--gris5,#888); font-weight:600; margin-left:4px; }
+  .pd2-cols{ display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:14px; align-items:start; }
+  @media (max-width:1000px){ .pd2-cols{ grid-template-columns:1fr; } }
+  .pd2-row{ display:flex; gap:10px; align-items:flex-start; padding:9px 0; border-bottom:1px solid var(--borde,#2e2e2e); }
+  .pd2-row:last-child{ border-bottom:none; }
+  .pd2-row input{ width:17px; height:17px; margin-top:2px; flex:none; accent-color:var(--gris5,#888); cursor:pointer; }
+  .pd2-txt{ flex:1; min-width:0; cursor:pointer; display:flex; flex-direction:column; }
+  .pd2-t{ font-size:16px; color:var(--texto,#f0f0f0); }
+  .pd2-m{ font-size:13px; color:var(--gris5,#888); }
+  .pd2-f{ font-size:13px; color:var(--gris5,#888); white-space:nowrap; }
+  .pd2-f.mal{ color:#EF4444; font-weight:700; }
+  .pd2-row.hecho .pd2-t{ text-decoration:line-through; color:var(--gris5,#888); }
+  .pd2-vacio{ padding:10px 0; font-size:14px; color:var(--gris5,#888); }
+  .pd2-link{ background:none; border:none; color:var(--gris5,#888); font:600 14px 'Barlow Condensed',sans-serif; cursor:pointer; padding:4px 0 10px; text-decoration:underline; }
 </style>
  
 <div class="cf-root" id="cfRoot"><div class="cf-loading" id="cfLoading">Cargando cronograma...</div></div>
@@ -1021,9 +1038,9 @@ function _modNavHtml(vista){
     ['mapa','btnDtTop','Mapa de obra','Estado y certificados'],
     ['crono','btnCronoTop','Cronograma','Gantt de la obra'],
     ['pend','btnPendTop','Pendientes','Ayuda memoria Ingemax'],
-    ['avances','btnAvTop','Avances','Bitácora diaria'],
     ['viajes','btnViajesTop','Viajes','Quién va y cuándo'],
-    ['mails','btnMailsTop','Mails','Correos de la obra']
+    ['mails','btnMailsTop','Mails','Correos de la obra'],
+    ['avances','btnAvTop','Avances','Bitácora diaria']
   ];
   return '<nav class="cf-modnav" aria-label="Módulos"><div class="cf-mods">'
     + mods.map(function(m){
@@ -4934,73 +4951,54 @@ function _vjIcs(){
 }
 
 // ════════════════════════════════════════
-//  VISTA PENDIENTES INGEMAX — tablero de la dirección técnica
+//  VISTA PENDIENTES INGEMAX — lista simple: lo urgente arriba, el resto por tipo
 // ════════════════════════════════════════
 var PD_ESTADOS = {foco:'En foco', pendiente:'Pendiente', hecho:'Hecho'};
-var PD_TIPOS = {planos:'Planos / ingeniería', os:'Órdenes de servicio a emitir', seguimiento:'Seguimiento', gestion:'Gestión / verificación'};
-var PD_TIPO_COLOR = {planos:'#8B5CF6', os:'#E8651A', seguimiento:'#2563EB', gestion:'#14B8A6'};
-var _pdVerHechos = false, _pdFiltro = '';
+var PD_TIPOS = {planos:'Planos / ingeniería', seguimiento:'Seguimiento en obra', gestion:'Gestión / verificación'};
+var _pdVerHechos = false;
 function _pdRe(){ var c=document.getElementById('vistaEspecial'); if(c) renderPendientes(c, window._stateRef); }
 function _pdPersist(){ if(typeof _dtPersist==='function') _dtPersist(); }
-function _pdTipo(p){ return PD_TIPOS[p.tipo] ? p.tipo : (p.tipo==='verificacion' ? 'gestion' : p.tipo==='proyecto' ? 'planos' : 'gestion'); }
-function _pdVence(p){
-  if(!p.fecha || p.estado==='hecho') return '';
+function _pdTipo(p){ return PD_TIPOS[p.tipo] ? p.tipo : (p.tipo==='proyecto' ? 'planos' : 'gestion'); }
+function _pdFecha(p){
+  if(!p.fecha) return '';
   var d = _dtDays(_dtHoy(), p.fecha);
-  if(d<0) return '<span class="pd-vence mal">Vencido '+(-d)+' d</span>';
-  if(d===0) return '<span class="pd-vence mal">Hoy</span>';
-  if(d<=7) return '<span class="pd-vence cerca">'+(d===1?'Mañana':'En '+d+' días')+' · '+_vjFmtDia(p.fecha)+'</span>';
-  return '<span class="pd-vence">'+_vjFmtDia(p.fecha)+'</span>';
+  if(d<0) return '<span class="pd2-f mal">Vencido '+(-d)+' d</span>';
+  if(d===0) return '<span class="pd2-f mal">Hoy</span>';
+  return '<span class="pd2-f">'+(d===1?'Mañana':_vjFmtDia(p.fecha))+'</span>';
+}
+function _pdFila(o, conTipo){
+  var p = o.p;
+  return '<div class="pd2-row'+(p.estado==='hecho'?' hecho':'')+'">'
+    +'<input type="checkbox" title="Marcar hecho"'+(p.estado==='hecho'?' checked':'')+' onclick="_pdToggle('+o.i+')">'
+    +'<div class="pd2-txt" onclick="_pdEditar('+o.i+')"><span class="pd2-t">'+escHGlob(p.tarea)+'</span>'
+    +'<span class="pd2-m">'+escHGlob(p.sector||'General')+(conTipo?' · '+PD_TIPOS[_pdTipo(p)]:'')+'</span></div>'
+    +_pdFecha(p)+'</div>';
 }
 function renderPendientes(container, st){
   var dt = _dtInit(st); dt.pendientes = dt.pendientes || [];
-  var hoy = _dtHoy(), abiertos = dt.pendientes.map(function(p,i){ return {p:p,i:i}; }).filter(function(o){ return o.p.estado!=='hecho'; });
-  var semana = abiertos.filter(function(o){ return o.p.fecha && _dtDays(hoy,o.p.fecha)<=7; }).sort(function(a,b){ return a.p.fecha.localeCompare(b.p.fecha); });
-  var vencidos = abiertos.filter(function(o){ return o.p.fecha && o.p.fecha<hoy; }).length;
-  var h = '<div class="vj-wrap"><div class="vj-bar"><h3 class="vj-h">Pendientes de Ingemax</h3><span style="flex:1"></span>'
-    +'<button class="vj-btn pri" onclick="_pdEditar(null)">+ Pendiente</button></div>';
-  // Tablero de conteos: cada tipo filtra el tablero
-  h += '<div class="pd-kpis">'+Object.keys(PD_TIPOS).map(function(k){
-      var n = abiertos.filter(function(o){ return _pdTipo(o.p)===k; }).length;
-      return '<button class="pd-kpi'+(_pdFiltro===k?' sel':'')+'" style="--c:'+PD_TIPO_COLOR[k]+'" onclick="_pdFiltro=(_pdFiltro===\''+k+'\'?\'\':\''+k+'\');_pdRe()"><b>'+n+'</b><span>'+PD_TIPOS[k]+'</span></button>';
-    }).join('')
-    +'<div class="pd-kpi alerta'+(vencidos?'':' ok')+'"><b>'+vencidos+'</b><span>'+(vencidos?'Vencidos':'Nada vencido')+'</span></div></div>';
-  // Esta semana
-  if(semana.length) h += '<div class="pd-semana"><div class="pd-h">Esta semana</div>'+semana.map(function(o){
-      return '<div class="pd-chip" style="--c:'+PD_TIPO_COLOR[_pdTipo(o.p)]+'" onclick="_pdEditar('+o.i+')">'+_pdVence(o.p)+'<b>'+escHGlob(o.p.tarea)+'</b><small>'+escHGlob(o.p.sector||'General')+'</small></div>';
-    }).join('')+'</div>';
-  // Columnas por tipo
-  var tipos = _pdFiltro ? [_pdFiltro] : Object.keys(PD_TIPOS);
-  h += '<div class="pd-board'+(_pdFiltro?' uno':'')+'">'+tipos.map(function(k){
-    var items = abiertos.filter(function(o){ return _pdTipo(o.p)===k; }).sort(function(a,b){
+  var hoy = _dtHoy(), todos = dt.pendientes.map(function(p,i){ return {p:p,i:i}; });
+  var abiertos = todos.filter(function(o){ return o.p.estado!=='hecho'; });
+  var ahora = abiertos.filter(function(o){ return o.p.fecha && _dtDays(hoy,o.p.fecha)<=7; }).sort(function(a,b){ return a.p.fecha.localeCompare(b.p.fecha); });
+  var resto = abiertos.filter(function(o){ return ahora.indexOf(o)<0; });
+  var h = '<div class="vj-wrap pd2"><div class="vj-bar"><h3 class="vj-h">Pendientes de Ingemax</h3><span style="flex:1"></span>'
+    +'<button class="vj-btn" onclick="_pdEditar(null)">+ Pendiente</button></div>';
+  if(ahora.length) h += '<div class="pd2-sec"><div class="pd2-h">Vencido y esta semana</div>'+ahora.map(function(o){ return _pdFila(o, true); }).join('')+'</div>';
+  h += '<div class="pd2-cols">'+Object.keys(PD_TIPOS).map(function(k){
+    var items = resto.filter(function(o){ return _pdTipo(o.p)===k; }).sort(function(a,b){
       if((a.p.estado==='foco')!==(b.p.estado==='foco')) return a.p.estado==='foco'?-1:1;
       return (a.p.fecha||'9999').localeCompare(b.p.fecha||'9999');
     });
-    return '<div class="pd-col" style="--c:'+PD_TIPO_COLOR[k]+'"><div class="pd-col-h">'+PD_TIPOS[k]+' <small>'+items.length+'</small></div>'
-      + items.map(function(o){ var p=o.p;
-          return '<div class="pd-card'+(p.estado==='foco'?' foco':'')+'">'
-            +'<input type="checkbox" title="Marcar hecho" onclick="_pdToggle('+o.i+')">'
-            +'<div class="pd-txt" onclick="_pdEditar('+o.i+')"><div class="pd-top">'+(p.estado==='foco'?'<span class="pd-foco">★ En foco</span>':'')+_pdVence(p)+'</div>'
-            +'<b>'+escHGlob(p.tarea)+'</b><div class="dt-meta">'+escHGlob(p.sector||'General')+(p.resp?' · '+escHGlob(p.resp):'')+'</div>'
-            +(p.nota?'<div class="dt-meta">'+escHGlob(p.nota)+'</div>':'')+'</div>'
-            +'<button class="pd-star" title="Poner / sacar del foco" onclick="_pdFoco('+o.i+')">'+(p.estado==='foco'?'★':'☆')+'</button></div>';
-        }).join('') + (items.length?'':'<div class="dt-nota">Nada pendiente.</div>') + '</div>';
+    return '<div class="pd2-sec"><div class="pd2-h">'+PD_TIPOS[k]+' <small>'+items.length+'</small></div>'
+      + (items.length ? items.map(function(o){ return _pdFila(o, false); }).join('') : '<div class="pd2-vacio">Nada pendiente.</div>') + '</div>';
   }).join('')+'</div>';
-  var hechos = dt.pendientes.map(function(p,i){ return {p:p,i:i}; }).filter(function(o){ return o.p.estado==='hecho'; });
-  h += '<div class="vj-bar" style="margin-top:18px"><div class="pd-h">Hechos ('+hechos.length+')</div>'
-    +'<button class="vj-btn" onclick="_pdVerHechos=!_pdVerHechos;_pdRe()">'+(_pdVerHechos?'Ocultar':'Ver')+'</button></div>';
-  if(_pdVerHechos) h += '<div class="pd-hechos">'+hechos.map(function(o){
-      return '<div class="pd-card hecho"><input type="checkbox" checked onclick="_pdToggle('+o.i+')"><div class="pd-txt"><b>'+escHGlob(o.p.tarea)+'</b><div class="dt-meta">'+escHGlob(o.p.sector||'General')+'</div></div></div>';
-    }).join('')+'</div>';
+  var hechos = todos.filter(function(o){ return o.p.estado==='hecho'; });
+  h += '<button class="pd2-link" onclick="_pdVerHechos=!_pdVerHechos;_pdRe()">'+(_pdVerHechos?'Ocultar hechos':'Ver hechos ('+hechos.length+')')+'</button>';
+  if(_pdVerHechos) h += '<div class="pd2-sec">'+hechos.map(function(o){ return _pdFila(o, true); }).join('')+'</div>';
   container.innerHTML = h + '</div>';
 }
 function _pdToggle(i){
   var p = window._stateRef.dt.pendientes[i];
   if(p.estado==='hecho'){ p.estado = p.estadoPrevio || 'pendiente'; } else { p.estadoPrevio = p.estado || 'pendiente'; p.estado = 'hecho'; }
-  _pdPersist(); _pdRe();
-}
-function _pdFoco(i){
-  var p = window._stateRef.dt.pendientes[i];
-  p.estado = p.estado==='foco' ? 'pendiente' : 'foco';
   _pdPersist(); _pdRe();
 }
 function _pdEditar(i){
