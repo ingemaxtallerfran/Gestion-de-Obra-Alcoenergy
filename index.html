@@ -932,6 +932,68 @@
   .dt-ficha .dt-bar{ font-size:14px; margin-top:10px; } .dt-ficha .dt-bar > div{ height:10px; }
   .dt-ficha .dt-falta{ font-size:16px; line-height:1.4; margin-top:0; }
   @media (max-width:640px){ #dtDetalle .dt-cards{ grid-template-columns:1fr; } }
+  .dt-badge.est-postergada{ background:#6B7280; }
+  .dt-steps{ display:flex; gap:2px; margin:12px 0 4px; }
+  .dt-step{ flex:1; min-width:0; display:flex; flex-direction:column; align-items:center; gap:4px; font-size:11px; line-height:1.1; color:var(--gris5,#888); text-align:center; position:relative; }
+  .dt-step::before{ content:''; position:absolute; top:13px; left:-50%; width:100%; height:3px; background:var(--borde,#2e2e2e); z-index:0; }
+  .dt-step:first-child::before{ display:none; }
+  .dt-step.ok::before, .dt-step.act::before{ background:var(--naranja,#E8651A); }
+  .dt-step i{ position:relative; z-index:1; width:28px; height:28px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-style:normal; font-weight:800; background:var(--gris2,#252525); border:2px solid var(--borde,#2e2e2e); color:var(--gris5,#888); }
+  .dt-step.ok i{ background:var(--naranja,#E8651A); border-color:var(--naranja,#E8651A); color:#fff; }
+  .dt-step.act i{ border-color:var(--naranja,#E8651A); color:var(--naranja,#E8651A); box-shadow:0 0 0 4px rgba(232,101,26,.2); }
+  .dt-step.act span{ color:var(--texto,#f0f0f0); font-weight:800; }
+  .dt-dias{ font-size:12px; font-weight:800; padding:1px 7px; border-radius:9px; background:var(--gris2,#252525); color:var(--gris5,#888); margin-left:4px; }
+  .dt-dias.cerca{ background:rgba(245,158,11,.2); color:#F59E0B; } .dt-dias.mal{ background:rgba(239,68,68,.2); color:#EF4444; }
+  .dt-falta-h{ font-size:12px; font-weight:800; letter-spacing:.1em; text-transform:uppercase; color:var(--gris5,#888); margin-bottom:6px; }
+  .dt-check{ list-style:none; margin:0; padding:0; display:grid; gap:4px; font-size:15px; }
+  .dt-check li{ display:flex; gap:8px; align-items:flex-start; padding:5px 8px; background:var(--gris2,#252525); border-radius:6px; }
+  .dt-check input{ width:17px; height:17px; margin-top:2px; flex:none; accent-color:var(--naranja,#E8651A); }
+  .dt-check li.ok{ opacity:.6; text-decoration:line-through; }
+  .dt-hechos{ margin-top:8px; font-size:13px; } .dt-hechos summary{ cursor:pointer; color:var(--gris5,#888); margin-bottom:4px; }
+  .dt-avs{ margin:0; padding-left:16px; font-size:14px; } .dt-avs small{ color:var(--gris5,#888); }
+  .dt-os{ display:flex; gap:6px; flex-wrap:wrap; margin-top:12px; }
+  .dt-os a{ display:flex; flex-direction:column; padding:4px 10px; border:1px solid var(--borde,#2e2e2e); border-radius:6px; color:var(--texto,#f0f0f0); text-decoration:none; font-weight:800; font-size:13px; max-width:230px; }
+  .dt-os a small{ font-weight:600; color:var(--gris5,#888); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .dt-os a:hover{ border-color:var(--naranja,#E8651A); }
+  .vj-mes-tit{ font:800 16px 'Barlow Condensed',sans-serif; letter-spacing:.08em; text-transform:uppercase; margin:16px 0 6px; color:var(--naranja,#E8651A); }
+  .pd-kpis{ display:grid; grid-template-columns:repeat(auto-fit,minmax(170px,1fr)); gap:10px; margin-bottom:16px; font-family:'Barlow Condensed',sans-serif; }
+  .pd-kpi{ display:flex; flex-direction:column; align-items:flex-start; gap:2px; padding:12px 14px; background:var(--gris1,#1a1a1a); border:1px solid var(--borde,#2e2e2e); border-top:4px solid var(--c,#64748b); border-radius:10px; color:var(--texto,#f0f0f0); cursor:pointer; text-align:left; font-family:inherit; }
+  .pd-kpi b{ font-size:34px; line-height:1; color:var(--c,#f0f0f0); } .pd-kpi span{ font-size:14px; color:var(--gris5,#888); }
+  .pd-kpi.sel{ background:var(--gris2,#252525); box-shadow:0 0 0 2px var(--c) inset; }
+  .pd-kpi.alerta{ --c:#EF4444; cursor:default; } .pd-kpi.alerta.ok{ --c:#16A34A; }
+  .pd-semana{ display:flex; gap:8px; overflow-x:auto; padding-bottom:6px; margin-bottom:16px; align-items:stretch; }
+  .pd-semana .pd-h{ margin:0; writing-mode:vertical-rl; transform:rotate(180deg); flex:none; }
+  .pd-chip{ min-width:220px; max-width:260px; padding:10px 12px; background:var(--gris1,#1a1a1a); border:1px solid var(--borde,#2e2e2e); border-left:4px solid var(--c); border-radius:8px; cursor:pointer; font-family:'Barlow Condensed',sans-serif; display:flex; flex-direction:column; gap:3px; }
+  .pd-chip b{ font-size:15px; } .pd-chip small{ color:var(--gris5,#888); }
+  .pd-board{ display:grid; grid-template-columns:repeat(4,minmax(240px,1fr)); gap:12px; align-items:start; }
+  .pd-board.uno{ grid-template-columns:1fr; }
+  @media (max-width:1100px){ .pd-board{ grid-template-columns:repeat(2,minmax(240px,1fr)); } }
+  @media (max-width:640px){ .pd-board{ grid-template-columns:1fr; } }
+  .pd-col{ background:var(--gris1,#1a1a1a); border:1px solid var(--borde,#2e2e2e); border-top:4px solid var(--c); border-radius:10px; padding:10px; display:grid; gap:8px; font-family:'Barlow Condensed',sans-serif; }
+  .pd-col-h{ font-size:15px; font-weight:800; letter-spacing:.06em; text-transform:uppercase; color:var(--c); display:flex; justify-content:space-between; }
+  .pd-col-h small{ background:var(--c); color:#fff; border-radius:9px; padding:0 8px; font-size:13px; }
+  .pd-card{ display:flex; gap:10px; align-items:flex-start; background:var(--gris2,#252525); border-radius:8px; padding:9px 10px; font-size:15px; }
+  .pd-card.foco{ box-shadow:inset 3px 0 0 var(--naranja,#E8651A); }
+  .pd-card.hecho{ opacity:.55; } .pd-card.hecho b{ text-decoration:line-through; }
+  .pd-card input{ width:18px; height:18px; margin-top:3px; flex:none; accent-color:var(--naranja,#E8651A); }
+  .pd-card .pd-txt{ cursor:pointer; }
+  .pd-top{ display:flex; gap:6px; flex-wrap:wrap; margin-bottom:2px; }
+  .pd-foco{ font-size:11px; font-weight:800; color:var(--naranja,#E8651A); text-transform:uppercase; letter-spacing:.06em; }
+  .pd-vence{ font-size:11px; font-weight:800; padding:1px 7px; border-radius:9px; background:rgba(255,255,255,.06); color:var(--gris5,#888); }
+  .pd-vence.cerca{ background:rgba(245,158,11,.2); color:#F59E0B; } .pd-vence.mal{ background:rgba(239,68,68,.2); color:#EF4444; }
+  .pd-star{ background:none; border:none; color:var(--naranja,#E8651A); font-size:18px; cursor:pointer; padding:0 2px; }
+  .pd-hechos{ display:grid; gap:6px; }
+  .av-form{ background:var(--gris1,#1a1a1a); border:1px solid var(--borde,#2e2e2e); border-radius:10px; padding:12px; display:grid; gap:8px; margin-bottom:18px; font-family:'Barlow Condensed',sans-serif; }
+  .av-row{ display:flex; gap:8px; flex-wrap:wrap; align-items:center; }
+  .av-form input, .av-form select, .av-form textarea{ background:var(--gris2,#252525); border:1px solid var(--borde,#2e2e2e); color:var(--texto,#f0f0f0); padding:8px 10px; border-radius:7px; font-family:inherit; font-size:15px; }
+  .av-form textarea{ width:100%; box-sizing:border-box; }
+  .av-form button[disabled]{ opacity:.5; cursor:not-allowed; }
+  .av-lista{ display:grid; gap:6px; font-family:'Barlow Condensed',sans-serif; }
+  .av-dia{ font-size:14px; font-weight:800; letter-spacing:.08em; text-transform:uppercase; color:var(--naranja,#E8651A); margin-top:10px; }
+  .av-item{ display:flex; gap:10px; align-items:flex-start; padding:9px 12px; background:var(--gris1,#1a1a1a); border:1px solid var(--borde,#2e2e2e); border-left:4px solid #2563EB; border-radius:8px; font-size:16px; }
+  .av-item.ofi{ border-left-color:#8B5CF6; }
+  .av-lugar{ font-size:11px; font-weight:800; text-transform:uppercase; letter-spacing:.06em; color:var(--gris5,#888); min-width:48px; margin-top:3px; }
+  .av-txt{ flex:1; } .av-del{ background:none; border:none; color:var(--gris5,#888); font-size:18px; cursor:pointer; }
 </style>
  
 <div class="cf-root" id="cfRoot"><div class="cf-loading" id="cfLoading">Cargando cronograma...</div></div>
@@ -946,18 +1008,20 @@ var MOD_ICONOS = {
   pend:'<path d="M10 6h10M10 12h10M10 18h10"/><path d="m3.5 6 1.5 1.5 2.5-3M3.5 12l1.5 1.5 2.5-3M3.5 18l1.5 1.5 2.5-3"/>',
   viajes:'<path d="M17.8 19.2 16 11l3.5-3.5C21 6 21.5 4 21 3c-1-.5-3 0-4.5 1.5L13 8 4.8 6.2c-.5-.1-.9.1-1.1.5l-.3.5c-.2.5-.1 1 .3 1.3L9 12l-2 3H4l-1 1 3 2 2 3 1-1v-3l3-2 3.5 5.3c.3.4.8.5 1.3.3l.5-.2c.4-.3.6-.7.5-1.2z"/>',
   mails:'<rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/>',
+  avances:'<path d="M3 12h4l3-8 4 16 3-8h4"/>',
   reporte:'<path d="M6 9V3h12v6"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="7"/>',
   planos:'<path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>',
   ext:'<path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"/>'
 };
 function _modIcono(k){ return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">'+MOD_ICONOS[k]+'</svg>'; }
 function _modNavHtml(vista){
-  var esDT = {dt:'mapa', pend:'pend', viajes:'viajes', mails:'mails'};
+  var esDT = {dt:'mapa', pend:'pend', viajes:'viajes', mails:'mails', avances:'avances'};
   var activo = esDT[vista] || 'crono';
   var mods = [
     ['mapa','btnDtTop','Mapa de obra','Estado y certificados'],
     ['crono','btnCronoTop','Cronograma','Gantt de la obra'],
     ['pend','btnPendTop','Pendientes','Ayuda memoria Ingemax'],
+    ['avances','btnAvTop','Avances','Bitácora diaria'],
     ['viajes','btnViajesTop','Viajes','Quién va y cuándo'],
     ['mails','btnMailsTop','Mails','Correos de la obra']
   ];
@@ -3968,9 +4032,10 @@ function toggleTema(){
         if(state.vista==='dt') return '<div id="vistaEspecial" data-vista-tipo="dt"></div>';
         if(state.vista==='pend') return '<div id="vistaEspecial" data-vista-tipo="pend"></div>';
         if(state.vista==='mails') return '<div id="vistaEspecial" data-vista-tipo="mails"></div>';
+        if(state.vista==='avances') return '<div id="vistaEspecial" data-vista-tipo="avances"></div>';
         return '';
       })()}
-      ${state.vista!=='calendario'&&state.vista!=='compras'&&state.vista!=='viajes'&&state.vista!=='dt'&&state.vista!=='pend'&&state.vista!=='mails'?`<div style="position:relative;">
+      ${state.vista!=='calendario'&&state.vista!=='compras'&&state.vista!=='viajes'&&state.vista!=='dt'&&state.vista!=='pend'&&state.vista!=='mails'&&state.vista!=='avances'?`<div style="position:relative;">
         <button class="gantt-fs-btn" id="btnGanttFS" title="Pantalla completa">⤢ Pantalla completa</button>
         <div class="cf-gantt-wrap" id="cfGanttWrap"><div class="cf-gantt">
         <div class="cf-rowlabels">
@@ -4086,9 +4151,10 @@ function toggleTema(){
       if(tipoVista==='dt' && typeof renderDT==='function') renderDT(vistaEsp, state);
       if(tipoVista==='pend' && typeof renderPendientes==='function') renderPendientes(vistaEsp, state);
       if(tipoVista==='mails' && typeof renderMails==='function') renderMails(vistaEsp, state);
+      if(tipoVista==='avances' && typeof renderAvances==='function') renderAvances(vistaEsp, state);
     }
     // Módulos de dirección técnica: pantalla limpia, sin panel de hoy/cuadrillas ni barra del Gantt
-    root.classList.toggle('modo-dt', ['viajes','dt','pend','mails'].indexOf(state.vista)>-1);
+    root.classList.toggle('modo-dt', ['viajes','dt','pend','mails','avances'].indexOf(state.vista)>-1);
     {
     }
 
@@ -4107,6 +4173,8 @@ function toggleTema(){
     if(btnCronoTop) btnCronoTop.onclick = ()=>{ state.vista='sector'; save(); render(); };
     const btnPendTop = document.getElementById('btnPendTop');
     if(btnPendTop) btnPendTop.onclick = ()=>{ state.vista='pend'; save(); render(); };
+    const btnAvTop = document.getElementById('btnAvTop');
+    if(btnAvTop) btnAvTop.onclick = ()=>{ state.vista='avances'; save(); render(); };
     const btnMailsTop = document.getElementById('btnMailsTop');
     if(btnMailsTop) btnMailsTop.onclick = ()=>{ state.vista='mails'; save(); render(); };
     const btnDtTop = document.getElementById('btnDtTop');
@@ -4752,13 +4820,25 @@ function renderViajes(container, st){
     +'<button class="vj-btn pri" onclick="_vjEditar(null)">+ Nuevo viaje</button></div>';
   h += '<div class="vj-list">'+(proximos.length?proximos.map(function(o){ return _vjCard(o.v,o.i); }).join(''):'<div class="dt-nota">No hay viajes próximos cargados.</div>')+'</div>';
 
-  // Calendario del mes: solo viajes
+  // Calendario: dos meses seguidos para no perder el hilo a fin de mes
+  var m2 = new Date(y, m+1, 1);
   h += '<div class="vj-bar" style="margin-top:22px">'
     +'<button class="vj-btn" onclick="_vjIr(-1)">‹</button>'
-    +'<div class="vj-mes">'+VJ_MESES[m]+' '+y+'</div>'
+    +'<div class="vj-mes">'+VJ_MESES[m]+' – '+VJ_MESES[m2.getMonth()]+' '+m2.getFullYear()+'</div>'
     +'<button class="vj-btn" onclick="_vjIr(1)">›</button>'
     +'<button class="vj-btn" onclick="_vjIr(0)">Hoy</button></div>';
-  h += '<div class="vj-grid">';
+  h += _vjMesHtml(st, y, m, hoyStr) + _vjMesHtml(st, m2.getFullYear(), m2.getMonth(), hoyStr);
+  h += '<div class="dt-nota">↗ ida · ↙ vuelta. Tocá un día para cargar un viaje.</div>';
+
+  h += '<div class="vj-bar" style="margin-top:22px"><h3 class="vj-h">Viajes realizados ('+hechos.length+')</h3>'
+    +'<button class="vj-btn" onclick="_vjVerRealizados=!_vjVerRealizados;_vjRe()">'+(_vjVerRealizados?'Ocultar':'Ver')+'</button></div>';
+  if(_vjVerRealizados) h += '<div class="vj-list">'+hechos.map(function(o){ return _vjCard(o.v,o.i); }).join('')+'</div>';
+  container.innerHTML = h + '</div>';
+}
+
+function _vjMesHtml(st, y, m, hoyStr){
+  var primer = new Date(y,m,1).getDay(), dias = new Date(y,m+1,0).getDate();
+  var h = '<div class="vj-mes-tit">'+VJ_MESES[m]+' '+y+'</div><div class="vj-grid">';
   ['Dom','Lun','Mar','Mié','Jue','Vie','Sáb'].forEach(function(d){ h += '<div class="vj-dow">'+d+'</div>'; });
   for(var v=0; v<primer; v++) h += '<div class="vj-dia vacio"></div>';
   for(var d=1; d<=dias; d++){
@@ -4777,14 +4857,8 @@ function renderViajes(container, st){
     });
     h += '</div>';
   }
-  h += '</div><div class="dt-nota">↗ ida · ↙ vuelta. Tocá un día para cargar un viaje.</div>';
-
-  h += '<div class="vj-bar" style="margin-top:22px"><h3 class="vj-h">Viajes realizados ('+hechos.length+')</h3>'
-    +'<button class="vj-btn" onclick="_vjVerRealizados=!_vjVerRealizados;_vjRe()">'+(_vjVerRealizados?'Ocultar':'Ver')+'</button></div>';
-  if(_vjVerRealizados) h += '<div class="vj-list">'+hechos.map(function(o){ return _vjCard(o.v,o.i); }).join('')+'</div>';
-  container.innerHTML = h + '</div>';
+  return h + '</div>';
 }
-
 function _vjIr(delta){
   var hoy = new Date();
   if(delta===0) _vjMes = {y:hoy.getFullYear(), m:hoy.getMonth()};
@@ -4860,36 +4934,63 @@ function _vjIcs(){
 }
 
 // ════════════════════════════════════════
-//  VISTA PENDIENTES INGEMAX — ayuda memoria de la dirección técnica
+//  VISTA PENDIENTES INGEMAX — tablero de la dirección técnica
 // ════════════════════════════════════════
-var PD_ESTADOS = {foco:'En foco ahora', pendiente:'Pendiente', hecho:'Hecho'};
-var PD_TIPOS = {planos:'Planos', verificacion:'Verificación', proyecto:'Proyecto', gestion:'Gestión / OS'};
-var _pdVerHechos = false;
+var PD_ESTADOS = {foco:'En foco', pendiente:'Pendiente', hecho:'Hecho'};
+var PD_TIPOS = {planos:'Planos / ingeniería', os:'Órdenes de servicio a emitir', seguimiento:'Seguimiento', gestion:'Gestión / verificación'};
+var PD_TIPO_COLOR = {planos:'#8B5CF6', os:'#E8651A', seguimiento:'#2563EB', gestion:'#14B8A6'};
+var _pdVerHechos = false, _pdFiltro = '';
 function _pdRe(){ var c=document.getElementById('vistaEspecial'); if(c) renderPendientes(c, window._stateRef); }
 function _pdPersist(){ if(typeof _dtPersist==='function') _dtPersist(); }
+function _pdTipo(p){ return PD_TIPOS[p.tipo] ? p.tipo : (p.tipo==='verificacion' ? 'gestion' : p.tipo==='proyecto' ? 'planos' : 'gestion'); }
+function _pdVence(p){
+  if(!p.fecha || p.estado==='hecho') return '';
+  var d = _dtDays(_dtHoy(), p.fecha);
+  if(d<0) return '<span class="pd-vence mal">Vencido '+(-d)+' d</span>';
+  if(d===0) return '<span class="pd-vence mal">Hoy</span>';
+  if(d<=7) return '<span class="pd-vence cerca">'+(d===1?'Mañana':'En '+d+' días')+' · '+_vjFmtDia(p.fecha)+'</span>';
+  return '<span class="pd-vence">'+_vjFmtDia(p.fecha)+'</span>';
+}
 function renderPendientes(container, st){
   var dt = _dtInit(st); dt.pendientes = dt.pendientes || [];
-  var lista = dt.pendientes.map(function(p,i){ return {p:p,i:i}; });
+  var hoy = _dtHoy(), abiertos = dt.pendientes.map(function(p,i){ return {p:p,i:i}; }).filter(function(o){ return o.p.estado!=='hecho'; });
+  var semana = abiertos.filter(function(o){ return o.p.fecha && _dtDays(hoy,o.p.fecha)<=7; }).sort(function(a,b){ return a.p.fecha.localeCompare(b.p.fecha); });
+  var vencidos = abiertos.filter(function(o){ return o.p.fecha && o.p.fecha<hoy; }).length;
   var h = '<div class="vj-wrap"><div class="vj-bar"><h3 class="vj-h">Pendientes de Ingemax</h3><span style="flex:1"></span>'
     +'<button class="vj-btn pri" onclick="_pdEditar(null)">+ Pendiente</button></div>';
-  ['foco','pendiente','hecho'].forEach(function(est){
-    var items = lista.filter(function(o){ return (o.p.estado||'pendiente')===est; })
-      .sort(function(a,b){ return (a.p.fecha||'9999').localeCompare(b.p.fecha||'9999'); });
-    if(est==='hecho'){
-      h += '<div class="vj-bar" style="margin-top:18px"><h4 class="pd-h">Hechos ('+items.length+')</h4>'
-        +'<button class="vj-btn" onclick="_pdVerHechos=!_pdVerHechos;_pdRe()">'+(_pdVerHechos?'Ocultar':'Ver')+'</button></div>';
-      if(!_pdVerHechos) return;
-    } else h += '<h4 class="pd-h">'+PD_ESTADOS[est]+' ('+items.length+')</h4>';
-    h += '<div class="pd-list">'+items.map(function(o){
-      var p=o.p;
-      return '<div class="pd-item est-'+est+'">'
-        +'<input type="checkbox" title="Marcar hecho" '+(est==='hecho'?'checked':'')+' onclick="_pdToggle('+o.i+')">'
-        +'<div class="pd-txt"><div><b>'+escHGlob(p.tarea)+'</b></div>'
-        +'<div class="dt-meta">'+escHGlob(p.sector||'General')+' · '+(PD_TIPOS[p.tipo]||'')+(p.fecha?' · para '+_vjFmt(p.fecha):'')+(p.resp?' · '+escHGlob(p.resp):'')+'</div>'
-        +(p.nota?'<div class="dt-meta">'+escHGlob(p.nota)+'</div>':'')+'</div>'
-        +'<button class="vj-btn" onclick="_pdEditar('+o.i+')">Editar</button></div>';
-    }).join('')+(items.length?'':'<div class="dt-nota">Nada por acá.</div>')+'</div>';
-  });
+  // Tablero de conteos: cada tipo filtra el tablero
+  h += '<div class="pd-kpis">'+Object.keys(PD_TIPOS).map(function(k){
+      var n = abiertos.filter(function(o){ return _pdTipo(o.p)===k; }).length;
+      return '<button class="pd-kpi'+(_pdFiltro===k?' sel':'')+'" style="--c:'+PD_TIPO_COLOR[k]+'" onclick="_pdFiltro=(_pdFiltro===\''+k+'\'?\'\':\''+k+'\');_pdRe()"><b>'+n+'</b><span>'+PD_TIPOS[k]+'</span></button>';
+    }).join('')
+    +'<div class="pd-kpi alerta'+(vencidos?'':' ok')+'"><b>'+vencidos+'</b><span>'+(vencidos?'Vencidos':'Nada vencido')+'</span></div></div>';
+  // Esta semana
+  if(semana.length) h += '<div class="pd-semana"><div class="pd-h">Esta semana</div>'+semana.map(function(o){
+      return '<div class="pd-chip" style="--c:'+PD_TIPO_COLOR[_pdTipo(o.p)]+'" onclick="_pdEditar('+o.i+')">'+_pdVence(o.p)+'<b>'+escHGlob(o.p.tarea)+'</b><small>'+escHGlob(o.p.sector||'General')+'</small></div>';
+    }).join('')+'</div>';
+  // Columnas por tipo
+  var tipos = _pdFiltro ? [_pdFiltro] : Object.keys(PD_TIPOS);
+  h += '<div class="pd-board'+(_pdFiltro?' uno':'')+'">'+tipos.map(function(k){
+    var items = abiertos.filter(function(o){ return _pdTipo(o.p)===k; }).sort(function(a,b){
+      if((a.p.estado==='foco')!==(b.p.estado==='foco')) return a.p.estado==='foco'?-1:1;
+      return (a.p.fecha||'9999').localeCompare(b.p.fecha||'9999');
+    });
+    return '<div class="pd-col" style="--c:'+PD_TIPO_COLOR[k]+'"><div class="pd-col-h">'+PD_TIPOS[k]+' <small>'+items.length+'</small></div>'
+      + items.map(function(o){ var p=o.p;
+          return '<div class="pd-card'+(p.estado==='foco'?' foco':'')+'">'
+            +'<input type="checkbox" title="Marcar hecho" onclick="_pdToggle('+o.i+')">'
+            +'<div class="pd-txt" onclick="_pdEditar('+o.i+')"><div class="pd-top">'+(p.estado==='foco'?'<span class="pd-foco">★ En foco</span>':'')+_pdVence(p)+'</div>'
+            +'<b>'+escHGlob(p.tarea)+'</b><div class="dt-meta">'+escHGlob(p.sector||'General')+(p.resp?' · '+escHGlob(p.resp):'')+'</div>'
+            +(p.nota?'<div class="dt-meta">'+escHGlob(p.nota)+'</div>':'')+'</div>'
+            +'<button class="pd-star" title="Poner / sacar del foco" onclick="_pdFoco('+o.i+')">'+(p.estado==='foco'?'★':'☆')+'</button></div>';
+        }).join('') + (items.length?'':'<div class="dt-nota">Nada pendiente.</div>') + '</div>';
+  }).join('')+'</div>';
+  var hechos = dt.pendientes.map(function(p,i){ return {p:p,i:i}; }).filter(function(o){ return o.p.estado==='hecho'; });
+  h += '<div class="vj-bar" style="margin-top:18px"><div class="pd-h">Hechos ('+hechos.length+')</div>'
+    +'<button class="vj-btn" onclick="_pdVerHechos=!_pdVerHechos;_pdRe()">'+(_pdVerHechos?'Ocultar':'Ver')+'</button></div>';
+  if(_pdVerHechos) h += '<div class="pd-hechos">'+hechos.map(function(o){
+      return '<div class="pd-card hecho"><input type="checkbox" checked onclick="_pdToggle('+o.i+')"><div class="pd-txt"><b>'+escHGlob(o.p.tarea)+'</b><div class="dt-meta">'+escHGlob(o.p.sector||'General')+'</div></div></div>';
+    }).join('')+'</div>';
   container.innerHTML = h + '</div>';
 }
 function _pdToggle(i){
@@ -4897,15 +4998,21 @@ function _pdToggle(i){
   if(p.estado==='hecho'){ p.estado = p.estadoPrevio || 'pendiente'; } else { p.estadoPrevio = p.estado || 'pendiente'; p.estado = 'hecho'; }
   _pdPersist(); _pdRe();
 }
+function _pdFoco(i){
+  var p = window._stateRef.dt.pendientes[i];
+  p.estado = p.estado==='foco' ? 'pendiente' : 'foco';
+  _pdPersist(); _pdRe();
+}
 function _pdEditar(i){
   var st = window._stateRef, dt = _dtInit(st); dt.pendientes = dt.pendientes || [];
   var nuevo = (i===null), p = nuevo ? {tarea:'',sector:'',tipo:'planos',estado:'pendiente',fecha:'',resp:'',nota:''} : dt.pendientes[i];
   var sectores = []; st.grupos.forEach(function(g){ g.sectores.forEach(function(s){ sectores.push(s.nombre); }); });
+  Object.keys(st.dt.obras).forEach(function(id){ if(st.dt.obras[id].nombre) sectores.push(st.dt.obras[id].nombre); });
   _dtModal(nuevo?'Nuevo pendiente':'Editar pendiente',
     '<label>Qué hay que hacer</label><input id="pdT" value="'+escHGlob(p.tarea)+'">'
-    +'<label>Sector</label><input id="pdS" list="pdSect" value="'+escHGlob(p.sector||'')+'" placeholder="General">'
+    +'<label>Obra / sector</label><input id="pdS" list="pdSect" value="'+escHGlob(p.sector||'')+'" placeholder="General">'
     +'<datalist id="pdSect">'+sectores.map(function(n){return '<option value="'+escHGlob(n)+'">';}).join('')+'</datalist>'
-    +'<div class="vj-row"><div><label>Tipo</label><select id="pdTi">'+_dtOpts(PD_TIPOS,p.tipo)+'</select></div>'
+    +'<div class="vj-row"><div><label>Tipo</label><select id="pdTi">'+_dtOpts(PD_TIPOS,_pdTipo(p))+'</select></div>'
     +'<div><label>Estado</label><select id="pdE">'+_dtOpts(PD_ESTADOS,p.estado||'pendiente')+'</select></div></div>'
     +'<div class="vj-row"><div><label>Para cuándo</label><input type="date" id="pdF" value="'+(p.fecha||'')+'"></div>'
     +'<div><label>Responsable</label><input id="pdR" value="'+escHGlob(p.resp||'')+'"></div></div>'
@@ -4922,7 +5029,7 @@ function _pdEditar(i){
 // ════════════════════════════════════════
 //  VISTA DIRECCIÓN TÉCNICA — Estado por obra + Certificados de contratistas
 // ════════════════════════════════════════
-var DT_EST_OBRA = {por_iniciar:'Por iniciar', ingenieria:'En ingeniería', licitacion:'Sin adjudicar', tramite:'En trámite', en_curso:'En curso', demorada:'Demorada', pausada:'Pausada', terminada:'Terminada'};
+var DT_EST_OBRA = {por_iniciar:'Por iniciar', ingenieria:'En ingeniería', licitacion:'Por adjudicar', tramite:'En trámite', en_curso:'En ejecución', demorada:'Demorada', pausada:'Pausada', postergada:'Postergada', terminada:'Entregada'};
 var DT_EST_CERT = {presentado:'Presentado', revision:'En revisión DT', aprobado:'Aprobado', pagado:'Pagado'};
 var DT_MONEDA = {Gs:'₲', USD:'US$', ARS:'$'};
 var _dtTab = 'obras';
@@ -4987,8 +5094,11 @@ function _dtFechaCorta(s){ if(!s) return ''; var p=s.split('-'); return p[2]+'/'
 
 var DT_PAGO = {'':'Sin dato', pendiente:'Certificado pendiente de pago', al_dia:'Pagos al día', pagado:'Pagado total'};
 var DT_COLOR = {vencido:'#EF4444', demorada:'#EF4444', pausada:'#B45309', en_curso:'#2563EB', licitacion:'#F59E0B', ingenieria:'#8B5CF6', tramite:'#0EA5E9', por_iniciar:'#64748B', terminada:'#16A34A', sin:'#9CA3AF'};
-var DT_LEYENDA = {en_curso:'En curso', vencido:'Plazo vencido / demorada', ingenieria:'En ingeniería', licitacion:'Sin adjudicar', tramite:'En trámite', terminada:'Terminada', por_iniciar:'Por iniciar', sin:'Sin obra cargada'};
+var DT_LEYENDA = {en_curso:'En ejecución', vencido:'Entrega vencida', ingenieria:'En ingeniería', licitacion:'Por adjudicar', tramite:'En trámite', por_iniciar:'Por iniciar', terminada:'Entregada', sin:'Sin obra cargada'};
 var DT_PRIORIDAD = ['vencido','demorada','pausada','en_curso','licitacion','ingenieria','tramite','por_iniciar','terminada'];
+// Etapas estándar de toda obra, en orden
+var DT_ETAPAS = [['layout','Layout / cargas'],['ejecutivo','Plano ejecutivo'],['calculo','Cálculo'],['adjudicacion','Adjudicación'],['ejecucion','Ejecución'],['cierre','Terminaciones'],['terminada','Entregada']];
+var DT_ESPECIAL = {'':'—', tramite:'En trámite', pausada:'Pausada', postergada:'Postergada'};
 // Zonas del plano de planta (píxeles sobre plano-planta.webp de 2000x815) → obras.
 // r = rectángulo [x1,y1,x2,y2]; linea = recorrido [[x,y],...] con etiqueta en lbl.
 var DT_PLANO = {w:2000, h:815};
@@ -5010,7 +5120,7 @@ var DT_ZONAS = [
   {n:'Acceso', s:['acceso'], r:[100,200,275,330]},
   {n:'Ingreso y báscula', s:[], r:[345,280,475,335]},
   {n:'Laguna de retardo', s:['laguna'], r:[617,655,710,807]},
-  {n:'Red de incendio', s:['f8kuyzgd','fg3ura4w'], linea:[[1055,476],[1323,482],[1365,760]], lbl:[1380,700]}
+  {n:'Red contra incendio', s:['fg3ura4w'], linea:[[1055,476],[1323,482],[1365,760]], lbl:[1380,700]}
 ];
 var _dtSel = null; // índice de zona, o 's:<obraId>' si se eligió desde la lista
 
@@ -5027,12 +5137,23 @@ function _dtNombreObra(st, sid){
   var nombre = null; st.grupos.forEach(function(g){ g.sectores.forEach(function(s){ if(s.id===sid) nombre=s.nombre; }); });
   return nombre || ((st.dt.obras[sid]||{}).nombre) || sid;
 }
+function _dtEtapaIdx(k){ for(var i=0;i<DT_ETAPAS.length;i++) if(DT_ETAPAS[i][0]===k) return i; return -1; }
 // Estado consolidado de una obra (sector del cronograma u obra cargada solo en el mapa)
 function _dtInfo(st, sid){
   var r = _dtResumenSector(st, sid), o = st.dt.obras[sid] || {}, auto = _dtCertAuto(st, sid), hoy = _dtHoy();
   var ct = o.ct ? _dtCt(st,o.ct) : (auto ? _dtCt(st,auto.ct) : null);
   var cert = (o.cert===undefined||o.cert==='') ? (auto?auto.pct:null) : Number(o.cert);
-  var vencido = false, estado = o.estado;
+  var vencido = false, estado = o.especial || '';
+  if(!estado && o.etapa){
+    var e = o.etapa;
+    if(e==='layout'||e==='ejecutivo'||e==='calculo') estado = 'ingenieria';
+    else if(e==='adjudicacion') estado = 'licitacion';
+    else if(e==='terminada') estado = 'terminada';
+    else if(r && hoy<r.ini) estado = 'por_iniciar';
+    else if((o.entrega && hoy>o.entrega) || (!o.entrega && r && hoy>r.fin)){ estado='demorada'; vencido=true; }
+    else estado = 'en_curso';
+  }
+  if(!estado) estado = o.estado || '';
   if(!estado){
     if(!r || hoy<r.ini) estado = 'por_iniciar';
     else if(hoy>r.fin){ if(cert!==null && cert>=100) estado='terminada'; else { estado='demorada'; vencido=true; } }
@@ -5040,26 +5161,53 @@ function _dtInfo(st, sid){
   }
   return {sid:sid, nombre:_dtNombreObra(st, sid), r:r, o:o, auto:auto, ct:ct, cert:cert, estado:estado, vencido:vencido, clave:vencido?'vencido':estado};
 }
-function _dtBadge(i){ return '<span class="dt-badge est-'+i.estado+'">'+(i.vencido?'Plazo vencido':DT_EST_OBRA[i.estado])+'</span>'; }
+function _dtBadge(i){ return '<span class="dt-badge est-'+i.estado+'">'+(i.vencido?'Entrega vencida':(DT_EST_OBRA[i.estado]||i.estado))+'</span>'; }
 function _dtRgba(hex, a){ var n=parseInt(hex.slice(1),16); return 'rgba('+(n>>16)+','+((n>>8)&255)+','+(n&255)+','+a+')'; }
+function _dtDiasTxt(f){
+  if(!f) return '';
+  var d = _dtDays(_dtHoy(), f);
+  return d<0 ? '<span class="dt-dias mal">vencida hace '+(-d)+' d</span>' : d===0 ? '<span class="dt-dias mal">hoy</span>' : '<span class="dt-dias'+(d<=7?' cerca':'')+'">faltan '+d+' d</span>';
+}
+function _dtFalta(o){ return (o.falta||[]).map(function(x){ return typeof x==='string' ? {t:x, ok:false} : x; }); }
+
+function _dtStepper(o){
+  var idx = _dtEtapaIdx(o.etapa);
+  if(idx<0) return '';
+  return '<div class="dt-steps">'+DT_ETAPAS.map(function(e,i){
+    return '<div class="dt-step'+(i<idx?' ok':i===idx?' act':'')+'"><i>'+(i<idx?'✓':(i+1))+'</i><span>'+e[1]+'</span></div>';
+  }).join('')+'</div>';
+}
 
 function _dtFicha(st, i){
-  var r=i.r, o=i.o;
+  var r=i.r, o=i.o, falta=_dtFalta(o), pend=falta.filter(function(x){return !x.ok;}), hechos=falta.filter(function(x){return x.ok;});
+  var osList = (o.os||[]).map(function(n){ var d=(st.dt.os||[]).find(function(x){return String(x.n)===String(n);}); return d; }).filter(Boolean);
+  var avs = (st.avances||[]).filter(function(a){ return a.obra===i.sid; }).sort(function(a,b){ return b.fecha.localeCompare(a.fecha); }).slice(0,3);
+  var idxF = function(x){ return falta.indexOf(x); };
   return '<div class="dt-card dt-ficha"><div class="dt-card-h"><b>'+escHGlob(i.nombre)+'</b>'+_dtBadge(i)+'</div>'
+    + _dtStepper(o)
     +'<div class="dt-ficha-cuerpo"><div>'
     +'<div class="dt-filas">'
-    +'<span>Contratista</span><b>'+(i.ct?escHGlob(i.ct.nombre):(o.contratistaTxt?escHGlob(o.contratistaTxt):'Sin asignar'))+'</b>'
-    +'<span>Plazo</span><b>'+(r?_dtFechaCorta(r.ini)+' → '+_dtFechaCorta(r.fin):'Sin fechas en el cronograma')+'</b>'
-    +'<span>Certificado</span><b>'+(i.cert===null?'Sin certificar':i.cert+'%'+((o.cert===undefined||o.cert==='')&&i.auto?' <small>(cert. N° '+i.auto.nro+' del '+_dtFechaCorta(i.auto.fecha)+')</small>':''))+'</b>'
+    +'<span>Contratista</span><b>'+(i.ct?escHGlob(i.ct.nombre):'Sin asignar')+'</b>'
+    +(o.entrega?'<span>Entrega</span><b>'+_dtFechaCorta(o.entrega)+(o.entregaRef?' <small>('+escHGlob(o.entregaRef)+')</small>':'')+' '+_dtDiasTxt(o.entrega)+'</b>':'')
+    +'<span>Cronograma</span><b>'+(r?_dtFechaCorta(r.ini)+' → '+_dtFechaCorta(r.fin):'Sin fechas')+'</b>'
+    +'<span>Certificado</span><b>'+(i.cert===null?'Sin certificar':i.cert+'%'+((o.cert===undefined||o.cert==='')&&i.auto?' <small>(N° '+i.auto.nro+' del '+_dtFechaCorta(i.auto.fecha)+')</small>':''))+'</b>'
     +'<span>Pago</span><b>'+DT_PAGO[o.pago||'']+'</b>'
-    +(r&&r.prox?'<span>Próximo</span><b>'+escHGlob(r.prox.nombre)+' ('+_dtFechaCorta(r.prox.inicio)+')</b>':'')
     +'</div>'
-    +(r?'<div class="dt-bar"><span>Avance planificado por tiempo '+r.plan+'%</span><div><i style="width:'+r.plan+'%"></i></div></div>':'')
     +'<div class="dt-bar"><span>Certificado '+(i.cert===null?'—':i.cert+'%')+'</span><div><i class="c" style="width:'+Math.min(100,i.cert||0)+'%"></i></div></div>'
+    +(osList.length?'<div class="dt-os">'+osList.map(function(d){ return '<a href="'+escHGlob(d.url||'#')+'" target="_blank" rel="noopener" title="'+escHGlob(d.titulo||'')+'">OS '+escHGlob(String(d.n))+'<small>'+escHGlob(d.titulo||'')+'</small></a>'; }).join('')+'</div>':'')
     +'</div><div>'
-    +(o.obs?'<div class="dt-falta"><b>Qué falta / estado:</b><br>'+escHGlob(o.obs).replace(/\n/g,'<br>')+'</div>':'<div class="dt-nota">Sin observaciones cargadas.</div>')
+    +'<div class="dt-falta-h">Qué falta'+(pend.length?' ('+pend.length+')':'')+'</div>'
+    +(pend.length?'<ul class="dt-check">'+pend.map(function(x){ return '<li><input type="checkbox" onclick="_dtToggleFalta(\''+i.sid+'\','+idxF(x)+')"> '+escHGlob(x.t)+'</li>'; }).join('')+'</ul>':'<div class="dt-nota">Nada pendiente cargado.</div>')
+    +(hechos.length?'<details class="dt-hechos"><summary>Hecho ('+hechos.length+')</summary><ul class="dt-check">'+hechos.map(function(x){ return '<li class="ok"><input type="checkbox" checked onclick="_dtToggleFalta(\''+i.sid+'\','+idxF(x)+')"> '+escHGlob(x.t)+'</li>'; }).join('')+'</ul></details>':'')
+    +(avs.length?'<div class="dt-falta-h" style="margin-top:12px">Últimos avances</div><ul class="dt-avs">'+avs.map(function(a){ return '<li><b>'+_dtFechaCorta(a.fecha)+'</b> '+escHGlob(a.texto)+(a.autor?' <small>— '+escHGlob(a.autor)+'</small>':'')+'</li>'; }).join('')+'</ul>':'')
     +'<div style="margin-top:10px"><button class="vj-btn" onclick="_dtEditObra(\''+i.sid+'\')">Editar</button></div>'
     +'</div></div></div>';
+}
+function _dtToggleFalta(sid, k){
+  var st = window._stateRef, o = st.dt.obras[sid]; if(!o) return;
+  o.falta = _dtFalta(o); if(!o.falta[k]) return;
+  o.falta[k].ok = !o.falta[k].ok;
+  _dtPersist(); _dtRe();
 }
 
 function _dtZonaInfo(st, z){
@@ -5094,7 +5242,7 @@ function _dtHtmlObras(st){
 
   // Detalle de lo seleccionado
   h += '<div id="dtDetalle">';
-  if(_dtSel===null) h += '<div class="dt-nota" style="font-size:15px">Tocá un sector del plano (o una obra de la lista) para ver contratista, estado, certificado, pago y qué falta.</div>';
+  if(_dtSel===null) h += '<div class="dt-nota" style="font-size:15px">Tocá un sector del plano (o una obra de la lista) para ver etapa, entrega, qué falta, certificado y pago.</div>';
   else if(typeof _dtSel==='string'){ h += '<div class="dt-cards">'+_dtFicha(st, _dtInfo(st, _dtSel.slice(2)))+'</div>'; }
   else {
     var z = DT_ZONAS[_dtSel];
@@ -5108,16 +5256,17 @@ function _dtHtmlObras(st){
   var enPlano = {}; DT_ZONAS.forEach(function(z){ z.s.forEach(function(s){ enPlano[s]=1; }); });
   var enCrono = {}; st.grupos.forEach(function(g){ g.sectores.forEach(function(s){ enCrono[s.id]=1; }); });
   var fila = function(sid){
-    var i = _dtInfo(st, sid);
+    var i = _dtInfo(st, sid), o = i.o, e = _dtEtapaIdx(o.etapa), pend = _dtFalta(o).filter(function(x){return !x.ok;}).length;
     return '<tr class="'+(_dtSel==='s:'+sid?'sel':'')+'" onclick="_dtSel=\'s:'+sid+'\';_dtRe();_dtVerDetalle()"><td>'+escHGlob(i.nombre)+(enPlano[sid]?'':' <small>(fuera del plano)</small>')+'</td>'
-      +'<td>'+(i.ct?escHGlob(i.ct.nombre):'—')+'</td><td>'+_dtBadge(i)+'</td><td>'+(i.cert===null?'—':i.cert+'%')+'</td></tr>';
+      +'<td>'+(i.ct?escHGlob(i.ct.nombre):'—')+'</td><td>'+_dtBadge(i)+(e>=0?' <small>'+DT_ETAPAS[e][1]+'</small>':'')+'</td>'
+      +'<td>'+(o.entrega?_dtFechaCorta(o.entrega)+' '+_dtDiasTxt(o.entrega):'—')+'</td><td>'+(pend?pend:'—')+'</td><td>'+(i.cert===null?'—':i.cert+'%')+'</td></tr>';
   };
-  h += '<h3 class="vj-h" style="margin:26px 0 6px">Todas las obras</h3><table class="dt-tab dt-lista"><tr><th>Obra</th><th>Contratista</th><th>Estado</th><th>Certificado</th></tr>';
+  h += '<h3 class="vj-h" style="margin:26px 0 6px">Todas las obras</h3><table class="dt-tab dt-lista"><tr><th>Obra</th><th>Contratista</th><th>Estado / etapa</th><th>Entrega</th><th>Falta</th><th>Cert.</th></tr>';
   st.grupos.forEach(function(g){
-    h += '<tr><td colspan="4" class="dt-lista-grp">'+escHGlob(g.nombre||g.id)+'</td></tr>' + g.sectores.map(function(s){ return fila(s.id); }).join('');
+    h += '<tr><td colspan="6" class="dt-lista-grp">'+escHGlob(g.nombre||g.id)+'</td></tr>' + g.sectores.map(function(s){ return fila(s.id); }).join('');
   });
   var extra = Object.keys(st.dt.obras).filter(function(id){ return !enCrono[id] && st.dt.obras[id].nombre; });
-  if(extra.length) h += '<tr><td colspan="4" class="dt-lista-grp">Obras sin cronograma todavía</td></tr>' + extra.map(fila).join('');
+  if(extra.length) h += '<tr><td colspan="6" class="dt-lista-grp">Obras sin cronograma todavía</td></tr>' + extra.map(fila).join('');
   return h + '</table>';
 }
 function _dtVerDetalle(){ var d=document.getElementById('dtDetalle'); if(d && d.scrollIntoView) d.scrollIntoView({behavior:'smooth', block:'nearest'}); }
@@ -5137,14 +5286,28 @@ function _dtEditObra(sid){
   var st = window._stateRef, o = st.dt.obras[sid] || {};
   var nombre = _dtNombreObra(st, sid);
   var cts = '<option value="">— ninguno —</option>'+st.dt.contratistas.map(function(c){ return '<option value="'+c.id+'"'+(o.ct===c.id?' selected':'')+'>'+escHGlob(c.nombre)+'</option>'; }).join('');
+  var etapas = '<option value="">—</option>'+DT_ETAPAS.map(function(e){ return '<option value="'+e[0]+'"'+(o.etapa===e[0]?' selected':'')+'>'+e[1]+'</option>'; }).join('');
+  var falta = _dtFalta(o).map(function(x){ return (x.ok?'[x] ':'')+x.t; }).join('\n');
   _dtModal('Obra: '+escHGlob(nombre),
-    '<label>Estado (vacío = automático según fechas)</label><select id="doEst"><option value="">Automático</option>'+_dtOpts(DT_EST_OBRA,o.estado)+'</select>'
+    '<div class="vj-row"><div><label>Etapa</label><select id="doEta">'+etapas+'</select></div>'
+    +'<div><label>Situación especial</label><select id="doEsp">'+_dtOpts(DT_ESPECIAL,o.especial||'')+'</select></div></div>'
     +'<label>Contratista</label><select id="doCt">'+cts+'</select>'
+    +'<div class="vj-row"><div><label>Entrega comprometida</label><input type="date" id="doEnt" value="'+(o.entrega||'')+'"></div>'
+    +'<div><label>Según</label><input id="doEntR" value="'+escHGlob(o.entregaRef||'')+'" placeholder="Ej: OS 53"></div></div>'
     +'<div class="vj-row"><div><label>% certificado (vacío = del último certificado)</label><input id="doCert" type="number" min="0" max="100" step="0.1" value="'+(o.cert===undefined?'':o.cert)+'"></div>'
     +'<div><label>Pago</label><select id="doPago">'+_dtOpts(DT_PAGO,o.pago||'')+'</select></div></div>'
-    +'<label>Qué falta / observación</label><textarea id="doObs" rows="4">'+escHGlob(o.obs||'')+'</textarea>',
-    function(){ st.dt.obras[sid] = Object.assign({}, o, {estado:document.getElementById('doEst').value, ct:document.getElementById('doCt').value,
-      cert:document.getElementById('doCert').value, pago:document.getElementById('doPago').value, obs:document.getElementById('doObs').value.trim()}); });
+    +'<label>Qué falta (uno por línea; empezá con [x] lo que ya está hecho)</label><textarea id="doFal" rows="7">'+escHGlob(falta)+'</textarea>'
+    +'<label>Órdenes de servicio relacionadas (números separados por coma)</label><input id="doOS" value="'+escHGlob((o.os||[]).join(', '))+'">',
+    function(){
+      var lineas = document.getElementById('doFal').value.split('\n').map(function(l){ return l.trim(); }).filter(Boolean);
+      st.dt.obras[sid] = Object.assign({}, o, {
+        etapa:document.getElementById('doEta').value, especial:document.getElementById('doEsp').value, estado:'',
+        ct:document.getElementById('doCt').value, entrega:document.getElementById('doEnt').value, entregaRef:document.getElementById('doEntR').value.trim(),
+        cert:document.getElementById('doCert').value, pago:document.getElementById('doPago').value,
+        falta:lineas.map(function(l){ var ok=/^\[x\]\s*/i.test(l); return {t:l.replace(/^\[x\]\s*/i,''), ok:ok}; }),
+        os:document.getElementById('doOS').value.split(',').map(function(x){ return x.trim().replace(/^OS\s*/i,''); }).filter(Boolean)
+      });
+    });
 }
 
 // ── Certificados ──
@@ -5284,6 +5447,63 @@ function renderMails(container, st){
       + '</a>';
   }).join('') + (vis.length?'':'<div class="dt-nota">No hay mails para este filtro.</div>') + '</div></div>';
   container.innerHTML = h;
+}
+</script>
+<script>
+// ════════════════════════════════════════
+//  VISTA AVANCES — bitácora diaria del equipo (obra u oficina)
+// ════════════════════════════════════════
+var AV_EQUIPO = ['Franco','Tobías','Alejandro','Francisco','Leandro'];
+var _avFiltro = '';
+function _avRe(){ var c=document.getElementById('vistaEspecial'); if(c) renderAvances(c, window._stateRef); }
+function _avObras(st){
+  var l = []; st.grupos.forEach(function(g){ g.sectores.forEach(function(s){ l.push([s.id, s.nombre]); }); });
+  Object.keys((st.dt||{}).obras||{}).forEach(function(id){ var o=st.dt.obras[id]; if(o.nombre && !l.some(function(x){return x[0]===id;})) l.push([id, o.nombre]); });
+  return l;
+}
+function renderAvances(container, st){
+  if(typeof _dtInit==='function') _dtInit(st);
+  st.avances = st.avances || [];
+  var obras = _avObras(st), nom = {}; obras.forEach(function(o){ nom[o[0]]=o[1]; });
+  var lista = st.avances.map(function(a,i){ return {a:a,i:i}; }).filter(function(o){ return !_avFiltro || o.a.obra===_avFiltro; })
+    .sort(function(x,y){ return (y.a.fecha+(y.a.creado||'')).localeCompare(x.a.fecha+(x.a.creado||'')); });
+  var editor = !!window.IS_EDITOR_GLOBAL;
+  var h = '<div class="vj-wrap"><div class="vj-bar"><h3 class="vj-h">Avances</h3><span style="flex:1"></span>'
+    +'<select class="cal-filtro-select" onchange="_avFiltro=this.value;_avRe()"><option value="">Todas las obras</option>'
+    +obras.map(function(o){ return '<option value="'+o[0]+'"'+(_avFiltro===o[0]?' selected':'')+'>'+escHGlob(o[1])+'</option>'; }).join('')+'</select></div>';
+  h += '<div class="av-form"><div class="av-row">'
+    +'<input type="date" id="avF" value="'+_dtHoy()+'">'
+    +'<select id="avA">'+AV_EQUIPO.map(function(n){ return '<option>'+n+'</option>'; }).join('')+'<option value="">Otro</option></select>'
+    +'<select id="avO"><option value="">General</option>'+obras.map(function(o){ return '<option value="'+o[0]+'"'+(_avFiltro===o[0]?' selected':'')+'>'+escHGlob(o[1])+'</option>'; }).join('')+'</select>'
+    +'<select id="avL"><option value="obra">En obra</option><option value="oficina">Oficina</option></select></div>'
+    +'<textarea id="avT" rows="2" placeholder="Qué se avanzó hoy (un ítem por línea: cada línea queda como un avance)"></textarea>'
+    +'<div class="av-row"><button class="vj-btn pri" onclick="_avGuardar()"'+(editor?'':' disabled title="Entrá con el link de editor para registrar"')+'>Registrar avance</button>'
+    +(editor?'':'<span class="dt-nota">Para registrar, abrí la app con el link de editor (termina en ?editor).</span>')+'</div></div>';
+  var dia = '';
+  h += '<div class="av-lista">'+lista.map(function(o){
+    var a=o.a, cab='';
+    if(a.fecha!==dia){ dia=a.fecha; cab='<div class="av-dia">'+_vjFmtDia(a.fecha)+'</div>'; }
+    return cab+'<div class="av-item'+(a.lugar==='oficina'?' ofi':'')+'"><span class="av-lugar">'+(a.lugar==='oficina'?'Oficina':'Obra')+'</span>'
+      +'<div class="av-txt">'+escHGlob(a.texto)+'<div class="dt-meta">'+(a.obra?escHGlob(nom[a.obra]||a.obra)+' · ':'')+escHGlob(a.autor||'')+'</div></div>'
+      +(editor?'<button class="av-del" title="Borrar" onclick="_avBorrar('+o.i+')">×</button>':'')+'</div>';
+  }).join('')+(lista.length?'':'<div class="dt-nota">Todavía no hay avances registrados.</div>')+'</div></div>';
+  container.innerHTML = h;
+}
+function _avGuardar(){
+  var st = window._stateRef; st.avances = st.avances || [];
+  var lineas = document.getElementById('avT').value.split('\n').map(function(l){ return l.replace(/^[-•·]\s*/,'').trim(); }).filter(Boolean);
+  if(!lineas.length){ alert('Escribí qué se avanzó.'); return; }
+  var base = {fecha:document.getElementById('avF').value||_dtHoy(), autor:document.getElementById('avA').value, obra:document.getElementById('avO').value,
+    lugar:document.getElementById('avL').value, creado:new Date().toISOString()};
+  lineas.forEach(function(t, k){ st.avances.push(Object.assign({id:'av_'+Date.now()+'_'+k, texto:t}, base)); });
+  if(typeof window._saveState==='function') window._saveState();
+  _avRe();
+}
+function _avBorrar(i){
+  if(!confirm('¿Borrar este avance?')) return;
+  window._stateRef.avances.splice(i,1);
+  if(typeof window._saveState==='function') window._saveState();
+  _avRe();
 }
 </script>
 </body>
