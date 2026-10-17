@@ -865,7 +865,7 @@
   .dt-tab a{ color:#60A5FA; margin-right:6px; }
   .dt-rub{ display:flex; justify-content:space-between; gap:10px; font-size:12px; padding:3px 0; border-bottom:1px dotted var(--borde,#2e2e2e); }
   @media (max-width:640px){ .dt-tab{ display:block; overflow-x:auto; } }
-  #cfRoot.modo-dt > *:not(.cf-brandbar):not(#vistaEspecial){ display:none !important; }
+  #cfRoot.modo-dt > *:not(.cf-brandbar):not(.cf-modnav):not(#vistaEspecial){ display:none !important; }
   .vj-h{ margin:0; font-family:'Barlow Condensed',sans-serif; font-size:20px; font-weight:800; text-transform:uppercase; letter-spacing:.06em; }
   .vj-personas{ display:flex; gap:6px; flex-wrap:wrap; margin-top:6px; }
   .vj-personas span{ color:#fff; font-size:13px; font-weight:800; padding:2px 10px; border-radius:12px; }
@@ -901,10 +901,77 @@
   .ml-asunto{ min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; } .ml-asunto small{ color:var(--gris5,#888); }
   .ml-tag{ font-size:11px; font-weight:800; background:#EC4899; color:#fff; padding:2px 8px; border-radius:10px; }
   @media (max-width:640px){ .ml-item{ grid-template-columns:1fr auto; } .ml-asunto{ grid-column:1 / -1; white-space:normal; } }
+  .cf-brand-sep{ width:1px; height:30px; background:var(--borde,#2e2e2e); margin:0 6px; }
+  .cf-client-badge{ background:transparent !important; box-shadow:none !important; padding:0 !important; gap:8px; }
+  .cf-client-badge .lbl{ border-right:none !important; padding-right:0 !important; font-size:10px !important; color:var(--gris5,#888) !important; }
+  .cf-client-badge img{ background:#fff; padding:4px 8px; border-radius:4px; height:26px !important; }
+  .cf-modnav{ display:flex; gap:14px; align-items:stretch; justify-content:space-between; margin:12px 0 18px; padding:6px; background:var(--gris1,#1a1a1a); border:1px solid var(--borde,#2e2e2e); border-radius:12px; flex-wrap:wrap; }
+  .cf-mods{ display:flex; gap:6px; flex:1 1 700px; overflow-x:auto; scrollbar-width:none; }
+  .cf-mod{ flex:1; min-width:150px; display:flex; align-items:center; gap:10px; padding:10px 14px; background:transparent; border:none; border-radius:9px; color:var(--gris5,#888); cursor:pointer; text-align:left; font-family:'Barlow Condensed',sans-serif; transition:background .15s,color .15s; position:relative; }
+  .cf-mod svg{ width:24px; height:24px; flex:none; }
+  .cf-mod b{ display:block; font-size:16px; font-weight:800; letter-spacing:.04em; text-transform:uppercase; color:var(--texto,#f0f0f0); }
+  .cf-mod small{ display:block; font-size:12px; letter-spacing:.02em; }
+  .cf-mod:hover{ background:var(--gris2,#252525); }
+  .cf-mod.activo{ background:var(--gris2,#252525); color:var(--naranja,#E8651A); box-shadow:inset 0 -3px 0 var(--naranja,#E8651A); }
+  .cf-mod.activo b{ color:var(--naranja,#E8651A); }
+  .cf-herr{ display:flex; gap:6px; align-items:center; padding-left:14px; border-left:1px solid var(--borde,#2e2e2e); }
+  .cf-herr-btn{ display:flex; align-items:center; gap:6px; padding:8px 12px; background:transparent; border:1px solid var(--borde,#2e2e2e); border-radius:8px; color:var(--texto,#f0f0f0); font:700 13px 'Barlow Condensed',sans-serif; letter-spacing:.05em; text-transform:uppercase; cursor:pointer; white-space:nowrap; }
+  .cf-herr-btn:hover{ border-color:var(--naranja,#E8651A); color:var(--naranja,#E8651A); }
+  .cf-herr-btn svg{ width:16px; height:16px; }
+  @media (max-width:1250px){ .cf-mod{ min-width:112px; padding:8px 10px; } .cf-mod small{ display:none; } .cf-herr{ border-left:none; padding-left:0; } }
+  .dt-mapa-svg{ position:absolute; inset:0; width:100%; height:100%; pointer-events:none; }
+  .dt-linea-hit{ pointer-events:stroke; cursor:pointer; }
+  .dt-linea-lbl{ position:absolute; color:#fff; font:800 clamp(8px,.85vw,13px)/1.25 'Barlow Condensed',sans-serif; padding:2px 8px; border-radius:4px; white-space:nowrap; cursor:pointer; }
+  .dt-linea-lbl.sel{ box-shadow:0 0 0 3px rgba(0,0,0,.35); }
+  .dt-badge.est-ingenieria{ background:#8B5CF6; } .dt-badge.est-licitacion{ background:#F59E0B; } .dt-badge.est-tramite{ background:#0EA5E9; }
+  #dtDetalle .dt-cards{ grid-template-columns:repeat(auto-fit,minmax(420px,1fr)); gap:14px; }
+  .dt-ficha{ padding:16px 20px; }
+  .dt-ficha .dt-card-h{ font-size:22px; }
+  .dt-ficha-cuerpo{ display:grid; grid-template-columns:repeat(auto-fit,minmax(280px,1fr)); gap:10px 28px; align-items:start; margin-top:6px; }
+  .dt-ficha .dt-filas{ font-size:16px; gap:6px 14px; }
+  .dt-ficha .dt-bar{ font-size:14px; margin-top:10px; } .dt-ficha .dt-bar > div{ height:10px; }
+  .dt-ficha .dt-falta{ font-size:16px; line-height:1.4; margin-top:0; }
+  @media (max-width:640px){ #dtDetalle .dt-cards{ grid-template-columns:1fr; } }
 </style>
  
 <div class="cf-root" id="cfRoot"><div class="cf-loading" id="cfLoading">Cargando cronograma...</div></div>
  
+<script>
+// ════════════════════════════════════════
+//  MENÚ DE MÓDULOS
+// ════════════════════════════════════════
+var MOD_ICONOS = {
+  mapa:'<path d="M9 4 3 6v14l6-2 6 2 6-2V4l-6 2-6-2z"/><path d="M9 4v14M15 6v14"/>',
+  crono:'<rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4M7 14h6M10 17h7"/>',
+  pend:'<path d="M10 6h10M10 12h10M10 18h10"/><path d="m3.5 6 1.5 1.5 2.5-3M3.5 12l1.5 1.5 2.5-3M3.5 18l1.5 1.5 2.5-3"/>',
+  viajes:'<path d="M17.8 19.2 16 11l3.5-3.5C21 6 21.5 4 21 3c-1-.5-3 0-4.5 1.5L13 8 4.8 6.2c-.5-.1-.9.1-1.1.5l-.3.5c-.2.5-.1 1 .3 1.3L9 12l-2 3H4l-1 1 3 2 2 3 1-1v-3l3-2 3.5 5.3c.3.4.8.5 1.3.3l.5-.2c.4-.3.6-.7.5-1.2z"/>',
+  mails:'<rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/>',
+  reporte:'<path d="M6 9V3h12v6"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="7"/>',
+  planos:'<path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>',
+  ext:'<path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"/>'
+};
+function _modIcono(k){ return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">'+MOD_ICONOS[k]+'</svg>'; }
+function _modNavHtml(vista){
+  var esDT = {dt:'mapa', pend:'pend', viajes:'viajes', mails:'mails'};
+  var activo = esDT[vista] || 'crono';
+  var mods = [
+    ['mapa','btnDtTop','Mapa de obra','Estado y certificados'],
+    ['crono','btnCronoTop','Cronograma','Gantt de la obra'],
+    ['pend','btnPendTop','Pendientes','Ayuda memoria Ingemax'],
+    ['viajes','btnViajesTop','Viajes','Quién va y cuándo'],
+    ['mails','btnMailsTop','Mails','Correos de la obra']
+  ];
+  return '<nav class="cf-modnav" aria-label="Módulos"><div class="cf-mods">'
+    + mods.map(function(m){
+        return '<button id="'+m[1]+'" class="cf-mod'+(activo===m[0]?' activo':'')+'"'+(activo===m[0]?' aria-current="page"':'')+'>'
+          + _modIcono(m[0]) + '<span><b>'+m[2]+'</b><small>'+m[3]+'</small></span></button>';
+      }).join('')
+    + '</div><div class="cf-herr">'
+    + '<button class="cf-herr-btn" onclick="abrirReporte()">'+_modIcono('reporte')+'Reporte</button>'
+    + '<button class="cf-herr-btn" onclick="window.open(\'https://drive.google.com/drive/folders/1lAODEcN9ypzMBSqpOiUx8kD6Alac8GK-\',\'_blank\',\'noopener\')" title="Abre la carpeta de planos en Google Drive">'+_modIcono('planos')+'Planos'+_modIcono('ext')+'</button>'
+    + '</div></nav>';
+}
+</script>
 <script>
 // ── MÁQUINAS MODAL — funciones globales ──
 
@@ -3789,21 +3856,16 @@ function toggleTema(){
         <div class="cf-brand-left">
           <div class="ingemax-logo-box">${INGEMAX_SVG}</div>
           <span class="cf-brand-tag">Software de gestión<br>de obra civil</span>
+          <span class="cf-brand-sep"></span>
+          <div class="cf-client-badge"><span class="lbl">Obra</span><img src="${ALCO_LOGO}" alt="AlcoEnergy"/></div>
         </div>
         <div class="cf-brand-right" style="display:flex;align-items:center;gap:10px;">
-          <div class="cf-client-badge"><span class="lbl">Obra de</span><img src="${ALCO_LOGO}" alt="AlcoEnergy"/></div>
-          <button id="btnCronoTop" style="background:rgba(255,255,255,.06);border:1px solid var(--borde,#2e2e2e);color:var(--texto,#f0f0f0);border-radius:7px;padding:6px 14px;font-family:Barlow Condensed,sans-serif;font-size:12px;font-weight:800;cursor:pointer;letter-spacing:.06em;">📅 CRONOGRAMA</button>
-          <button id="btnPendTop" style="background:rgba(234,179,8,.15);border:1px solid rgba(234,179,8,.45);color:#FACC15;border-radius:7px;padding:6px 14px;font-family:Barlow Condensed,sans-serif;font-size:12px;font-weight:800;cursor:pointer;letter-spacing:.06em;">✅ PENDIENTES</button>
-          <button id="btnDtTop" style="background:rgba(22,163,74,.15);border:1px solid rgba(22,163,74,.45);color:#4ADE80;border-radius:7px;padding:6px 14px;font-family:Barlow Condensed,sans-serif;font-size:12px;font-weight:800;cursor:pointer;letter-spacing:.06em;">📊 OBRAS Y CERTIF.</button>
-          <button id="btnMailsTop" style="background:rgba(236,72,153,.15);border:1px solid rgba(236,72,153,.45);color:#F472B6;border-radius:7px;padding:6px 14px;font-family:Barlow Condensed,sans-serif;font-size:12px;font-weight:800;cursor:pointer;letter-spacing:.06em;">✉ MAILS</button>
-          <button id="btnViajesTop" style="background:rgba(59,130,246,.15);border:1px solid rgba(59,130,246,.45);color:#60A5FA;border-radius:7px;padding:6px 14px;font-family:Barlow Condensed,sans-serif;font-size:12px;font-weight:800;cursor:pointer;letter-spacing:.06em;">✈ VIAJES</button>
-          <button onclick="abrirReporte()" style="background:rgba(232,101,26,.15);border:1px solid rgba(232,101,26,.45);color:var(--naranja,#E8651A);border-radius:7px;padding:6px 14px;font-family:Barlow Condensed,sans-serif;font-size:12px;font-weight:800;cursor:pointer;letter-spacing:.06em;text-transform:uppercase;display:flex;align-items:center;gap:6px;white-space:nowrap;">🖨 Reporte</button>
-          <button onclick="window.open('https://drive.google.com/drive/folders/1lAODEcN9ypzMBSqpOiUx8kD6Alac8GK-','_blank','noopener')" title="Abre la carpeta de planos en Google Drive" style="background:rgba(124,58,237,.15);border:1px solid rgba(124,58,237,.45);color:#A78BFA;border-radius:7px;padding:6px 14px;font-family:Barlow Condensed,sans-serif;font-size:12px;font-weight:800;cursor:pointer;letter-spacing:.06em;text-transform:uppercase;display:flex;align-items:center;gap:6px;white-space:nowrap;">📋 Planos</button>
           <span id="cfEditorBadge"></span>
           <span id="cfSyncStatus"></span>
           <button class="theme-toggle-btn" id="btnTema" title="Cambiar tema" onclick="toggleTema()">🌙</button>
         </div>
       </div>
+      ${typeof _modNavHtml==='function' ? _modNavHtml(state.vista) : ''}
 
       <div class="cf-header">
         <div class="cf-title-block">
@@ -4860,7 +4922,7 @@ function _pdEditar(i){
 // ════════════════════════════════════════
 //  VISTA DIRECCIÓN TÉCNICA — Estado por obra + Certificados de contratistas
 // ════════════════════════════════════════
-var DT_EST_OBRA = {por_iniciar:'Por iniciar', en_curso:'En curso', demorada:'Demorada', pausada:'Pausada', terminada:'Terminada'};
+var DT_EST_OBRA = {por_iniciar:'Por iniciar', ingenieria:'En ingeniería', licitacion:'Sin adjudicar', tramite:'En trámite', en_curso:'En curso', demorada:'Demorada', pausada:'Pausada', terminada:'Terminada'};
 var DT_EST_CERT = {presentado:'Presentado', revision:'En revisión DT', aprobado:'Aprobado', pagado:'Pagado'};
 var DT_MONEDA = {Gs:'₲', USD:'US$', ARS:'$'};
 var _dtTab = 'obras';
@@ -4924,27 +4986,33 @@ function _dtCertAuto(st, sid){
 function _dtFechaCorta(s){ if(!s) return ''; var p=s.split('-'); return p[2]+'/'+p[1]+'/'+p[0].slice(2); }
 
 var DT_PAGO = {'':'Sin dato', pendiente:'Certificado pendiente de pago', al_dia:'Pagos al día', pagado:'Pagado total'};
-var DT_COLOR = {vencido:'#EF4444', demorada:'#EF4444', pausada:'#B45309', en_curso:'#2563EB', por_iniciar:'#64748B', terminada:'#16A34A', sin:'#9CA3AF'};
-var DT_LEYENDA = {en_curso:'En curso', vencido:'Plazo vencido / demorada', terminada:'Terminada', por_iniciar:'Por iniciar', sin:'Sin obra cargada'};
-// Zonas del plano de planta (píxeles sobre plano-planta.webp de 2000x815) → sectores del cronograma
+var DT_COLOR = {vencido:'#EF4444', demorada:'#EF4444', pausada:'#B45309', en_curso:'#2563EB', licitacion:'#F59E0B', ingenieria:'#8B5CF6', tramite:'#0EA5E9', por_iniciar:'#64748B', terminada:'#16A34A', sin:'#9CA3AF'};
+var DT_LEYENDA = {en_curso:'En curso', vencido:'Plazo vencido / demorada', ingenieria:'En ingeniería', licitacion:'Sin adjudicar', tramite:'En trámite', terminada:'Terminada', por_iniciar:'Por iniciar', sin:'Sin obra cargada'};
+var DT_PRIORIDAD = ['vencido','demorada','pausada','en_curso','licitacion','ingenieria','tramite','por_iniciar','terminada'];
+// Zonas del plano de planta (píxeles sobre plano-planta.webp de 2000x815) → obras.
+// r = rectángulo [x1,y1,x2,y2]; linea = recorrido [[x,y],...] con etiqueta en lbl.
 var DT_PLANO = {w:2000, h:815};
 var DT_ZONAS = [
   {n:'Planta de agua', s:['trat_aguas'], r:[815,120,950,248]},
   {n:'Refrigeración', s:['refrigeracion'], r:[955,120,1108,248]},
-  {n:'Tratamiento de CO2', s:[], r:[1110,90,1330,248]},
-  {n:'Caldera', s:['caldera'], r:[1388,92,1495,242]},
-  {n:'Patio de chips', s:['caldera'], r:[1495,78,1700,246]},
-  {n:'Burlanda', s:['burlanda'], r:[663,295,855,462]},
+  {n:'SET-02', s:['set02'], r:[1160,92,1300,170]},
+  {n:'Cañeros', s:['caneros'], r:[1110,226,1390,262]},
+  {n:'Caldera', s:['caldera'], r:[1388,92,1495,212]},
+  {n:'Patio de chips', s:['patio_chips'], r:[1495,78,1700,212]},
+  {n:'Tolva y cinta de chips', s:['tolva_chips'], r:[1400,214,1612,246]},
+  {n:'Hornos', s:['hornos'], r:[663,295,855,392]},
+  {n:'Burlanda', s:['burlanda'], r:[663,392,855,462]},
   {n:'Subproductos', s:['subproductos'], r:[855,295,978,462]},
   {n:'Destilación', s:['destilacion_ed','destilacion'], r:[1014,295,1122,465]},
   {n:'Molienda-Fermentación', s:['molienda','fermentadores'], r:[1155,295,1422,442]},
-  {n:'Silos y almacenamiento', s:['silos'], r:[1520,300,1765,452]},
-  {n:'Patio de leña', s:['fzkct2dm'], r:[1600,452,1700,492]},
+  {n:'Silos y almacenamiento', s:['silos'], r:[1520,300,1765,465]},
   {n:'Galpón de insumos', s:['galpon_insumos'], r:[1805,310,1885,492]},
+  {n:'Acceso', s:['acceso'], r:[100,200,275,330]},
   {n:'Ingreso y báscula', s:[], r:[345,280,475,335]},
-  {n:'Laguna de retardo', s:[], r:[617,655,710,807]}
+  {n:'Laguna de retardo', s:['laguna'], r:[617,655,710,807]},
+  {n:'Red de incendio', s:['f8kuyzgd','fg3ura4w'], linea:[[1055,476],[1323,482],[1365,760]], lbl:[1380,700]}
 ];
-var _dtSel = null; // índice de zona, o 's:<sectorId>' si se eligió desde la lista
+var _dtSel = null; // índice de zona, o 's:<obraId>' si se eligió desde la lista
 
 function renderDT(container, st){
   var dt = _dtInit(st);
@@ -4955,7 +5023,11 @@ function renderDT(container, st){
   container.innerHTML = h + '</div>';
 }
 
-// Estado consolidado de una obra (sector del cronograma)
+function _dtNombreObra(st, sid){
+  var nombre = null; st.grupos.forEach(function(g){ g.sectores.forEach(function(s){ if(s.id===sid) nombre=s.nombre; }); });
+  return nombre || ((st.dt.obras[sid]||{}).nombre) || sid;
+}
+// Estado consolidado de una obra (sector del cronograma u obra cargada solo en el mapa)
 function _dtInfo(st, sid){
   var r = _dtResumenSector(st, sid), o = st.dt.obras[sid] || {}, auto = _dtCertAuto(st, sid), hoy = _dtHoy();
   var ct = o.ct ? _dtCt(st,o.ct) : (auto ? _dtCt(st,auto.ct) : null);
@@ -4966,8 +5038,7 @@ function _dtInfo(st, sid){
     else if(hoy>r.fin){ if(cert!==null && cert>=100) estado='terminada'; else { estado='demorada'; vencido=true; } }
     else estado = 'en_curso';
   }
-  var nombre = sid; st.grupos.forEach(function(g){ g.sectores.forEach(function(s){ if(s.id===sid) nombre=s.nombre; }); });
-  return {sid:sid, nombre:nombre, r:r, o:o, auto:auto, ct:ct, cert:cert, estado:estado, vencido:vencido, clave:vencido?'vencido':estado};
+  return {sid:sid, nombre:_dtNombreObra(st, sid), r:r, o:o, auto:auto, ct:ct, cert:cert, estado:estado, vencido:vencido, clave:vencido?'vencido':estado};
 }
 function _dtBadge(i){ return '<span class="dt-badge est-'+i.estado+'">'+(i.vencido?'Plazo vencido':DT_EST_OBRA[i.estado])+'</span>'; }
 function _dtRgba(hex, a){ var n=parseInt(hex.slice(1),16); return 'rgba('+(n>>16)+','+((n>>8)&255)+','+(n&255)+','+a+')'; }
@@ -4975,8 +5046,9 @@ function _dtRgba(hex, a){ var n=parseInt(hex.slice(1),16); return 'rgba('+(n>>16
 function _dtFicha(st, i){
   var r=i.r, o=i.o;
   return '<div class="dt-card dt-ficha"><div class="dt-card-h"><b>'+escHGlob(i.nombre)+'</b>'+_dtBadge(i)+'</div>'
+    +'<div class="dt-ficha-cuerpo"><div>'
     +'<div class="dt-filas">'
-    +'<span>Contratista</span><b>'+(i.ct?escHGlob(i.ct.nombre):'Sin asignar')+'</b>'
+    +'<span>Contratista</span><b>'+(i.ct?escHGlob(i.ct.nombre):(o.contratistaTxt?escHGlob(o.contratistaTxt):'Sin asignar'))+'</b>'
     +'<span>Plazo</span><b>'+(r?_dtFechaCorta(r.ini)+' → '+_dtFechaCorta(r.fin):'Sin fechas en el cronograma')+'</b>'
     +'<span>Certificado</span><b>'+(i.cert===null?'Sin certificar':i.cert+'%'+((o.cert===undefined||o.cert==='')&&i.auto?' <small>(cert. N° '+i.auto.nro+' del '+_dtFechaCorta(i.auto.fecha)+')</small>':''))+'</b>'
     +'<span>Pago</span><b>'+DT_PAGO[o.pago||'']+'</b>'
@@ -4984,49 +5056,68 @@ function _dtFicha(st, i){
     +'</div>'
     +(r?'<div class="dt-bar"><span>Avance planificado por tiempo '+r.plan+'%</span><div><i style="width:'+r.plan+'%"></i></div></div>':'')
     +'<div class="dt-bar"><span>Certificado '+(i.cert===null?'—':i.cert+'%')+'</span><div><i class="c" style="width:'+Math.min(100,i.cert||0)+'%"></i></div></div>'
-    +(o.obs?'<div class="dt-falta"><b>Qué falta:</b> '+escHGlob(o.obs)+'</div>':'')
-    +'<div style="margin-top:8px"><button class="vj-btn" onclick="_dtEditObra(\''+i.sid+'\')">Editar</button></div></div>';
+    +'</div><div>'
+    +(o.obs?'<div class="dt-falta"><b>Qué falta / estado:</b><br>'+escHGlob(o.obs).replace(/\n/g,'<br>')+'</div>':'<div class="dt-nota">Sin observaciones cargadas.</div>')
+    +'<div style="margin-top:10px"><button class="vj-btn" onclick="_dtEditObra(\''+i.sid+'\')">Editar</button></div>'
+    +'</div></div></div>';
+}
+
+function _dtZonaInfo(st, z){
+  var infos = z.s.map(function(sid){ return _dtInfo(st, sid); });
+  var clave = 'sin';
+  DT_PRIORIDAD.some(function(k){ if(infos.some(function(i){ return i.clave===k; })){ clave=k; return true; } return false; });
+  var certs = infos.filter(function(i){ return i.cert!==null; });
+  return {infos:infos, clave:clave, col:DT_COLOR[clave], cert:certs.length?certs[0].cert:null};
 }
 
 function _dtHtmlObras(st){
-  var orden = ['vencido','demorada','pausada','en_curso','por_iniciar','terminada'];
-  var h = '<div class="dt-mapa"><img src="plano-planta.webp" alt="Plano de planta AlcoEnergy">';
+  var W=DT_PLANO.w, H=DT_PLANO.h, svg='', h = '<div class="dt-mapa"><img src="plano-planta.webp" alt="Plano de planta AlcoEnergy">';
   DT_ZONAS.forEach(function(z, zi){
-    var infos = z.s.map(function(sid){ return _dtInfo(st, sid); });
-    var clave = 'sin';
-    orden.some(function(k){ if(infos.some(function(i){ return i.clave===k; })){ clave=k; return true; } return false; });
-    var certs = infos.filter(function(i){ return i.cert!==null; });
-    var col = DT_COLOR[clave], r = z.r;
-    h += '<div class="dt-zona'+(_dtSel===zi?' sel':'')+'" title="'+escHGlob(z.n)+'" onclick="_dtSel='+zi+';_dtRe();_dtVerDetalle()" '
-      +'style="left:'+(r[0]/DT_PLANO.w*100)+'%;top:'+(r[1]/DT_PLANO.h*100)+'%;width:'+((r[2]-r[0])/DT_PLANO.w*100)+'%;height:'+((r[3]-r[1])/DT_PLANO.h*100)+'%;'
-      +'border-color:'+col+';background:'+_dtRgba(col,_dtSel===zi?.35:.18)+'">'
-      +'<span style="background:'+col+'">'+escHGlob(z.n)+(certs.length?' · '+certs[0].cert+'%':'')+'</span></div>';
+    var zi2 = _dtZonaInfo(st, z), col = zi2.col, sel = _dtSel===zi;
+    var etiqueta = escHGlob(z.n)+(zi2.cert!==null?' · '+zi2.cert+'%':'');
+    var click = 'onclick="_dtSel='+zi+';_dtRe();_dtVerDetalle()"';
+    if(z.linea){
+      var pts = z.linea.map(function(p){ return p[0]+','+p[1]; }).join(' ');
+      svg += '<polyline points="'+pts+'" fill="none" stroke="'+col+'" stroke-width="'+(sel?9:6)+'" stroke-dasharray="18 10" stroke-linejoin="round"/>'
+           + '<polyline class="dt-linea-hit" points="'+pts+'" fill="none" stroke="transparent" stroke-width="34" '+click+'><title>'+escHGlob(z.n)+'</title></polyline>';
+      h += '<span class="dt-linea-lbl'+(sel?' sel':'')+'" style="left:'+(z.lbl[0]/W*100)+'%;top:'+(z.lbl[1]/H*100)+'%;background:'+col+'" '+click+'>'+etiqueta+'</span>';
+      return;
+    }
+    var r = z.r;
+    h += '<div class="dt-zona'+(sel?' sel':'')+'" title="'+escHGlob(z.n)+'" '+click+' '
+      +'style="left:'+(r[0]/W*100)+'%;top:'+(r[1]/H*100)+'%;width:'+((r[2]-r[0])/W*100)+'%;height:'+((r[3]-r[1])/H*100)+'%;'
+      +'border-color:'+col+';background:'+_dtRgba(col,sel?.35:.18)+'">'
+      +'<span style="background:'+col+'">'+etiqueta+'</span></div>';
   });
+  h += '<svg class="dt-mapa-svg" viewBox="0 0 '+W+' '+H+'" preserveAspectRatio="none">'+svg+'</svg>';
   h += '</div><div class="dt-leyenda">'+Object.keys(DT_LEYENDA).map(function(k){ return '<span><i style="background:'+DT_COLOR[k]+'"></i>'+DT_LEYENDA[k]+'</span>'; }).join('')+'</div>';
 
   // Detalle de lo seleccionado
   h += '<div id="dtDetalle">';
   if(_dtSel===null) h += '<div class="dt-nota" style="font-size:15px">Tocá un sector del plano (o una obra de la lista) para ver contratista, estado, certificado, pago y qué falta.</div>';
-  else if(typeof _dtSel==='string'){ h += _dtFicha(st, _dtInfo(st, _dtSel.slice(2))); }
+  else if(typeof _dtSel==='string'){ h += '<div class="dt-cards">'+_dtFicha(st, _dtInfo(st, _dtSel.slice(2)))+'</div>'; }
   else {
     var z = DT_ZONAS[_dtSel];
     h += '<h3 class="vj-h" style="margin:4px 0 10px">'+escHGlob(z.n)+'</h3>';
     h += z.s.length ? '<div class="dt-cards">'+z.s.map(function(sid){ return _dtFicha(st, _dtInfo(st, sid)); }).join('')+'</div>'
-                    : '<div class="dt-nota" style="font-size:15px">Este sector todavía no tiene obra cargada en el cronograma.</div>';
+                    : '<div class="dt-nota" style="font-size:15px">Este sector no tiene obra cargada.</div>';
   }
   h += '</div>';
 
-  // Lista de todas las obras
+  // Lista de todas las obras: las del cronograma y las cargadas solo en el mapa
   var enPlano = {}; DT_ZONAS.forEach(function(z){ z.s.forEach(function(s){ enPlano[s]=1; }); });
+  var enCrono = {}; st.grupos.forEach(function(g){ g.sectores.forEach(function(s){ enCrono[s.id]=1; }); });
+  var fila = function(sid){
+    var i = _dtInfo(st, sid);
+    return '<tr class="'+(_dtSel==='s:'+sid?'sel':'')+'" onclick="_dtSel=\'s:'+sid+'\';_dtRe();_dtVerDetalle()"><td>'+escHGlob(i.nombre)+(enPlano[sid]?'':' <small>(fuera del plano)</small>')+'</td>'
+      +'<td>'+(i.ct?escHGlob(i.ct.nombre):'—')+'</td><td>'+_dtBadge(i)+'</td><td>'+(i.cert===null?'—':i.cert+'%')+'</td></tr>';
+  };
   h += '<h3 class="vj-h" style="margin:26px 0 6px">Todas las obras</h3><table class="dt-tab dt-lista"><tr><th>Obra</th><th>Contratista</th><th>Estado</th><th>Certificado</th></tr>';
   st.grupos.forEach(function(g){
-    h += '<tr><td colspan="4" class="dt-lista-grp">'+escHGlob(g.nombre||g.id)+'</td></tr>';
-    g.sectores.forEach(function(s){
-      var i = _dtInfo(st, s.id);
-      h += '<tr class="'+(_dtSel==='s:'+s.id?'sel':'')+'" onclick="_dtSel=\'s:'+s.id+'\';_dtRe();_dtVerDetalle()"><td>'+escHGlob(s.nombre)+(enPlano[s.id]?'':' <small>(fuera del plano)</small>')+'</td>'
-        +'<td>'+(i.ct?escHGlob(i.ct.nombre):'—')+'</td><td>'+_dtBadge(i)+'</td><td>'+(i.cert===null?'—':i.cert+'%')+'</td></tr>';
-    });
+    h += '<tr><td colspan="4" class="dt-lista-grp">'+escHGlob(g.nombre||g.id)+'</td></tr>' + g.sectores.map(function(s){ return fila(s.id); }).join('');
   });
+  var extra = Object.keys(st.dt.obras).filter(function(id){ return !enCrono[id] && st.dt.obras[id].nombre; });
+  if(extra.length) h += '<tr><td colspan="4" class="dt-lista-grp">Obras sin cronograma todavía</td></tr>' + extra.map(fila).join('');
   return h + '</table>';
 }
 function _dtVerDetalle(){ var d=document.getElementById('dtDetalle'); if(d && d.scrollIntoView) d.scrollIntoView({behavior:'smooth', block:'nearest'}); }
@@ -5044,7 +5135,7 @@ function _dtModal(titulo, body, onSave, onDel){
 function _dtOpts(map, sel){ return Object.keys(map).map(function(k){ return '<option value="'+k+'"'+(sel===k?' selected':'')+'>'+map[k]+'</option>'; }).join(''); }
 function _dtEditObra(sid){
   var st = window._stateRef, o = st.dt.obras[sid] || {};
-  var nombre=''; st.grupos.forEach(function(g){ g.sectores.forEach(function(s){ if(s.id===sid) nombre=s.nombre; }); });
+  var nombre = _dtNombreObra(st, sid);
   var cts = '<option value="">— ninguno —</option>'+st.dt.contratistas.map(function(c){ return '<option value="'+c.id+'"'+(o.ct===c.id?' selected':'')+'>'+escHGlob(c.nombre)+'</option>'; }).join('');
   _dtModal('Obra: '+escHGlob(nombre),
     '<label>Estado (vacío = automático según fechas)</label><select id="doEst"><option value="">Automático</option>'+_dtOpts(DT_EST_OBRA,o.estado)+'</select>'
