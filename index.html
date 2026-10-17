@@ -880,6 +880,19 @@
   .pd-item.est-hecho{ opacity:.55; } .pd-item.est-hecho b{ text-decoration:line-through; }
   .pd-item input[type=checkbox]{ width:20px; height:20px; flex:none; accent-color:var(--naranja,#E8651A); }
   .pd-txt{ flex:1; min-width:0; }
+  .dt-mapa{ position:relative; background:#fff; border:1px solid var(--borde,#2e2e2e); border-radius:10px; overflow:hidden; }
+  .dt-mapa img{ display:block; width:100%; height:auto; }
+  .dt-zona{ position:absolute; border:2px solid; border-radius:4px; cursor:pointer; transition:background .15s; }
+  .dt-zona:hover{ filter:brightness(1.1); box-shadow:0 0 0 2px rgba(0,0,0,.25); }
+  .dt-zona.sel{ border-width:4px; box-shadow:0 0 0 3px rgba(0,0,0,.35); }
+  .dt-zona span{ position:absolute; left:0; top:0; color:#fff; font:800 clamp(8px,.85vw,13px)/1.25 'Barlow Condensed',sans-serif; padding:1px 6px; border-radius:0 0 4px 0; white-space:nowrap; pointer-events:none; }
+  .dt-leyenda{ display:flex; gap:16px; flex-wrap:wrap; margin:10px 0 16px; font:600 13px 'Barlow Condensed',sans-serif; color:var(--gris5,#888); }
+  .dt-leyenda i{ display:inline-block; width:12px; height:12px; border-radius:3px; margin-right:5px; vertical-align:-1px; }
+  .dt-filas{ display:grid; grid-template-columns:auto 1fr; gap:4px 12px; margin-top:8px; font-size:14px; }
+  .dt-filas span{ color:var(--gris5,#888); } .dt-filas small{ color:var(--gris5,#888); font-weight:600; }
+  .dt-falta{ margin-top:8px; padding:8px 10px; background:var(--gris2,#252525); border-left:3px solid var(--naranja,#E8651A); border-radius:6px; font-size:14px; }
+  .dt-lista tr[onclick]{ cursor:pointer; } .dt-lista tr[onclick]:hover td, .dt-lista tr.sel td{ background:var(--gris2,#252525); }
+  .dt-lista-grp{ font-weight:800; letter-spacing:.1em; text-transform:uppercase; font-size:11px; color:var(--gris5,#888); padding-top:12px !important; }
 </style>
  
 <div class="cf-root" id="cfRoot"><div class="cf-loading" id="cfLoading">Cargando cronograma...</div></div>
@@ -3774,7 +3787,7 @@ function toggleTema(){
           <button id="btnDtTop" style="background:rgba(22,163,74,.15);border:1px solid rgba(22,163,74,.45);color:#4ADE80;border-radius:7px;padding:6px 14px;font-family:Barlow Condensed,sans-serif;font-size:12px;font-weight:800;cursor:pointer;letter-spacing:.06em;">📊 OBRAS Y CERTIF.</button>
           <button id="btnViajesTop" style="background:rgba(59,130,246,.15);border:1px solid rgba(59,130,246,.45);color:#60A5FA;border-radius:7px;padding:6px 14px;font-family:Barlow Condensed,sans-serif;font-size:12px;font-weight:800;cursor:pointer;letter-spacing:.06em;">✈ VIAJES</button>
           <button onclick="abrirReporte()" style="background:rgba(232,101,26,.15);border:1px solid rgba(232,101,26,.45);color:var(--naranja,#E8651A);border-radius:7px;padding:6px 14px;font-family:Barlow Condensed,sans-serif;font-size:12px;font-weight:800;cursor:pointer;letter-spacing:.06em;text-transform:uppercase;display:flex;align-items:center;gap:6px;white-space:nowrap;">🖨 Reporte</button>
-          <button onclick="abrirPlanos()" style="background:rgba(124,58,237,.15);border:1px solid rgba(124,58,237,.45);color:#A78BFA;border-radius:7px;padding:6px 14px;font-family:Barlow Condensed,sans-serif;font-size:12px;font-weight:800;cursor:pointer;letter-spacing:.06em;text-transform:uppercase;display:flex;align-items:center;gap:6px;white-space:nowrap;">📋 Planos</button>
+          <button onclick="window.open('https://drive.google.com/drive/folders/1lAODEcN9ypzMBSqpOiUx8kD6Alac8GK-','_blank','noopener')" title="Abre la carpeta de planos en Google Drive" style="background:rgba(124,58,237,.15);border:1px solid rgba(124,58,237,.45);color:#A78BFA;border-radius:7px;padding:6px 14px;font-family:Barlow Condensed,sans-serif;font-size:12px;font-weight:800;cursor:pointer;letter-spacing:.06em;text-transform:uppercase;display:flex;align-items:center;gap:6px;white-space:nowrap;">📋 Planos</button>
           <span id="cfEditorBadge"></span>
           <span id="cfSyncStatus"></span>
           <button class="theme-toggle-btn" id="btnTema" title="Cambiar tema" onclick="toggleTema()">🌙</button>
@@ -4895,49 +4908,113 @@ function _dtCertAuto(st, sid){
 }
 function _dtFechaCorta(s){ if(!s) return ''; var p=s.split('-'); return p[2]+'/'+p[1]+'/'+p[0].slice(2); }
 
+var DT_PAGO = {'':'Sin dato', pendiente:'Certificado pendiente de pago', al_dia:'Pagos al día', pagado:'Pagado total'};
+var DT_COLOR = {vencido:'#EF4444', demorada:'#EF4444', pausada:'#B45309', en_curso:'#2563EB', por_iniciar:'#64748B', terminada:'#16A34A', sin:'#9CA3AF'};
+var DT_LEYENDA = {en_curso:'En curso', vencido:'Plazo vencido / demorada', terminada:'Terminada', por_iniciar:'Por iniciar', sin:'Sin obra cargada'};
+// Zonas del plano de planta (píxeles sobre plano-planta.webp de 2000x815) → sectores del cronograma
+var DT_PLANO = {w:2000, h:815};
+var DT_ZONAS = [
+  {n:'Planta de agua', s:['trat_aguas'], r:[815,120,950,248]},
+  {n:'Refrigeración', s:['refrigeracion'], r:[955,120,1108,248]},
+  {n:'Tratamiento de CO2', s:[], r:[1110,90,1330,248]},
+  {n:'Caldera', s:['caldera'], r:[1388,92,1495,242]},
+  {n:'Patio de chips', s:['caldera'], r:[1495,78,1700,246]},
+  {n:'Burlanda', s:['burlanda'], r:[663,295,855,462]},
+  {n:'Subproductos', s:['subproductos'], r:[855,295,978,462]},
+  {n:'Destilación', s:['destilacion_ed','destilacion'], r:[1014,295,1122,465]},
+  {n:'Molienda-Fermentación', s:['molienda','fermentadores'], r:[1155,295,1422,442]},
+  {n:'Silos y almacenamiento', s:['silos'], r:[1520,300,1765,452]},
+  {n:'Patio de leña', s:['fzkct2dm'], r:[1600,452,1700,492]},
+  {n:'Galpón de insumos', s:['galpon_insumos'], r:[1805,310,1885,492]},
+  {n:'Ingreso y báscula', s:[], r:[345,280,475,335]},
+  {n:'Laguna de retardo', s:[], r:[617,655,710,807]}
+];
+var _dtSel = null; // índice de zona, o 's:<sectorId>' si se eligió desde la lista
+
 function renderDT(container, st){
   var dt = _dtInit(st);
   var h = '<div class="vj-wrap"><div class="vj-bar">'
-    +'<button class="vj-btn'+(_dtTab==='obras'?' pri':'')+'" onclick="_dtTab=\'obras\';_dtRe()">Estado por obra</button>'
+    +'<button class="vj-btn'+(_dtTab==='obras'?' pri':'')+'" onclick="_dtTab=\'obras\';_dtRe()">Mapa de obra</button>'
     +'<button class="vj-btn'+(_dtTab==='cert'?' pri':'')+'" onclick="_dtTab=\'cert\';_dtRe()">Certificados</button></div>';
   h += (_dtTab==='obras') ? _dtHtmlObras(st) : _dtHtmlCert(st);
   container.innerHTML = h + '</div>';
 }
 
-// ── Estado por obra ──
-function _dtHtmlObras(st){
-  var h = '', hoy = _dtHoy();
-  st.grupos.forEach(function(g){
-    h += '<div class="dt-grp" style="border-color:'+(g.color||'#E8651A')+'">'+escHGlob(g.nombre||g.id)+'</div><div class="dt-cards">';
-    g.sectores.forEach(function(s){
-      var r = _dtResumenSector(st, s.id), o = st.dt.obras[s.id] || {}, auto = _dtCertAuto(st, s.id);
-      var ct = o.ct ? _dtCt(st,o.ct) : (auto ? _dtCt(st,auto.ct) : null);
-      var cert = (o.cert===undefined||o.cert==='') ? (auto?auto.pct:null) : Number(o.cert);
-      var vencido = false;
-      var estado = o.estado;
-      if(!estado){
-        if(!r) estado = 'por_iniciar';
-        else if(hoy<r.ini) estado = 'por_iniciar';
-        else if(hoy>r.fin){ if(cert!==null && cert>=100) estado='terminada'; else { estado='demorada'; vencido=true; } }
-        else estado = 'en_curso';
-      }
-      var sem = 'gris';
-      if(cert!==null && r){ var d = r.plan - cert; sem = d>15?'rojo':d>5?'ambar':'verde'; }
-      h += '<div class="dt-card sem-'+sem+'"><div class="dt-card-h"><b>'+escHGlob(s.nombre)+'</b>'
-        +'<span class="dt-badge est-'+estado+'">'+(vencido?'Plazo vencido':DT_EST_OBRA[estado])+'</span></div>'
-        +'<div class="dt-meta">'+(ct?'Contratista: <b>'+escHGlob(ct.nombre)+'</b>':'<i>Sin contratista asignado</i>')
-        +(r?' · '+_dtFechaCorta(r.ini)+' → '+_dtFechaCorta(r.fin):' · sin tareas en el cronograma')+'</div>'
-        +(r?'<div class="dt-bar"><span>Plan (tiempo) '+r.plan+'%</span><div><i style="width:'+r.plan+'%"></i></div></div>':'')
-        +'<div class="dt-bar"><span>Certificado '+(cert===null?'—':cert+'%')+((o.cert===undefined||o.cert==='')&&auto?' · cert. N° '+auto.nro+' ('+_dtFechaCorta(auto.fecha)+')':'')+'</span><div><i class="c" style="width:'+(cert||0)+'%"></i></div></div>'
-        +(r&&r.activas.length?'<div class="dt-meta"><b>Hoy en obra:</b> '+escHGlob(r.activas.slice(0,4).join(', '))+(r.activas.length>4?'…':'')+'</div>':'')
-        +(r&&r.prox?'<div class="dt-meta"><b>Próximo:</b> '+escHGlob(r.prox.nombre)+' ('+_dtFechaCorta(r.prox.inicio)+')</div>':'')
-        +(o.obs?'<div class="dt-obs">'+escHGlob(o.obs)+'</div>':'')
-        +'<div style="margin-top:8px"><button class="vj-btn" onclick="_dtEditObra(\''+s.id+'\')">Editar</button></div></div>';
-    });
-    h += '</div>';
-  });
-  return h + '<div class="dt-nota">El semáforo compara el avance planificado por tiempo (del cronograma) contra el % certificado que cargás a mano: &gt;5 pts de diferencia ámbar, &gt;15 rojo.</div>';
+// Estado consolidado de una obra (sector del cronograma)
+function _dtInfo(st, sid){
+  var r = _dtResumenSector(st, sid), o = st.dt.obras[sid] || {}, auto = _dtCertAuto(st, sid), hoy = _dtHoy();
+  var ct = o.ct ? _dtCt(st,o.ct) : (auto ? _dtCt(st,auto.ct) : null);
+  var cert = (o.cert===undefined||o.cert==='') ? (auto?auto.pct:null) : Number(o.cert);
+  var vencido = false, estado = o.estado;
+  if(!estado){
+    if(!r || hoy<r.ini) estado = 'por_iniciar';
+    else if(hoy>r.fin){ if(cert!==null && cert>=100) estado='terminada'; else { estado='demorada'; vencido=true; } }
+    else estado = 'en_curso';
+  }
+  var nombre = sid; st.grupos.forEach(function(g){ g.sectores.forEach(function(s){ if(s.id===sid) nombre=s.nombre; }); });
+  return {sid:sid, nombre:nombre, r:r, o:o, auto:auto, ct:ct, cert:cert, estado:estado, vencido:vencido, clave:vencido?'vencido':estado};
 }
+function _dtBadge(i){ return '<span class="dt-badge est-'+i.estado+'">'+(i.vencido?'Plazo vencido':DT_EST_OBRA[i.estado])+'</span>'; }
+function _dtRgba(hex, a){ var n=parseInt(hex.slice(1),16); return 'rgba('+(n>>16)+','+((n>>8)&255)+','+(n&255)+','+a+')'; }
+
+function _dtFicha(st, i){
+  var r=i.r, o=i.o;
+  return '<div class="dt-card dt-ficha"><div class="dt-card-h"><b>'+escHGlob(i.nombre)+'</b>'+_dtBadge(i)+'</div>'
+    +'<div class="dt-filas">'
+    +'<span>Contratista</span><b>'+(i.ct?escHGlob(i.ct.nombre):'Sin asignar')+'</b>'
+    +'<span>Plazo</span><b>'+(r?_dtFechaCorta(r.ini)+' → '+_dtFechaCorta(r.fin):'Sin fechas en el cronograma')+'</b>'
+    +'<span>Certificado</span><b>'+(i.cert===null?'Sin certificar':i.cert+'%'+((o.cert===undefined||o.cert==='')&&i.auto?' <small>(cert. N° '+i.auto.nro+' del '+_dtFechaCorta(i.auto.fecha)+')</small>':''))+'</b>'
+    +'<span>Pago</span><b>'+DT_PAGO[o.pago||'']+'</b>'
+    +(r&&r.prox?'<span>Próximo</span><b>'+escHGlob(r.prox.nombre)+' ('+_dtFechaCorta(r.prox.inicio)+')</b>':'')
+    +'</div>'
+    +(r?'<div class="dt-bar"><span>Avance planificado por tiempo '+r.plan+'%</span><div><i style="width:'+r.plan+'%"></i></div></div>':'')
+    +'<div class="dt-bar"><span>Certificado '+(i.cert===null?'—':i.cert+'%')+'</span><div><i class="c" style="width:'+Math.min(100,i.cert||0)+'%"></i></div></div>'
+    +(o.obs?'<div class="dt-falta"><b>Qué falta:</b> '+escHGlob(o.obs)+'</div>':'')
+    +'<div style="margin-top:8px"><button class="vj-btn" onclick="_dtEditObra(\''+i.sid+'\')">Editar</button></div></div>';
+}
+
+function _dtHtmlObras(st){
+  var orden = ['vencido','demorada','pausada','en_curso','por_iniciar','terminada'];
+  var h = '<div class="dt-mapa"><img src="plano-planta.webp" alt="Plano de planta AlcoEnergy">';
+  DT_ZONAS.forEach(function(z, zi){
+    var infos = z.s.map(function(sid){ return _dtInfo(st, sid); });
+    var clave = 'sin';
+    orden.some(function(k){ if(infos.some(function(i){ return i.clave===k; })){ clave=k; return true; } return false; });
+    var certs = infos.filter(function(i){ return i.cert!==null; });
+    var col = DT_COLOR[clave], r = z.r;
+    h += '<div class="dt-zona'+(_dtSel===zi?' sel':'')+'" title="'+escHGlob(z.n)+'" onclick="_dtSel='+zi+';_dtRe();_dtVerDetalle()" '
+      +'style="left:'+(r[0]/DT_PLANO.w*100)+'%;top:'+(r[1]/DT_PLANO.h*100)+'%;width:'+((r[2]-r[0])/DT_PLANO.w*100)+'%;height:'+((r[3]-r[1])/DT_PLANO.h*100)+'%;'
+      +'border-color:'+col+';background:'+_dtRgba(col,_dtSel===zi?.35:.18)+'">'
+      +'<span style="background:'+col+'">'+escHGlob(z.n)+(certs.length?' · '+certs[0].cert+'%':'')+'</span></div>';
+  });
+  h += '</div><div class="dt-leyenda">'+Object.keys(DT_LEYENDA).map(function(k){ return '<span><i style="background:'+DT_COLOR[k]+'"></i>'+DT_LEYENDA[k]+'</span>'; }).join('')+'</div>';
+
+  // Detalle de lo seleccionado
+  h += '<div id="dtDetalle">';
+  if(_dtSel===null) h += '<div class="dt-nota" style="font-size:15px">Tocá un sector del plano (o una obra de la lista) para ver contratista, estado, certificado, pago y qué falta.</div>';
+  else if(typeof _dtSel==='string'){ h += _dtFicha(st, _dtInfo(st, _dtSel.slice(2))); }
+  else {
+    var z = DT_ZONAS[_dtSel];
+    h += '<h3 class="vj-h" style="margin:4px 0 10px">'+escHGlob(z.n)+'</h3>';
+    h += z.s.length ? '<div class="dt-cards">'+z.s.map(function(sid){ return _dtFicha(st, _dtInfo(st, sid)); }).join('')+'</div>'
+                    : '<div class="dt-nota" style="font-size:15px">Este sector todavía no tiene obra cargada en el cronograma.</div>';
+  }
+  h += '</div>';
+
+  // Lista de todas las obras
+  var enPlano = {}; DT_ZONAS.forEach(function(z){ z.s.forEach(function(s){ enPlano[s]=1; }); });
+  h += '<h3 class="vj-h" style="margin:26px 0 6px">Todas las obras</h3><table class="dt-tab dt-lista"><tr><th>Obra</th><th>Contratista</th><th>Estado</th><th>Certificado</th></tr>';
+  st.grupos.forEach(function(g){
+    h += '<tr><td colspan="4" class="dt-lista-grp">'+escHGlob(g.nombre||g.id)+'</td></tr>';
+    g.sectores.forEach(function(s){
+      var i = _dtInfo(st, s.id);
+      h += '<tr class="'+(_dtSel==='s:'+s.id?'sel':'')+'" onclick="_dtSel=\'s:'+s.id+'\';_dtRe();_dtVerDetalle()"><td>'+escHGlob(s.nombre)+(enPlano[s.id]?'':' <small>(fuera del plano)</small>')+'</td>'
+        +'<td>'+(i.ct?escHGlob(i.ct.nombre):'—')+'</td><td>'+_dtBadge(i)+'</td><td>'+(i.cert===null?'—':i.cert+'%')+'</td></tr>';
+    });
+  });
+  return h + '</table>';
+}
+function _dtVerDetalle(){ var d=document.getElementById('dtDetalle'); if(d && d.scrollIntoView) d.scrollIntoView({behavior:'smooth', block:'nearest'}); }
 function _dtModal(titulo, body, onSave, onDel){
   var ov = document.createElement('div'); ov.className='vj-ov'; ov.id='dtOv';
   ov.onclick = function(e){ if(e.target===ov) ov.remove(); };
@@ -4957,10 +5034,11 @@ function _dtEditObra(sid){
   _dtModal('Obra: '+escHGlob(nombre),
     '<label>Estado (vacío = automático según fechas)</label><select id="doEst"><option value="">Automático</option>'+_dtOpts(DT_EST_OBRA,o.estado)+'</select>'
     +'<label>Contratista</label><select id="doCt">'+cts+'</select>'
-    +'<label>% certificado acumulado</label><input id="doCert" type="number" min="0" max="100" step="0.1" value="'+(o.cert===undefined?'':o.cert)+'">'
-    +'<label>Observación de la dirección técnica</label><textarea id="doObs" rows="3">'+escHGlob(o.obs||'')+'</textarea>',
-    function(){ st.dt.obras[sid] = {estado:document.getElementById('doEst').value, ct:document.getElementById('doCt').value,
-      cert:document.getElementById('doCert').value, obs:document.getElementById('doObs').value.trim()}; });
+    +'<div class="vj-row"><div><label>% certificado (vacío = del último certificado)</label><input id="doCert" type="number" min="0" max="100" step="0.1" value="'+(o.cert===undefined?'':o.cert)+'"></div>'
+    +'<div><label>Pago</label><select id="doPago">'+_dtOpts(DT_PAGO,o.pago||'')+'</select></div></div>'
+    +'<label>Qué falta / observación</label><textarea id="doObs" rows="4">'+escHGlob(o.obs||'')+'</textarea>',
+    function(){ st.dt.obras[sid] = Object.assign({}, o, {estado:document.getElementById('doEst').value, ct:document.getElementById('doCt').value,
+      cert:document.getElementById('doCert').value, pago:document.getElementById('doPago').value, obs:document.getElementById('doObs').value.trim()}); });
 }
 
 // ── Certificados ──
