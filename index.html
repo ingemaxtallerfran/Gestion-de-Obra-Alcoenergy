@@ -811,6 +811,60 @@
   .cf-maq-add .qty-inp{ width:60px; text-align:center; }
   .cf-maq-add .tipo-inp{ flex:1; }
   .cf-maq-add button{ background:var(--naranja); border:none; color:#fff; font-family:'Barlow Condensed',sans-serif; font-size:14px; font-weight:800; padding:8px 14px; border-radius:var(--rsm); cursor:pointer; }
+  .vj-wrap{ padding:4px 0 24px; font-family:'Barlow Condensed',sans-serif; }
+  .vj-bar{ display:flex; gap:8px; flex-wrap:wrap; align-items:center; margin:8px 0 14px; }
+  .vj-btn{ background:var(--gris2,#252525); border:1px solid var(--borde,#2e2e2e); color:var(--texto,#f0f0f0);
+    padding:7px 14px; border-radius:7px; cursor:pointer; font-family:inherit; font-size:13px; font-weight:700; letter-spacing:.04em; }
+  .vj-btn.pri{ background:var(--naranja,#E8651A); border-color:var(--naranja,#E8651A); color:#fff; }
+  .vj-mes{ font-size:20px; font-weight:800; min-width:170px; text-align:center; text-transform:uppercase; letter-spacing:.06em; }
+  .vj-grid{ display:grid; grid-template-columns:repeat(7,minmax(0,1fr)); gap:3px; }
+  .vj-dow{ font-size:11px; font-weight:700; text-align:center; color:var(--gris5,#888); letter-spacing:.1em; text-transform:uppercase; padding:4px 0; }
+  .vj-dia{ min-height:84px; background:var(--gris1,#1a1a1a); border:1px solid var(--borde,#2e2e2e); border-radius:6px; padding:3px 4px; cursor:pointer; overflow:hidden; }
+  .vj-dia.vacio{ background:transparent; border-color:transparent; cursor:default; }
+  .vj-dia.finde{ opacity:.7; }
+  .vj-dia.hoy{ border-color:var(--naranja,#E8651A); box-shadow:inset 0 0 0 1px var(--naranja,#E8651A); }
+  .vj-num{ font-size:12px; font-weight:700; color:var(--gris5,#888); }
+  .vj-chip{ font-size:11px; font-weight:700; color:#fff; border-radius:4px; padding:1px 5px; margin-top:2px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; cursor:pointer; }
+  .vj-chip.prov{ opacity:.65; border:1px dashed #fff; }
+  .vj-mark{ font-size:10px; font-weight:700; margin-top:2px; padding:1px 4px; border-radius:4px; background:rgba(107,114,128,.35); color:var(--texto,#f0f0f0); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .vj-mark.lim{ background:rgba(239,68,68,.35); }
+  .vj-list{ margin-top:22px; display:grid; gap:10px; }
+  .vj-card{ background:var(--gris1,#1a1a1a); border:1px solid var(--borde,#2e2e2e); border-left:4px solid var(--naranja,#E8651A); border-radius:8px; padding:10px 14px; }
+  .vj-card h4{ margin:0 0 3px; font-size:16px; font-weight:800; }
+  .vj-card .sub{ font-size:13px; color:var(--gris5,#888); }
+  .vj-card .obra{ margin-top:6px; font-size:12px; color:var(--texto,#f0f0f0); opacity:.85; }
+  .vj-ov{ position:fixed; inset:0; background:rgba(0,0,0,.6); z-index:500; display:flex; align-items:center; justify-content:center; padding:16px; }
+  .vj-modal{ background:var(--gris1,#1a1a1a); border:1px solid var(--borde,#2e2e2e); border-top:3px solid var(--naranja,#E8651A);
+    border-radius:12px; padding:18px; width:100%; max-width:440px; max-height:92vh; overflow:auto; font-family:'Barlow Condensed',sans-serif; color:var(--texto,#f0f0f0); }
+  .vj-modal label{ display:block; font-size:11px; font-weight:700; letter-spacing:.1em; text-transform:uppercase; color:var(--gris5,#888); margin:10px 0 3px; }
+  .vj-modal input,.vj-modal select,.vj-modal textarea{ width:100%; box-sizing:border-box; background:var(--gris2,#252525); border:1px solid var(--borde,#2e2e2e);
+    color:var(--texto,#f0f0f0); padding:8px 10px; border-radius:7px; font-family:inherit; font-size:15px; }
+  .vj-row{ display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+  @media (max-width:640px){ .vj-dia{ min-height:58px; } .vj-chip,.vj-mark{ font-size:9px; padding:0 3px; } }
+  .dt-grp{ font-size:15px; font-weight:800; letter-spacing:.12em; text-transform:uppercase; border-left:4px solid; padding:2px 10px; margin:18px 0 10px; font-family:'Barlow Condensed',sans-serif; }
+  .dt-cards{ display:grid; grid-template-columns:repeat(auto-fill,minmax(260px,1fr)); gap:10px; font-family:'Barlow Condensed',sans-serif; }
+  .dt-card{ background:var(--gris1,#1a1a1a); border:1px solid var(--borde,#2e2e2e); border-top:4px solid #555; border-radius:8px; padding:10px 12px; }
+  .dt-card.sem-verde{ border-top-color:#16A34A; } .dt-card.sem-ambar{ border-top-color:#F59E0B; } .dt-card.sem-rojo{ border-top-color:#EF4444; }
+  .dt-card-h{ display:flex; justify-content:space-between; gap:6px; align-items:center; font-size:17px; }
+  .dt-badge{ font-size:11px; font-weight:800; padding:2px 8px; border-radius:10px; background:#444; color:#fff; white-space:nowrap; }
+  .dt-badge.est-en_curso{ background:#2563EB; } .dt-badge.est-demorada{ background:#EF4444; } .dt-badge.est-terminada{ background:#16A34A; } .dt-badge.est-pausada{ background:#B45309; }
+  .dt-badge.ce-revision{ background:#B45309; } .dt-badge.ce-aprobado{ background:#2563EB; } .dt-badge.ce-pagado{ background:#16A34A; }
+  .dt-meta{ font-size:13px; color:var(--gris5,#888); margin-top:4px; }
+  .dt-meta b{ color:var(--texto,#f0f0f0); }
+  .dt-obs{ font-size:13px; margin-top:6px; padding:6px 8px; background:var(--gris2,#252525); border-radius:6px; }
+  .dt-bar{ margin-top:6px; font-size:12px; color:var(--gris5,#888); }
+  .dt-bar > div{ height:7px; background:var(--gris2,#252525); border-radius:4px; overflow:hidden; margin-top:2px; }
+  .dt-bar i{ display:block; height:100%; background:#64748b; } .dt-bar i.c{ background:var(--naranja,#E8651A); }
+  .dt-nota{ font-size:12px; color:var(--gris5,#888); margin-top:14px; font-family:'Barlow Condensed',sans-serif; }
+  .dt-kpis{ display:grid; grid-template-columns:repeat(auto-fit,minmax(130px,1fr)); gap:8px; margin:10px 0 4px; }
+  .dt-kpis small{ display:block; font-size:10px; letter-spacing:.1em; text-transform:uppercase; color:var(--gris5,#888); }
+  .dt-kpis b{ font-size:15px; }
+  .dt-tab{ width:100%; border-collapse:collapse; margin-top:10px; font-size:13px; }
+  .dt-tab th{ text-align:left; font-size:10px; letter-spacing:.1em; text-transform:uppercase; color:var(--gris5,#888); padding:4px 8px; }
+  .dt-tab td{ padding:6px 8px; border-top:1px solid var(--borde,#2e2e2e); }
+  .dt-tab a{ color:#60A5FA; margin-right:6px; }
+  .dt-rub{ display:flex; justify-content:space-between; gap:10px; font-size:12px; padding:3px 0; border-bottom:1px dotted var(--borde,#2e2e2e); }
+  @media (max-width:640px){ .dt-tab{ display:block; overflow-x:auto; } }
 </style>
  
 <div class="cf-root" id="cfRoot"><div class="cf-loading" id="cfLoading">Cargando cronograma...</div></div>
@@ -3700,7 +3754,8 @@ function toggleTema(){
         </div>
         <div class="cf-brand-right" style="display:flex;align-items:center;gap:10px;">
           <div class="cf-client-badge"><span class="lbl">Obra de</span><img src="${ALCO_LOGO}" alt="AlcoEnergy"/></div>
-          <button id="btnComprasTop" style="background:rgba(255,255,255,.06);border:1px solid var(--borde,#2e2e2e);color:var(--texto,#f0f0f0);border-radius:7px;padding:6px 14px;font-family:Barlow Condensed,sans-serif;font-size:12px;font-weight:800;cursor:pointer;letter-spacing:.06em;text-transform:uppercase;display:flex;align-items:center;gap:6px;white-space:nowrap;">🛒 Compras</button>
+          <button id="btnDtTop" style="background:rgba(22,163,74,.15);border:1px solid rgba(22,163,74,.45);color:#4ADE80;border-radius:7px;padding:6px 14px;font-family:Barlow Condensed,sans-serif;font-size:12px;font-weight:800;cursor:pointer;letter-spacing:.06em;">📊 OBRAS Y CERTIF.</button>
+          <button id="btnViajesTop" style="background:rgba(59,130,246,.15);border:1px solid rgba(59,130,246,.45);color:#60A5FA;border-radius:7px;padding:6px 14px;font-family:Barlow Condensed,sans-serif;font-size:12px;font-weight:800;cursor:pointer;letter-spacing:.06em;">✈ VIAJES</button>
           <button onclick="abrirReporte()" style="background:rgba(232,101,26,.15);border:1px solid rgba(232,101,26,.45);color:var(--naranja,#E8651A);border-radius:7px;padding:6px 14px;font-family:Barlow Condensed,sans-serif;font-size:12px;font-weight:800;cursor:pointer;letter-spacing:.06em;text-transform:uppercase;display:flex;align-items:center;gap:6px;white-space:nowrap;">🖨 Reporte</button>
           <button onclick="abrirPlanos()" style="background:rgba(124,58,237,.15);border:1px solid rgba(124,58,237,.45);color:#A78BFA;border-radius:7px;padding:6px 14px;font-family:Barlow Condensed,sans-serif;font-size:12px;font-weight:800;cursor:pointer;letter-spacing:.06em;text-transform:uppercase;display:flex;align-items:center;gap:6px;white-space:nowrap;">📋 Planos</button>
           <span id="cfEditorBadge"></span>
@@ -3806,9 +3861,11 @@ function toggleTema(){
       ${(()=>{
         if(state.vista==='calendario') return '<div id="vistaEspecial" data-vista-tipo="calendario"></div>';
         if(state.vista==='compras') return '<div id="vistaEspecial" data-vista-tipo="compras"></div>';
+        if(state.vista==='viajes') return '<div id="vistaEspecial" data-vista-tipo="viajes"></div>';
+        if(state.vista==='dt') return '<div id="vistaEspecial" data-vista-tipo="dt"></div>';
         return '';
       })()}
-      ${state.vista!=='calendario'&&state.vista!=='compras'?`<div style="position:relative;">
+      ${state.vista!=='calendario'&&state.vista!=='compras'&&state.vista!=='viajes'&&state.vista!=='dt'?`<div style="position:relative;">
         <button class="gantt-fs-btn" id="btnGanttFS" title="Pantalla completa">⤢ Pantalla completa</button>
         <div class="cf-gantt-wrap" id="cfGanttWrap"><div class="cf-gantt">
         <div class="cf-rowlabels">
@@ -3920,6 +3977,8 @@ function toggleTema(){
       const tipoVista = vistaEsp.getAttribute('data-vista-tipo');
       if(tipoVista==='calendario' && typeof renderCalendario==='function') renderCalendario(vistaEsp, state);
       if(tipoVista==='compras' && typeof renderCompras==='function') renderCompras(vistaEsp, state);
+      if(tipoVista==='viajes' && typeof renderViajes==='function') renderViajes(vistaEsp, state);
+      if(tipoVista==='dt' && typeof renderDT==='function') renderDT(vistaEsp, state);
     }
 
     const _sa = (id,fn)=>{ const el=document.getElementById(id); if(el) el.onclick=fn; };
@@ -3931,8 +3990,10 @@ function toggleTema(){
     _sc('inpProyecto', (e)=>{ state.proyecto=e.target.value; save(); });
     _sc('inpLimite', (e)=>{ state.fechaLimite=e.target.value; save(); render(); });
     root.querySelectorAll('[data-vista]').forEach(b=>b.onclick=()=>{ state.vista=b.dataset.vista; save(); render(); });
-    const btnComprasTop = document.getElementById('btnComprasTop');
-    if(btnComprasTop) btnComprasTop.onclick = ()=>{ state.vista='compras'; save(); render(); };
+    const btnViajesTop = document.getElementById('btnViajesTop');
+    if(btnViajesTop) btnViajesTop.onclick = ()=>{ state.vista='viajes'; save(); render(); };
+    const btnDtTop = document.getElementById('btnDtTop');
+    if(btnDtTop) btnDtTop.onclick = ()=>{ state.vista='dt'; save(); render(); };
     root.querySelectorAll('[data-zoom]').forEach(b=>b.onclick=()=>{ state.zoom=b.dataset.zoom; save(); render(); });
     const lvlS = document.getElementById('btnLvlSectores'); if(lvlS) lvlS.onclick = ()=>setAllCollapsed(true,true);
     const lvlF = document.getElementById('btnLvlFrentes'); if(lvlF) lvlF.onclick = ()=>setAllCollapsed(true,false);
@@ -4398,6 +4459,7 @@ function toggleTema(){
 
   // Exponer state y cuadrillas para funciones globales (plantillas)
   window._stateRef = state; // referencia inmediata
+  window._saveState = function(){ return save(); };
   if(typeof window._cuadModo==='undefined') window._cuadModo='hoy';
   // Setear sector default para el calendario
   if(state.grupos && state.grupos[0] && state.grupos[0].sectores[0]){
@@ -4510,7 +4572,411 @@ function toggleTema(){
     </div>
     <div id="planosSectores"></div>
   </div>
-    +'<button id="taskDetailClose" '
+</div>
 
+<script>
+// ════════════════════════════════════════
+//  VISTA VIAJES — calendario de la dirección técnica
+// ════════════════════════════════════════
+var VJ_ESTADOS = {planificado:'Tentativo', confirmado:'Confirmado', realizado:'Realizado'};
+var VJ_MESES = ['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
+var VJ_PALETA = ['#E8651A','#3B82F6','#16A34A','#A855F7','#EAB308','#EC4899','#14B8A6','#EF4444'];
+var _vjMes = null; // {y, m}
+
+function _vjPersist(){
+  var st = window._stateRef; if(!st) return;
+  try{ localStorage.setItem('cf-viajes', JSON.stringify(st.viajes||[])); }catch(e){}
+  if(typeof window._saveState==='function') window._saveState();
+}
+function _vjColor(nombre){
+  var h = 0; String(nombre||'').split('').forEach(function(c){ h = (h*31 + c.charCodeAt(0))>>>0; });
+  return VJ_PALETA[h % VJ_PALETA.length];
+}
+function _vjPersonas(v){ return (v.personas||[]).filter(Boolean); }
+function _vjFmt(s){ if(!s) return ''; var p=s.split('-'); return p[2]+'/'+p[1]; }
+function _vjSectorNombre(st, id){
+  for(var i=0;i<st.grupos.length;i++){ var s=st.grupos[i].sectores.find(function(x){return x.id===id;}); if(s) return s.nombre; }
+  return id||'';
+}
+function _vjObraEnFechas(st, desde, hasta){
+  // Tareas hoja del cronograma que se solapan con el viaje, agrupadas por sector
+  var padres = {}; st.tasks.forEach(function(t){ if(t.parentId) padres[t.parentId]=true; });
+  var por = {};
+  st.tasks.forEach(function(t){
+    if(padres[t.id] || !t.inicio || !t.fin) return;
+    if(t.fin < desde || t.inicio > hasta) return;
+    var n = _vjSectorNombre(st, t.sector);
+    (por[n] = por[n] || []).push(t);
+  });
+  return por;
+}
+
+function renderViajes(container, st){
+  if(!st.viajes || !st.viajes.length){
+    try{ var loc = JSON.parse(localStorage.getItem('cf-viajes')||'[]'); if(loc.length) st.viajes = loc; }catch(e){}
+  }
+  if(!st.viajes) st.viajes = [];
+  var hoy = new Date(); hoy.setHours(0,0,0,0);
+  if(!_vjMes) _vjMes = {y:hoy.getFullYear(), m:hoy.getMonth()};
+  var y=_vjMes.y, m=_vjMes.m;
+  var primer = new Date(y,m,1).getDay(), dias = new Date(y,m+1,0).getDate();
+  var hoyStr = hoy.getFullYear()+'-'+String(hoy.getMonth()+1).padStart(2,'0')+'-'+String(hoy.getDate()).padStart(2,'0');
+
+  // Días con hormigonado (tareas con m3) → hito para decidir cuándo conviene estar en obra
+  var hormig = st.tasks.filter(function(t){ return t.m3>0 && t.inicio && t.fin; });
+
+  var h = '<div class="vj-wrap">';
+  h += '<div class="vj-bar">'
+    +'<button class="vj-btn" onclick="_vjIr(-1)">‹</button>'
+    +'<div class="vj-mes">'+VJ_MESES[m]+' '+y+'</div>'
+    +'<button class="vj-btn" onclick="_vjIr(1)">›</button>'
+    +'<button class="vj-btn" onclick="_vjIr(0)">Hoy</button>'
+    +'<span style="flex:1"></span>'
+    +'<button class="vj-btn" onclick="_vjIcs()">Exportar .ics</button>'
+    +'<button class="vj-btn pri" onclick="_vjEditar(null)">+ Nuevo viaje</button>'
+    +'</div>';
+  h += '<div class="vj-grid">';
+  ['Dom','Lun','Mar','Mié','Jue','Vie','Sáb'].forEach(function(d){ h += '<div class="vj-dow">'+d+'</div>'; });
+  for(var v=0; v<primer; v++) h += '<div class="vj-dia vacio"></div>';
+  for(var d=1; d<=dias; d++){
+    var f = y+'-'+String(m+1).padStart(2,'0')+'-'+String(d).padStart(2,'0');
+    var dow = new Date(y,m,d).getDay();
+    h += '<div class="vj-dia'+(f===hoyStr?' hoy':'')+((dow===0||dow===6)?' finde':'')+'" onclick="_vjEditar(null,\''+f+'\')">';
+    h += '<div class="vj-num">'+d+'</div>';
+    st.viajes.forEach(function(vj, i){
+      if(f>=vj.desde && f<=vj.hasta){
+        var pers = _vjPersonas(vj);
+        var col = _vjColor(pers[0]||vj.titulo);
+        var lbl = (pers.length? pers.join('/')+' · ' : '') + (vj.titulo||'Viaje');
+        h += '<div class="vj-chip'+(vj.estado==='planificado'?' prov':'')+'" style="background:'+col+(vj.estado==='realizado'?';opacity:.5':'')+'" '
+          +'title="'+escHGlob(lbl)+'" onclick="event.stopPropagation();_vjEditar('+i+')">'+escHGlob(lbl)+'</div>';
+      }
+    });
+    if(hormig.some(function(t){ return f>=t.inicio && f<=t.fin && new Date(f+'T00:00:00').getDay()!==0; }))
+      h += '<div class="vj-mark" title="Hormigonado en obra">🏗 Hormigonado</div>';
+    if(st.fechaLimite===f) h += '<div class="vj-mark lim">⚑ Fecha límite</div>';
+    h += '</div>';
+  }
+  h += '</div>';
+
+  // Lista de próximos / todos los viajes, con la obra que está en curso en esas fechas
+  var orden = st.viajes.map(function(v,i){ return {v:v,i:i}; }).sort(function(a,b){ return a.v.desde.localeCompare(b.v.desde); });
+  h += '<div class="vj-list">';
+  if(!orden.length) h += '<div style="color:var(--gris5,#888);text-align:center;padding:16px;">Todavía no hay viajes cargados. Tocá un día o “+ Nuevo viaje”.</div>';
+  orden.forEach(function(o){
+    var vj=o.v, pers=_vjPersonas(vj), obra=_vjObraEnFechas(st, vj.desde, vj.hasta), sec=Object.keys(obra);
+    h += '<div class="vj-card" style="border-left-color:'+_vjColor(pers[0]||vj.titulo)+(vj.estado==='realizado'?';opacity:.6':'')+'">'
+      +'<h4>'+escHGlob(vj.titulo||'Viaje')+' <span style="font-size:12px;color:var(--gris5,#888);font-weight:700;">· '+VJ_ESTADOS[vj.estado||'planificado']+'</span></h4>'
+      +'<div class="sub">'+_vjFmt(vj.desde)+(vj.hasta!==vj.desde?' → '+_vjFmt(vj.hasta):'')
+      +(pers.length?' · '+escHGlob(pers.join(', ')):'')+(vj.destino?' · '+escHGlob(vj.destino):'')+'</div>'
+      +(vj.notas?'<div class="sub" style="margin-top:3px;">'+escHGlob(vj.notas)+'</div>':'')
+      +(sec.length?'<div class="obra"><b>En obra esos días:</b> '+sec.map(function(n){
+          return escHGlob(n)+' ('+obra[n].slice(0,3).map(function(t){return escHGlob(t.nombre);}).join(', ')+(obra[n].length>3?'…':'')+')';
+        }).join(' · ')+'</div>':'')
+      +'<div style="margin-top:6px;"><button class="vj-btn" onclick="_vjEditar('+o.i+')">Editar</button></div></div>';
+  });
+  h += '</div></div>';
+  container.innerHTML = h;
+}
+
+function _vjIr(delta){
+  var hoy = new Date();
+  if(delta===0) _vjMes = {y:hoy.getFullYear(), m:hoy.getMonth()};
+  else { var d = new Date(_vjMes.y, _vjMes.m+delta, 1); _vjMes = {y:d.getFullYear(), m:d.getMonth()}; }
+  var c = document.getElementById('vistaEspecial'); if(c) renderViajes(c, window._stateRef);
+}
+
+function _vjEditar(idx, fechaDefault){
+  var st = window._stateRef; if(!st.viajes) st.viajes = [];
+  var vj = (idx!==null && idx!==undefined) ? st.viajes[idx] : {titulo:'',desde:fechaDefault||'',hasta:fechaDefault||'',personas:[],destino:'',estado:'planificado',notas:''};
+  var nombres = {}; st.viajes.forEach(function(x){ _vjPersonas(x).forEach(function(n){ nombres[n]=1; }); });
+  var sectores = []; st.grupos.forEach(function(g){ g.sectores.forEach(function(s){ sectores.push(s.nombre); }); });
+  var ov = document.createElement('div'); ov.className='vj-ov'; ov.id='vjOv';
+  ov.onclick = function(e){ if(e.target===ov) ov.remove(); };
+  ov.innerHTML = '<div class="vj-modal"><h3 style="margin:0 0 4px;font-size:20px;">'+(idx!==null&&idx!==undefined?'Editar viaje':'Nuevo viaje')+'</h3>'
+    +'<label>Motivo / título</label><input id="vjTit" value="'+escHGlob(vj.titulo)+'" placeholder="Ej: Visita Molienda – hormigonado">'
+    +'<div class="vj-row"><div><label>Desde</label><input type="date" id="vjDes" value="'+vj.desde+'"></div>'
+    +'<div><label>Hasta</label><input type="date" id="vjHas" value="'+vj.hasta+'"></div></div>'
+    +'<label>Quiénes viajan (separados por coma)</label><input id="vjPer" list="vjNombres" value="'+escHGlob(_vjPersonas(vj).join(', '))+'">'
+    +'<datalist id="vjNombres">'+Object.keys(nombres).map(function(n){return '<option value="'+escHGlob(n)+'">';}).join('')+'</datalist>'
+    +'<label>Destino / sector</label><input id="vjDest" list="vjSect" value="'+escHGlob(vj.destino)+'" placeholder="Obra, sector, ciudad…">'
+    +'<datalist id="vjSect">'+sectores.map(function(n){return '<option value="'+escHGlob(n)+'">';}).join('')+'</datalist>'
+    +'<label>Estado</label><select id="vjEst">'+Object.keys(VJ_ESTADOS).map(function(k){return '<option value="'+k+'"'+((vj.estado||'planificado')===k?' selected':'')+'>'+VJ_ESTADOS[k]+'</option>';}).join('')+'</select>'
+    +'<label>Notas</label><textarea id="vjNot" rows="3">'+escHGlob(vj.notas)+'</textarea>'
+    +'<div style="display:flex;gap:8px;margin-top:14px;">'
+    +'<button class="vj-btn pri" onclick="_vjGuardar('+(idx===null||idx===undefined?'null':idx)+')">Guardar</button>'
+    +'<button class="vj-btn" onclick="document.getElementById(\'vjOv\').remove()">Cancelar</button>'
+    +'<span style="flex:1"></span>'
+    +((idx!==null&&idx!==undefined)?'<button class="vj-btn" style="border-color:#ef4444;color:#ef4444;" onclick="_vjBorrar('+idx+')">Borrar</button>':'')
+    +'</div></div>';
+  document.body.appendChild(ov);
+}
+function _vjGuardar(idx){
+  var st = window._stateRef;
+  var vj = {
+    titulo: document.getElementById('vjTit').value.trim(),
+    desde: document.getElementById('vjDes').value,
+    hasta: document.getElementById('vjHas').value,
+    personas: document.getElementById('vjPer').value.split(',').map(function(s){return s.trim();}).filter(Boolean),
+    destino: document.getElementById('vjDest').value.trim(),
+    estado: document.getElementById('vjEst').value,
+    notas: document.getElementById('vjNot').value.trim()
+  };
+  if(!vj.titulo || !vj.desde){ alert('Completá al menos el motivo y la fecha de inicio.'); return; }
+  if(!vj.hasta || vj.hasta < vj.desde) vj.hasta = vj.desde;
+  if(idx===null) st.viajes.push(vj); else st.viajes[idx] = vj;
+  document.getElementById('vjOv').remove();
+  _vjPersist();
+  var c = document.getElementById('vistaEspecial'); if(c) renderViajes(c, st);
+}
+function _vjBorrar(idx){
+  if(!confirm('¿Borrar este viaje?')) return;
+  window._stateRef.viajes.splice(idx,1);
+  document.getElementById('vjOv').remove();
+  _vjPersist();
+  var c = document.getElementById('vistaEspecial'); if(c) renderViajes(c, window._stateRef);
+}
+function _vjIcs(){
+  var st = window._stateRef, L = ['BEGIN:VCALENDAR','VERSION:2.0','PRODID:-//Ingemax//Viajes DT//ES'];
+  var ymd = function(s){ return s.replace(/-/g,''); };
+  (st.viajes||[]).forEach(function(v,i){
+    var fin = new Date(v.hasta+'T00:00:00'); fin.setDate(fin.getDate()+1); // DTEND es exclusivo
+    var finS = fin.getFullYear()+String(fin.getMonth()+1).padStart(2,'0')+String(fin.getDate()).padStart(2,'0');
+    L.push('BEGIN:VEVENT','UID:viaje'+i+'-'+ymd(v.desde)+'@ingemax','DTSTAMP:'+ymd(new Date().toISOString().slice(0,10))+'T000000Z',
+      'DTSTART;VALUE=DATE:'+ymd(v.desde),'DTEND;VALUE=DATE:'+finS,
+      'SUMMARY:'+(v.titulo||'Viaje').replace(/[,;]/g,' ')+(_vjPersonas(v).length?' ('+_vjPersonas(v).join('/')+')':''),
+      'LOCATION:'+(v.destino||'').replace(/[,;]/g,' '),'DESCRIPTION:'+(v.notas||'').replace(/\n/g,' ').replace(/[,;]/g,' '),'END:VEVENT');
+  });
+  L.push('END:VCALENDAR');
+  var a = document.createElement('a');
+  a.href = URL.createObjectURL(new Blob([L.join('\r\n')], {type:'text/calendar'}));
+  a.download = 'viajes-ingemax-alcoenergy.ics'; a.click();
+}
+</script>
+<script>
+// ════════════════════════════════════════
+//  VISTA DIRECCIÓN TÉCNICA — Estado por obra + Certificados de contratistas
+// ════════════════════════════════════════
+var DT_EST_OBRA = {por_iniciar:'Por iniciar', en_curso:'En curso', demorada:'Demorada', pausada:'Pausada', terminada:'Terminada'};
+var DT_EST_CERT = {presentado:'Presentado', revision:'En revisión DT', aprobado:'Aprobado', pagado:'Pagado'};
+var DT_MONEDA = {Gs:'₲', USD:'US$', ARS:'$'};
+var _dtTab = 'obras';
+
+function _dtSeed(){ return {obras:{}, contratistas:[], certificados:[]}; }
+function _dtInit(st){
+  if(!st.dt){ try{ var l = JSON.parse(localStorage.getItem('cf-dt')||'null'); if(l) st.dt = l; }catch(e){} }
+  if(!st.dt) st.dt = _dtSeed();
+  st.dt.obras = st.dt.obras || {}; st.dt.contratistas = st.dt.contratistas || []; st.dt.certificados = st.dt.certificados || [];
+  return st.dt;
+}
+function _dtPersist(){
+  var st = window._stateRef; if(!st) return;
+  try{ localStorage.setItem('cf-dt', JSON.stringify(st.dt)); }catch(e){}
+  if(typeof window._saveState==='function') window._saveState();
+}
+function _dtRe(){ var c=document.getElementById('vistaEspecial'); if(c) renderDT(c, window._stateRef); }
+function _dtNum(v){ // admite "1.234.567,89" o "1234567.89"
+  if(typeof v==='number') return v;
+  var s = String(v||'').trim().replace(/[^\d,.\-]/g,''); if(!s) return 0;
+  if(s.indexOf(',')>-1) s = s.replace(/\./g,'').replace(',','.');
+  else if((s.match(/\./g)||[]).length>1) s = s.replace(/\./g,'');
+  var n = parseFloat(s); return isNaN(n)?0:n;
+}
+function _dtFmt(n, mon){
+  if(n===''||n===null||n===undefined) return '—';
+  return (DT_MONEDA[mon]||'')+' '+Number(n).toLocaleString('es-AR',{maximumFractionDigits:0});
+}
+function _dtPct(a,b){ return b>0 ? Math.round(a/b*1000)/10 : 0; }
+function _dtCt(st,id){ return st.dt.contratistas.find(function(c){return c.id===id;}); }
+function _dtHoy(){ var d=new Date(); return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0'); }
+function _dtDays(a,b){ return Math.round((new Date(b+'T00:00:00')-new Date(a+'T00:00:00'))/86400000); }
+
+// Resumen de una obra (sector) a partir del cronograma
+function _dtResumenSector(st, sid){
+  var padres = {}; st.tasks.forEach(function(t){ if(t.parentId) padres[t.parentId]=true; });
+  var hojas = st.tasks.filter(function(t){ return t.sector===sid && !padres[t.id] && t.inicio && t.fin; });
+  if(!hojas.length) return null;
+  var hoy = _dtHoy(), tot=0, hecho=0, ini=hojas[0].inicio, fin=hojas[0].fin, activas=[], prox=null;
+  hojas.forEach(function(t){
+    var dur = _dtDays(t.inicio,t.fin)+1; tot += dur;
+    hecho += Math.max(0, Math.min(dur, _dtDays(t.inicio,hoy)+1));
+    if(t.inicio<ini) ini=t.inicio; if(t.fin>fin) fin=t.fin;
+    if(hoy>=t.inicio && hoy<=t.fin) activas.push(t.nombre);
+    if(t.inicio>hoy && (!prox || t.inicio<prox.inicio)) prox=t;
+  });
+  return {plan:Math.round(hecho/tot*100), ini:ini, fin:fin, activas:activas, prox:prox, n:hojas.length};
+}
+// % certificado y contratista tomados del último certificado cuyo rubro está vinculado a la obra (rubro.sectores)
+function _dtCertAuto(st, sid){
+  var certs = st.dt.certificados.slice().sort(function(a,b){ return (b.hasta||b.fecha||'').localeCompare(a.hasta||a.fecha||''); });
+  for(var i=0;i<certs.length;i++){
+    var c = certs[i], r = (c.rubros||[]).find(function(x){ return (x.sectores||[]).indexOf(sid)>-1; });
+    if(!r && (c.sectores||[]).indexOf(sid)>-1 && (c.rubros||[]).length){
+      r = {contrato:c.rubros.reduce(function(a,x){return a+(x.contrato||0);},0), acumulado:c.rubros.reduce(function(a,x){return a+(x.acumulado||0);},0)};
+    }
+    if(r && r.contrato>0) return {pct:Math.round(r.acumulado/r.contrato*1000)/10, ct:c.ct, nro:c.nro, fecha:c.hasta};
+  }
+  return null;
+}
+function _dtFechaCorta(s){ if(!s) return ''; var p=s.split('-'); return p[2]+'/'+p[1]+'/'+p[0].slice(2); }
+
+function renderDT(container, st){
+  var dt = _dtInit(st);
+  var h = '<div class="vj-wrap"><div class="vj-bar">'
+    +'<button class="vj-btn'+(_dtTab==='obras'?' pri':'')+'" onclick="_dtTab=\'obras\';_dtRe()">Estado por obra</button>'
+    +'<button class="vj-btn'+(_dtTab==='cert'?' pri':'')+'" onclick="_dtTab=\'cert\';_dtRe()">Certificados</button></div>';
+  h += (_dtTab==='obras') ? _dtHtmlObras(st) : _dtHtmlCert(st);
+  container.innerHTML = h + '</div>';
+}
+
+// ── Estado por obra ──
+function _dtHtmlObras(st){
+  var h = '', hoy = _dtHoy();
+  st.grupos.forEach(function(g){
+    h += '<div class="dt-grp" style="border-color:'+(g.color||'#E8651A')+'">'+escHGlob(g.nombre||g.id)+'</div><div class="dt-cards">';
+    g.sectores.forEach(function(s){
+      var r = _dtResumenSector(st, s.id), o = st.dt.obras[s.id] || {}, auto = _dtCertAuto(st, s.id);
+      var ct = o.ct ? _dtCt(st,o.ct) : (auto ? _dtCt(st,auto.ct) : null);
+      var cert = (o.cert===undefined||o.cert==='') ? (auto?auto.pct:null) : Number(o.cert);
+      var vencido = false;
+      var estado = o.estado;
+      if(!estado){
+        if(!r) estado = 'por_iniciar';
+        else if(hoy<r.ini) estado = 'por_iniciar';
+        else if(hoy>r.fin){ if(cert!==null && cert>=100) estado='terminada'; else { estado='demorada'; vencido=true; } }
+        else estado = 'en_curso';
+      }
+      var sem = 'gris';
+      if(cert!==null && r){ var d = r.plan - cert; sem = d>15?'rojo':d>5?'ambar':'verde'; }
+      h += '<div class="dt-card sem-'+sem+'"><div class="dt-card-h"><b>'+escHGlob(s.nombre)+'</b>'
+        +'<span class="dt-badge est-'+estado+'">'+(vencido?'Plazo vencido':DT_EST_OBRA[estado])+'</span></div>'
+        +'<div class="dt-meta">'+(ct?'Contratista: <b>'+escHGlob(ct.nombre)+'</b>':'<i>Sin contratista asignado</i>')
+        +(r?' · '+_dtFechaCorta(r.ini)+' → '+_dtFechaCorta(r.fin):' · sin tareas en el cronograma')+'</div>'
+        +(r?'<div class="dt-bar"><span>Plan (tiempo) '+r.plan+'%</span><div><i style="width:'+r.plan+'%"></i></div></div>':'')
+        +'<div class="dt-bar"><span>Certificado '+(cert===null?'—':cert+'%')+((o.cert===undefined||o.cert==='')&&auto?' · cert. N° '+auto.nro+' ('+_dtFechaCorta(auto.fecha)+')':'')+'</span><div><i class="c" style="width:'+(cert||0)+'%"></i></div></div>'
+        +(r&&r.activas.length?'<div class="dt-meta"><b>Hoy en obra:</b> '+escHGlob(r.activas.slice(0,4).join(', '))+(r.activas.length>4?'…':'')+'</div>':'')
+        +(r&&r.prox?'<div class="dt-meta"><b>Próximo:</b> '+escHGlob(r.prox.nombre)+' ('+_dtFechaCorta(r.prox.inicio)+')</div>':'')
+        +(o.obs?'<div class="dt-obs">'+escHGlob(o.obs)+'</div>':'')
+        +'<div style="margin-top:8px"><button class="vj-btn" onclick="_dtEditObra(\''+s.id+'\')">Editar</button></div></div>';
+    });
+    h += '</div>';
+  });
+  return h + '<div class="dt-nota">El semáforo compara el avance planificado por tiempo (del cronograma) contra el % certificado que cargás a mano: &gt;5 pts de diferencia ámbar, &gt;15 rojo.</div>';
+}
+function _dtModal(titulo, body, onSave, onDel){
+  var ov = document.createElement('div'); ov.className='vj-ov'; ov.id='dtOv';
+  ov.onclick = function(e){ if(e.target===ov) ov.remove(); };
+  ov.innerHTML = '<div class="vj-modal"><h3 style="margin:0 0 4px;font-size:20px;">'+titulo+'</h3>'+body
+    +'<div style="display:flex;gap:8px;margin-top:14px;"><button class="vj-btn pri" id="dtSave">Guardar</button>'
+    +'<button class="vj-btn" onclick="document.getElementById(\'dtOv\').remove()">Cancelar</button><span style="flex:1"></span>'
+    +(onDel?'<button class="vj-btn" id="dtDel" style="border-color:#ef4444;color:#ef4444;">Borrar</button>':'')+'</div></div>';
+  document.body.appendChild(ov);
+  document.getElementById('dtSave').onclick = function(){ if(onSave()!==false){ ov.remove(); _dtPersist(); _dtRe(); } };
+  if(onDel) document.getElementById('dtDel').onclick = function(){ if(confirm('¿Borrar?')){ onDel(); ov.remove(); _dtPersist(); _dtRe(); } };
+}
+function _dtOpts(map, sel){ return Object.keys(map).map(function(k){ return '<option value="'+k+'"'+(sel===k?' selected':'')+'>'+map[k]+'</option>'; }).join(''); }
+function _dtEditObra(sid){
+  var st = window._stateRef, o = st.dt.obras[sid] || {};
+  var nombre=''; st.grupos.forEach(function(g){ g.sectores.forEach(function(s){ if(s.id===sid) nombre=s.nombre; }); });
+  var cts = '<option value="">— ninguno —</option>'+st.dt.contratistas.map(function(c){ return '<option value="'+c.id+'"'+(o.ct===c.id?' selected':'')+'>'+escHGlob(c.nombre)+'</option>'; }).join('');
+  _dtModal('Obra: '+escHGlob(nombre),
+    '<label>Estado (vacío = automático según fechas)</label><select id="doEst"><option value="">Automático</option>'+_dtOpts(DT_EST_OBRA,o.estado)+'</select>'
+    +'<label>Contratista</label><select id="doCt">'+cts+'</select>'
+    +'<label>% certificado acumulado</label><input id="doCert" type="number" min="0" max="100" step="0.1" value="'+(o.cert===undefined?'':o.cert)+'">'
+    +'<label>Observación de la dirección técnica</label><textarea id="doObs" rows="3">'+escHGlob(o.obs||'')+'</textarea>',
+    function(){ st.dt.obras[sid] = {estado:document.getElementById('doEst').value, ct:document.getElementById('doCt').value,
+      cert:document.getElementById('doCert').value, obs:document.getElementById('doObs').value.trim()}; });
+}
+
+// ── Certificados ──
+function _dtHtmlCert(st){
+  var h = '<div class="vj-bar"><button class="vj-btn" onclick="_dtEditCt(null)">+ Contratista</button>'
+    +'<button class="vj-btn pri" onclick="_dtEditCert(null)">+ Certificado</button></div>';
+  if(!st.dt.contratistas.length) return h+'<div class="dt-nota">Todavía no hay contratistas cargados.</div>';
+  st.dt.contratistas.forEach(function(ct){
+    var certs = st.dt.certificados.filter(function(c){return c.ct===ct.id;}).sort(function(a,b){return (b.hasta||b.fecha||'').localeCompare(a.hasta||a.fecha||'');});
+    var ult = certs[0], ultPorObra = {};
+    certs.forEach(function(c){ if(_dtTieneAcum(c) && !ultPorObra[c.obra||'']) ultPorObra[c.obra||''] = c; });
+    var acum = Object.keys(ultPorObra).reduce(function(a,k){ return a+_dtAcum(ultPorObra[k]); },0), pct = _dtPct(acum, ct.contrato);
+    var dias = ult && (ult.hasta||ult.fecha) ? _dtDays(ult.hasta||ult.fecha,_dtHoy()) : null;
+    h += '<div class="vj-card" style="border-left-color:#3B82F6;margin-bottom:14px"><div style="display:flex;gap:8px;align-items:baseline;flex-wrap:wrap">'
+      +'<h4 style="margin:0">'+escHGlob(ct.nombre)+'</h4><span class="sub">'+escHGlob(ct.alcance||'')+'</span><span style="flex:1"></span>'
+      +'<button class="vj-btn" onclick="_dtEditCt(\''+ct.id+'\')">Editar</button></div>'
+      +'<div class="dt-kpis"><div><small>Contrato</small><b>'+_dtFmt(ct.contrato,ct.moneda)+'</b></div>'
+      +'<div><small>Certificado acum.</small><b>'+_dtFmt(acum,ct.moneda)+'</b></div>'
+      +'<div><small>Avance</small><b>'+pct+'%</b></div>'
+      +'<div><small>Saldo</small><b>'+_dtFmt(Math.max(0,(ct.contrato||0)-acum),ct.moneda)+'</b></div>'
+      +'<div><small>Último cert.</small><b'+(dias!==null&&dias>40?' style="color:#f59e0b"':'')+'>'+(ult?'N° '+ult.nro+(dias!==null?' · hace '+dias+' d':''):'—')+'</b></div></div>'
+      +'<div class="dt-bar"><div><i class="c" style="width:'+Math.min(100,pct)+'%"></i></div></div>';
+    if(certs.length){
+      h += '<table class="dt-tab"><tr><th>Obra</th><th>N°</th><th>Período</th><th>Del período</th><th>Acumulado</th><th>%</th><th>Estado</th><th></th></tr>';
+      certs.forEach(function(c){
+        var tiene=_dtTieneAcum(c), a=_dtAcum(c), tot=_dtTotalContrato(c, ct);
+        h += '<tr><td>'+escHGlob(c.obra||'')+'</td><td>'+c.nro+'</td><td>'+(c.desde?_dtFechaCorta(c.desde)+' – ':'')+_dtFechaCorta(c.hasta||c.fecha)+'</td><td>'+(c.monto===''||c.monto===undefined?'—':_dtFmt(c.monto,ct.moneda))+'</td>'
+          +'<td>'+(tiene?_dtFmt(a,ct.moneda):'—')+'</td><td>'+(tiene?_dtPct(a,tot)+'%':'—')+'</td><td><span class="dt-badge ce-'+c.estado+'">'+DT_EST_CERT[c.estado]+'</span></td>'
+          +'<td>'+(c.url?'<a href="'+escHGlob(c.url)+'" target="_blank" rel="noopener">PDF</a> ':'')+'<button class="vj-btn" onclick="_dtEditCert(\''+c.id+'\')">Editar</button></td></tr>';
+        if((c.rubros&&c.rubros.length)||c.notas){
+          h += '<tr><td colspan="8" style="padding:0 8px 8px"><details><summary>Detalle por rubro'+(c.notas?' y notas':'')+'</summary>'
+            +(c.notas?'<div class="dt-obs">'+escHGlob(c.notas)+'</div>':'')
+            +(c.rubros||[]).map(function(r){ return '<div class="dt-rub"><span>'+escHGlob(r.nombre)+'</span><span>'+_dtFmt(r.acumulado,ct.moneda)+' / '+_dtFmt(r.contrato,ct.moneda)+' · <b>'+_dtPct(r.acumulado,r.contrato)+'%</b></span></div>'; }).join('')
+            +'</details></td></tr>';
+        }
+      });
+      h += '</table>';
+    }
+    h += '</div>';
+  });
+  return h;
+}
+function _dtTieneAcum(c){ return (c.rubros&&c.rubros.length>0) || (c.acumulado!==undefined && c.acumulado!==''); }
+function _dtAcum(c){
+  if(c.acumulado!==undefined && c.acumulado!=='' && !(c.rubros&&c.rubros.length)) return _dtNum(c.acumulado);
+  return (c.rubros||[]).reduce(function(a,r){ return a+(Number(r.acumulado)||0); },0);
+}
+function _dtTotalContrato(c, ct){
+  var t = (c.rubros||[]).reduce(function(a,r){ return a+(Number(r.contrato)||0); },0);
+  return t || ct.contrato || 0;
+}
+function _dtEditCt(id){
+  var st = window._stateRef, c = id ? _dtCt(st,id) : {nombre:'',alcance:'',moneda:'Gs',contrato:''};
+  _dtModal(id?'Editar contratista':'Nuevo contratista',
+    '<label>Nombre</label><input id="dcN" value="'+escHGlob(c.nombre)+'">'
+    +'<label>Alcance</label><input id="dcA" value="'+escHGlob(c.alcance||'')+'">'
+    +'<div class="vj-row"><div><label>Moneda</label><select id="dcM">'+_dtOpts({Gs:'Guaraníes (₲)',USD:'Dólares (US$)',ARS:'Pesos ($)'},c.moneda)+'</select></div>'
+    +'<div><label>Monto de contrato</label><input id="dcC" value="'+(c.contrato===''?'':Number(c.contrato).toLocaleString('es-AR'))+'"></div></div>',
+    function(){
+      var n = document.getElementById('dcN').value.trim(); if(!n){ alert('Falta el nombre.'); return false; }
+      var o = {id:id||('ct_'+Date.now()), nombre:n, alcance:document.getElementById('dcA').value.trim(), moneda:document.getElementById('dcM').value, contrato:_dtNum(document.getElementById('dcC').value)};
+      if(id) Object.assign(c,o); else st.dt.contratistas.push(o);
+    }, id ? function(){ st.dt.contratistas = st.dt.contratistas.filter(function(x){return x.id!==id;}); st.dt.certificados = st.dt.certificados.filter(function(x){return x.ct!==id;}); } : null);
+}
+function _dtEditCert(id){
+  var st = window._stateRef, dt = st.dt;
+  if(!dt.contratistas.length){ alert('Primero cargá un contratista.'); return; }
+  var c = id ? dt.certificados.find(function(x){return x.id===id;}) : {ct:dt.contratistas[0].id, nro:'', desde:'', hasta:'', fecha:'', monto:'', estado:'presentado', url:'', notas:'', rubros:[]};
+  var rub = (c.rubros||[]).map(function(r){ return r.nombre+' | '+r.contrato+' | '+r.acumulado; }).join('\n');
+  _dtModal(id?'Editar certificado':'Nuevo certificado',
+    '<label>Contratista</label><select id="dxCt">'+dt.contratistas.map(function(k){ return '<option value="'+k.id+'"'+(c.ct===k.id?' selected':'')+'>'+escHGlob(k.nombre)+'</option>'; }).join('')+'</select>'
+    +'<label>Obra</label><input id="dxOb" value="'+escHGlob(c.obra||'')+'" placeholder="Ej: Obras Civiles Silos">'
+    +'<div class="vj-row"><div><label>N° certificado</label><input id="dxNro" type="number" value="'+c.nro+'"></div>'
+    +'<div><label>Estado</label><select id="dxEst">'+_dtOpts(DT_EST_CERT,c.estado)+'</select></div></div>'
+    +'<div class="vj-row"><div><label>Período desde</label><input type="date" id="dxD" value="'+c.desde+'"></div><div><label>Período hasta</label><input type="date" id="dxH" value="'+c.hasta+'"></div></div>'
+    +'<label>Monto del período (opcional)</label><input id="dxM" value="'+(c.monto===''||c.monto===undefined?'':Number(c.monto).toLocaleString('es-AR'))+'">'
+    +'<label>Acumulado (si no cargás rubros)</label><input id="dxA" value="'+((c.rubros&&c.rubros.length)||!c.acumulado?'':Number(c.acumulado).toLocaleString('es-AR'))+'">'
+    +'<label>Rubros — una línea por rubro: nombre | contrato | acumulado</label><textarea id="dxR" rows="5" style="font-size:12px">'+escHGlob(rub)+'</textarea>'
+    +'<label>Link al PDF (Drive)</label><input id="dxU" value="'+escHGlob(c.url||'')+'">'
+    +'<label>Notas</label><textarea id="dxN" rows="2">'+escHGlob(c.notas||'')+'</textarea>',
+    function(){
+      var viejos = {}; (c.rubros||[]).forEach(function(r){ viejos[r.nombre]=r; });
+      var rubros = document.getElementById('dxR').value.split('\n').map(function(l){ var p=l.split('|'); if(p.length<3) return null; var n=p[0].trim(); var o={nombre:n, contrato:_dtNum(p[1]), acumulado:_dtNum(p[2])}; if(viejos[n]&&viejos[n].sectores) o.sectores=viejos[n].sectores; return o; }).filter(Boolean);
+      var nro = parseInt(document.getElementById('dxNro').value,10);
+      if(!nro){ alert('Falta el N° de certificado.'); return false; }
+      var o = {id:id||('c_'+Date.now()), obra:document.getElementById('dxOb').value.trim(), ct:document.getElementById('dxCt').value, nro:nro, desde:document.getElementById('dxD').value, hasta:document.getElementById('dxH').value,
+        estado:document.getElementById('dxEst').value, monto:document.getElementById('dxM').value.trim()?_dtNum(document.getElementById('dxM').value):'',
+        acumulado:document.getElementById('dxA').value.trim()?_dtNum(document.getElementById('dxA').value):'', url:document.getElementById('dxU').value.trim(), notas:document.getElementById('dxN').value.trim(), rubros:rubros};
+      if(id) Object.assign(c,o); else dt.certificados.push(o);
+    }, id ? function(){ dt.certificados = dt.certificados.filter(function(x){return x.id!==id;}); } : null);
+}
+</script>
 </body>
 </html>
