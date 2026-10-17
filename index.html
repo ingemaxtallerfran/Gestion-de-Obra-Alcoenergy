@@ -893,6 +893,14 @@
   .dt-falta{ margin-top:8px; padding:8px 10px; background:var(--gris2,#252525); border-left:3px solid var(--naranja,#E8651A); border-radius:6px; font-size:14px; }
   .dt-lista tr[onclick]{ cursor:pointer; } .dt-lista tr[onclick]:hover td, .dt-lista tr.sel td{ background:var(--gris2,#252525); }
   .dt-lista-grp{ font-weight:800; letter-spacing:.1em; text-transform:uppercase; font-size:11px; color:var(--gris5,#888); padding-top:12px !important; }
+  .ml-list{ display:grid; gap:6px; font-family:'Barlow Condensed',sans-serif; }
+  .ml-item{ display:grid; grid-template-columns:96px 150px 1fr auto; gap:12px; align-items:center; padding:9px 12px; background:var(--gris1,#1a1a1a); border:1px solid var(--borde,#2e2e2e); border-left:4px solid #64748b; border-radius:8px; color:var(--texto,#f0f0f0); text-decoration:none; font-size:15px; }
+  .ml-item:hover{ background:var(--gris2,#252525); }
+  .ml-item.nap{ border-left-color:#EC4899; }
+  .ml-fecha{ color:var(--gris5,#888); font-size:13px; } .ml-de{ font-weight:800; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .ml-asunto{ min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; } .ml-asunto small{ color:var(--gris5,#888); }
+  .ml-tag{ font-size:11px; font-weight:800; background:#EC4899; color:#fff; padding:2px 8px; border-radius:10px; }
+  @media (max-width:640px){ .ml-item{ grid-template-columns:1fr auto; } .ml-asunto{ grid-column:1 / -1; white-space:normal; } }
 </style>
  
 <div class="cf-root" id="cfRoot"><div class="cf-loading" id="cfLoading">Cargando cronograma...</div></div>
@@ -3422,7 +3430,9 @@ function toggleTema(){
         const planosLocal = state.planos || [];
         const comprasLocal = state.compras || [];
         const gruposLocal = state.grupos;
+        const vistaLocal = state.vista; // la pantalla la elige cada usuario, no el servidor
         state = Object.assign(state, d);
+        state.vista = vistaLocal;
         // Si el Sheet no trajo planos/compras, usar los locales
         if(!state.planos || state.planos.length === 0) state.planos = planosLocal;
         if(!state.compras || state.compras.length === 0) state.compras = comprasLocal;
@@ -3785,6 +3795,7 @@ function toggleTema(){
           <button id="btnCronoTop" style="background:rgba(255,255,255,.06);border:1px solid var(--borde,#2e2e2e);color:var(--texto,#f0f0f0);border-radius:7px;padding:6px 14px;font-family:Barlow Condensed,sans-serif;font-size:12px;font-weight:800;cursor:pointer;letter-spacing:.06em;">📅 CRONOGRAMA</button>
           <button id="btnPendTop" style="background:rgba(234,179,8,.15);border:1px solid rgba(234,179,8,.45);color:#FACC15;border-radius:7px;padding:6px 14px;font-family:Barlow Condensed,sans-serif;font-size:12px;font-weight:800;cursor:pointer;letter-spacing:.06em;">✅ PENDIENTES</button>
           <button id="btnDtTop" style="background:rgba(22,163,74,.15);border:1px solid rgba(22,163,74,.45);color:#4ADE80;border-radius:7px;padding:6px 14px;font-family:Barlow Condensed,sans-serif;font-size:12px;font-weight:800;cursor:pointer;letter-spacing:.06em;">📊 OBRAS Y CERTIF.</button>
+          <button id="btnMailsTop" style="background:rgba(236,72,153,.15);border:1px solid rgba(236,72,153,.45);color:#F472B6;border-radius:7px;padding:6px 14px;font-family:Barlow Condensed,sans-serif;font-size:12px;font-weight:800;cursor:pointer;letter-spacing:.06em;">✉ MAILS</button>
           <button id="btnViajesTop" style="background:rgba(59,130,246,.15);border:1px solid rgba(59,130,246,.45);color:#60A5FA;border-radius:7px;padding:6px 14px;font-family:Barlow Condensed,sans-serif;font-size:12px;font-weight:800;cursor:pointer;letter-spacing:.06em;">✈ VIAJES</button>
           <button onclick="abrirReporte()" style="background:rgba(232,101,26,.15);border:1px solid rgba(232,101,26,.45);color:var(--naranja,#E8651A);border-radius:7px;padding:6px 14px;font-family:Barlow Condensed,sans-serif;font-size:12px;font-weight:800;cursor:pointer;letter-spacing:.06em;text-transform:uppercase;display:flex;align-items:center;gap:6px;white-space:nowrap;">🖨 Reporte</button>
           <button onclick="window.open('https://drive.google.com/drive/folders/1lAODEcN9ypzMBSqpOiUx8kD6Alac8GK-','_blank','noopener')" title="Abre la carpeta de planos en Google Drive" style="background:rgba(124,58,237,.15);border:1px solid rgba(124,58,237,.45);color:#A78BFA;border-radius:7px;padding:6px 14px;font-family:Barlow Condensed,sans-serif;font-size:12px;font-weight:800;cursor:pointer;letter-spacing:.06em;text-transform:uppercase;display:flex;align-items:center;gap:6px;white-space:nowrap;">📋 Planos</button>
@@ -3894,9 +3905,10 @@ function toggleTema(){
         if(state.vista==='viajes') return '<div id="vistaEspecial" data-vista-tipo="viajes"></div>';
         if(state.vista==='dt') return '<div id="vistaEspecial" data-vista-tipo="dt"></div>';
         if(state.vista==='pend') return '<div id="vistaEspecial" data-vista-tipo="pend"></div>';
+        if(state.vista==='mails') return '<div id="vistaEspecial" data-vista-tipo="mails"></div>';
         return '';
       })()}
-      ${state.vista!=='calendario'&&state.vista!=='compras'&&state.vista!=='viajes'&&state.vista!=='dt'&&state.vista!=='pend'?`<div style="position:relative;">
+      ${state.vista!=='calendario'&&state.vista!=='compras'&&state.vista!=='viajes'&&state.vista!=='dt'&&state.vista!=='pend'&&state.vista!=='mails'?`<div style="position:relative;">
         <button class="gantt-fs-btn" id="btnGanttFS" title="Pantalla completa">⤢ Pantalla completa</button>
         <div class="cf-gantt-wrap" id="cfGanttWrap"><div class="cf-gantt">
         <div class="cf-rowlabels">
@@ -4011,9 +4023,10 @@ function toggleTema(){
       if(tipoVista==='viajes' && typeof renderViajes==='function') renderViajes(vistaEsp, state);
       if(tipoVista==='dt' && typeof renderDT==='function') renderDT(vistaEsp, state);
       if(tipoVista==='pend' && typeof renderPendientes==='function') renderPendientes(vistaEsp, state);
+      if(tipoVista==='mails' && typeof renderMails==='function') renderMails(vistaEsp, state);
     }
     // Módulos de dirección técnica: pantalla limpia, sin panel de hoy/cuadrillas ni barra del Gantt
-    root.classList.toggle('modo-dt', ['viajes','dt','pend'].indexOf(state.vista)>-1);
+    root.classList.toggle('modo-dt', ['viajes','dt','pend','mails'].indexOf(state.vista)>-1);
     {
     }
 
@@ -4032,6 +4045,8 @@ function toggleTema(){
     if(btnCronoTop) btnCronoTop.onclick = ()=>{ state.vista='sector'; save(); render(); };
     const btnPendTop = document.getElementById('btnPendTop');
     if(btnPendTop) btnPendTop.onclick = ()=>{ state.vista='pend'; save(); render(); };
+    const btnMailsTop = document.getElementById('btnMailsTop');
+    if(btnMailsTop) btnMailsTop.onclick = ()=>{ state.vista='mails'; save(); render(); };
     const btnDtTop = document.getElementById('btnDtTop');
     if(btnDtTop) btnDtTop.onclick = ()=>{ state.vista='dt'; save(); render(); };
     root.querySelectorAll('[data-zoom]').forEach(b=>b.onclick=()=>{ state.zoom=b.dataset.zoom; save(); render(); });
@@ -5129,6 +5144,55 @@ function _dtEditCert(id){
         acumulado:document.getElementById('dxA').value.trim()?_dtNum(document.getElementById('dxA').value):'', url:document.getElementById('dxU').value.trim(), notas:document.getElementById('dxN').value.trim(), rubros:rubros};
       if(id) Object.assign(c,o); else dt.certificados.push(o);
     }, id ? function(){ dt.certificados = dt.certificados.filter(function(x){return x.id!==id;}); } : null);
+}
+</script>
+<script>
+// ════════════════════════════════════════
+//  VISTA MAILS DE OBRA — hilos con Alcoenergy / contratistas (los carga una tarea diaria desde Gmail)
+// ════════════════════════════════════════
+var ML_NOMBRES = {
+  'ndaza@alcoenergy.com.py':'Napoleón Daza', 'ecordova@alcoenergy.com.py':'Edzon Cordova', 'mayala@alcoenergy.com.py':'Mónica Ayala',
+  'cmucci@porta.com.ar':'Carolina Mucci (Porta)', 'armandorivasconst.central@gmail.com':'ARC', 'eng.gerencia@gmail.com':'Engesilo',
+  'comercial@engesilo.com.py':'Engesilo', 'ailsonjunior.eng@gmail.com':'Ailson', 'cvlazzari@gmail.com':'Clademir Lazzari',
+  'ingemaxtaller@gmail.com':'Ingemax', 'ingemaxsa@hotmail.com':'Alejandro', 'fformosa.ingemax@gmail.com':'Franco',
+  'tcanal.ingemax@gmail.com':'Tobías', 'ingemaxoficinatecnica@gmail.com':'Ingemax Of. Técnica'
+};
+var _mlFiltro = 'todos';
+function _mlNombre(mail){
+  mail = String(mail||'').toLowerCase().replace(/.*</,'').replace(/>.*/,'').trim();
+  if(ML_NOMBRES[mail]) return ML_NOMBRES[mail];
+  var dom = mail.split('@')[1]||'';
+  if(/steelcon/.test(dom)) return 'Steelcon';
+  if(/rocha/.test(dom)) return 'Rocha Equipamentos';
+  return mail.split('@')[0];
+}
+function _mlFecha(iso){
+  var d = new Date(iso); if(isNaN(d)) return '';
+  return String(d.getDate()).padStart(2,'0')+'/'+String(d.getMonth()+1).padStart(2,'0')+' '+String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0');
+}
+function _mlRe(){ var c=document.getElementById('vistaEspecial'); if(c) renderMails(c, window._stateRef); }
+function renderMails(container, st){
+  var mails = (st.mails||[]).slice().sort(function(a,b){ return String(b.fecha).localeCompare(String(a.fecha)); });
+  var hace7 = Date.now() - 7*86400000;
+  var vis = mails.filter(function(m){
+    if(_mlFiltro==='napoleon') return m.napoleon;
+    if(_mlFiltro==='semana') return new Date(m.fecha).getTime() >= hace7;
+    return true;
+  });
+  var f = function(k,t){ return '<button class="vj-btn'+(_mlFiltro===k?' pri':'')+'" onclick="_mlFiltro=\''+k+'\';_mlRe()">'+t+'</button>'; };
+  var h = '<div class="vj-wrap"><div class="vj-bar"><h3 class="vj-h">Mails de obra</h3><span style="flex:1"></span>'
+    + f('todos','Todos ('+mails.length+')') + f('napoleon','De Napoleón') + f('semana','Últimos 7 días') + '</div>'
+    + '<div class="dt-nota" style="margin:-4px 0 12px">Hilos donde participan Alcoenergy, Engesilo, ARC y demás contratistas (de, para o en copia). '
+    + (st.mailsActualizado?'Actualizado: '+_mlFecha(st.mailsActualizado)+'. ':'')+'Tocá el asunto para abrirlo en Gmail.</div>';
+  h += '<div class="ml-list">' + vis.map(function(m){
+    return '<a class="ml-item'+(m.napoleon?' nap':'')+'" href="'+escHGlob(m.url||'#')+'" target="_blank" rel="noopener">'
+      + '<span class="ml-fecha">'+_mlFecha(m.fecha)+'</span>'
+      + '<span class="ml-de">'+escHGlob(_mlNombre(m.de))+'</span>'
+      + '<span class="ml-asunto">'+escHGlob(m.asunto||'(sin asunto)')+(m.n>1?' <small>('+m.n+')</small>':'')+'</span>'
+      + (m.napoleon?'<span class="ml-tag">Napoleón</span>':'')
+      + '</a>';
+  }).join('') + (vis.length?'':'<div class="dt-nota">No hay mails para este filtro.</div>') + '</div></div>';
+  container.innerHTML = h;
 }
 </script>
 </body>
