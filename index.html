@@ -1011,6 +1011,9 @@
     .dt-step:not(.act) span{ display:none; } .dt-step.act span{ white-space:nowrap; }
     .vj-modal input, .vj-modal select, .vj-modal textarea, .av-form input, .av-form select, .av-form textarea, .cal-filtro-select{ font-size:16px; }
   }
+  .vj-chip.nota{ white-space:normal; line-height:1.15; padding:2px 5px; }
+  .vj-dias{ margin:8px 0 0; padding-left:18px; font-size:14px; color:var(--texto,#f0f0f0); }
+  .vj-dias li{ margin:2px 0; } .vj-dias b{ color:var(--gris5,#888); font-weight:700; margin-right:4px; }
 </style>
  
 <div class="cf-root" id="cfRoot"><div class="cf-loading" id="cfLoading">Cargando cronograma...</div></div>
@@ -4769,6 +4772,33 @@ function _vjPersonas(v){ return (v.personas||[]).filter(Boolean); }
 function _vjFmt(s){ if(!s) return ''; var p=s.split('-'); return p[2]+'/'+p[1]; }
 function _vjFmtDia(s){ if(!s) return ''; var d=new Date(s+'T00:00:00'); return VJ_DIAS[d.getDay()]+' '+_vjFmt(s); }
 function _vjHoy(){ var d=new Date(); return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0'); }
+function _vjNota(vj, f, persona){
+  var d = (vj.dias||{})[f]; if(!d) return '';
+  return d[persona] || d['*'] || '';
+}
+function _vjDiasTxt(vj){
+  var l = [];
+  Object.keys(vj.dias||{}).sort().forEach(function(f){
+    Object.keys(vj.dias[f]).forEach(function(k){ l.push(f.slice(8,10)+'/'+f.slice(5,7)+' '+(k==='*'?'':k+': ')+vj.dias[f][k]); });
+  });
+  return l.join('\n');
+}
+function _vjDiasParse(txt, desde){
+  var dias = {}, y0 = parseInt((desde||_vjHoy()).slice(0,4),10);
+  String(txt||'').split('\n').forEach(function(l){
+    var m = l.trim().match(/^(\d{1,2})\/(\d{1,2})\s+(?:([^:]+):\s*)?(.+)$/); if(!m) return;
+    var f = y0+'-'+String(m[2]).padStart(2,'0')+'-'+String(m[1]).padStart(2,'0');
+    if(desde && f < desde) f = (y0+1)+f.slice(4);
+    (dias[f] = dias[f] || {})[(m[3]||'*').trim()] = m[4].trim();
+  });
+  return dias;
+}
+// La persona sigue en otro viaje que arranca ese día o el siguiente: no es una vuelta
+function _vjSigue(st, vj, persona, f){
+  var sig = new Date(f+'T00:00:00'); sig.setDate(sig.getDate()+1);
+  var f2 = sig.getFullYear()+'-'+String(sig.getMonth()+1).padStart(2,'0')+'-'+String(sig.getDate()).padStart(2,'0');
+  return (st.viajes||[]).some(function(o){ return o!==vj && (o.desde===f || o.desde===f2) && _vjPersonas(o).indexOf(persona)>-1; });
+}
 function _vjRe(){ var c = document.getElementById('vistaEspecial'); if(c) renderViajes(c, window._stateRef); }
 
 function _vjCard(vj, i){
@@ -4780,6 +4810,7 @@ function _vjCard(vj, i){
     +'<span style="flex:1"></span><button class="vj-btn" onclick="_vjEditar('+i+')">Editar</button></div>'
     +'<div class="vj-personas">'+pers.map(function(p){ return '<span style="background:'+_vjColor(p)+'">'+escHGlob(p)+'</span>'; }).join('')+'</div>'
     +'<div class="vj-fechas"><span>Ida <b>'+_vjFmtDia(vj.desde)+'</b></span><span>Vuelta <b>'+(vj.vueltaTbc?'a confirmar':_vjFmtDia(vj.hasta))+'</b></span></div>'
+    +(Object.keys(vj.dias||{}).length?'<ul class="vj-dias">'+Object.keys(vj.dias).sort().map(function(f){ return Object.keys(vj.dias[f]).map(function(k){ return '<li><b>'+_vjFmtDia(f)+'</b> '+(k==='*'?'':escHGlob(k)+': ')+escHGlob(vj.dias[f][k])+'</li>'; }).join(''); }).join('')+'</ul>':'')
     +(hitos.length?'<ul class="vj-hitos">'+hitos.map(function(h){return '<li>'+escHGlob(h)+'</li>';}).join('')+'</ul>':'')
     +(vj.notas?'<div class="sub" style="margin-top:4px">'+escHGlob(vj.notas)+'</div>':'')
     +'</div>';
@@ -4834,9 +4865,10 @@ function _vjMesHtml(st, y, m, hoyStr){
     st.viajes.forEach(function(vj, i){
       if(f>=vj.desde && f<=vj.hasta){
         _vjPersonas(vj).forEach(function(p){
-          var marca = f===vj.desde ? '↗ ' : (f===vj.hasta && !vj.vueltaTbc ? '↙ ' : '');
-          h += '<div class="vj-chip'+(vj.estado==='planificado'?' prov':'')+'" style="background:'+_vjColor(p)+(vj.estado==='realizado'?';opacity:.55':'')+'" '
-            +'title="'+escHGlob(p+' · '+(vj.titulo||''))+'" onclick="event.stopPropagation();_vjEditar('+i+')">'+marca+escHGlob(p)+'</div>';
+          var marca = f===vj.desde ? '↗ ' : (f===vj.hasta && !vj.vueltaTbc && !_vjSigue(st, vj, p, f) ? '↙ ' : '');
+          var nota = _vjNota(vj, f, p);
+          h += '<div class="vj-chip'+(vj.estado==='planificado'?' prov':'')+(nota?' nota':'')+'" style="background:'+_vjColor(p)+(vj.estado==='realizado'?';opacity:.55':'')+'" '
+            +'title="'+escHGlob(p+' · '+(nota||vj.titulo||''))+'" onclick="event.stopPropagation();_vjEditar('+i+')">'+marca+escHGlob(p)+(nota?' · '+escHGlob(nota):'')+'</div>';
         });
       }
     });
@@ -4866,6 +4898,7 @@ function _vjEditar(idx, fechaDefault){
     +'<div><label>Vuelta</label><input type="date" id="vjHas" value="'+vj.hasta+'"></div></div>'
     +'<label style="display:flex;gap:8px;align-items:center;text-transform:none;letter-spacing:0;font-size:14px;color:var(--texto,#f0f0f0)"><input type="checkbox" id="vjTbc" style="width:auto"'+(vj.vueltaTbc?' checked':'')+'> Vuelta a confirmar</label>'
     +'<label>Estado</label><select id="vjEst">'+Object.keys(VJ_ESTADOS).map(function(k){return '<option value="'+k+'"'+((vj.estado||'planificado')===k?' selected':'')+'>'+VJ_ESTADOS[k]+'</option>';}).join('')+'</select>'
+    +'<label>Detalle por día (una línea por nota: 31/10 Francisco: traslado a Iguazú)</label><textarea id="vjDias" rows="3" placeholder="29/10 Alejandro: llega 15 h">'+escHGlob(_vjDiasTxt(vj))+'</textarea>'
     +'<label>Hitos del viaje (uno por línea)</label><textarea id="vjHit" rows="4" placeholder="Ej: Plano entregado: nivel de molienda +25 cm">'+escHGlob(vj.hitos||'')+'</textarea>'
     +'<label>Notas (vuelos, reservas)</label><textarea id="vjNot" rows="2">'+escHGlob(vj.notas)+'</textarea>'
     +'<div style="display:flex;gap:8px;margin-top:14px;">'
@@ -4886,6 +4919,7 @@ function _vjGuardar(idx){
     vueltaTbc: document.getElementById('vjTbc').checked,
     estado: document.getElementById('vjEst').value,
     hitos: document.getElementById('vjHit').value.trim(),
+    dias: _vjDiasParse(document.getElementById('vjDias').value, document.getElementById('vjDes').value),
     notas: document.getElementById('vjNot').value.trim()
   });
   if(!vj.titulo || !vj.desde){ alert('Completá al menos el motivo y la fecha de ida.'); return; }
