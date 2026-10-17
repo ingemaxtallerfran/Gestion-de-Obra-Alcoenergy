@@ -5119,7 +5119,7 @@ function _dtInfo(st, sid){
     else if(e==='adjudicacion') estado = 'licitacion';
     else if(e==='terminada') estado = 'terminada';
     else if(r && hoy<r.ini) estado = 'por_iniciar';
-    else if((o.entrega && hoy>o.entrega) || (!o.entrega && r && hoy>r.fin)){ estado='demorada'; vencido=true; }
+    else if(o.entrega && hoy>o.entrega){ estado='demorada'; vencido=true; } // solo con entrega comprometida
     else estado = 'en_curso';
   }
   if(!estado) estado = o.estado || '';
