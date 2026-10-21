@@ -3493,6 +3493,30 @@ function toggleTema(){
   // Cambiar de pantalla es local: no escribe en el Sheet
   function irA(v){ state.vista=v; try{ localStorage.setItem('cf-vista', v); }catch(e){} render(); }
   let _cargado = false, _revCargado = null;
+  // El Sheet guarda el estado en una sola celda (máx. 50.000 caracteres): los módulos de dirección técnica
+  // viajan comprimidos en _pack (gzip + base64). Mismo formato que herramientas/estado.py.
+  const PACK_KEYS = ['dt','viajes','mails','mailsActualizado','avances'];
+  async function _gz(obj){
+    const buf = await new Response(new Blob([JSON.stringify(obj)]).stream().pipeThrough(new CompressionStream('gzip'))).arrayBuffer();
+    const b = new Uint8Array(buf); let bin = '';
+    for(let i=0;i<b.length;i+=0x8000) bin += String.fromCharCode.apply(null, b.subarray(i, i+0x8000));
+    return btoa(bin);
+  }
+  async function _gunz(b64){
+    const bin = atob(b64), b = new Uint8Array(bin.length);
+    for(let i=0;i<bin.length;i++) b[i] = bin.charCodeAt(i);
+    return JSON.parse(await new Response(new Blob([b]).stream().pipeThrough(new DecompressionStream('gzip'))).text());
+  }
+  async function _unpack(d){
+    if(d && d._pack){ Object.assign(d, await _gunz(d._pack)); delete d._pack; }
+    return d;
+  }
+  async function _packState(st){
+    const datos = {}, out = Object.assign({}, st);
+    PACK_KEYS.forEach(k=>{ if(st[k]!==undefined) datos[k] = st[k]; delete out[k]; });
+    out._pack = await _gz(datos);
+    return out;
+  }
 
   async function load(){
     // 1. Arrancar siempre con datos locales
@@ -3504,7 +3528,7 @@ function toggleTema(){
       const timer = setTimeout(()=>controller.abort(), 20000);
       const r = await fetch(GAS_URL + '?action=load', {signal: controller.signal});
       clearTimeout(timer);
-      const d = await r.json();
+      const d = await _unpack(await r.json());
       // Limpiar fechas del Sheet que puedan venir mal formateadas
       if(d && d.tasks) d.tasks = d.tasks.map(t=>{
         const fixDate = v => {
@@ -3575,7 +3599,7 @@ function toggleTema(){
     _deb = setTimeout(async () => {
       try{
         // Antes de escribir: si otra persona guardó mientras tanto, no pisar sus cambios
-        const srv = await (await fetch(GAS_URL + '?action=load')).json();
+        const srv = await _unpack(await (await fetch(GAS_URL + '?action=load')).json());
         if(srv && srv._rev && srv._rev !== _revCargado){
           if(el) el.textContent = 'No guardado: hay cambios de otra persona';
           alert('Otra persona guardó cambios mientras tenías la app abierta.\nRecargá la página para ver lo último y volvé a hacer tu cambio.');
@@ -3585,10 +3609,10 @@ function toggleTema(){
         const rev = Date.now().toString(36);
         state._rev = rev;
         const r = await fetch(GAS_URL, { method:'POST',
-          body: JSON.stringify({ action:'save', token:EDIT_TOKEN, state }) });
+          body: JSON.stringify({ action:'save', token:EDIT_TOKEN, state: await _packState(state) }) });
         const d = await r.json();
         if(d.ok){ _revCargado = rev; if(el) el.textContent = 'Guardado en Sheet'; }
-        else if(el) el.textContent = 'Error al guardar';
+        else { if(el) el.textContent = 'Error al guardar'; alert('No se pudo guardar en el Sheet: '+(d.error||'error desconocido')); }
       } catch(e){ if(el) el.textContent = 'Sin conexion'; }
       finally{ window._guardando = false; }
     }, 800);
@@ -5443,7 +5467,7 @@ function renderMails(container, st){
     + f('todos','Todos ('+mails.length+')') + f('napoleon','De Napoleón') + f('semana','Últimos 7 días') + '</div>'
     + '<div class="dt-nota" style="margin:-4px 0 12px">'+(st.mailsActualizado?'Actualizado '+_mlFecha(st.mailsActualizado):'')+'</div>';
   h += '<div class="ml-list">' + vis.map(function(m){
-    return '<a class="ml-item'+(m.napoleon?' nap':'')+'" href="'+_url(m.url)+'" target="_blank" rel="noopener">'
+    return '<a class="ml-item'+(m.napoleon?' nap':'')+'" href="'+_url(m.url || ('https://mail.google.com/mail/?authuser=ingemaxtaller@gmail.com#all/'+m.id))+'" target="_blank" rel="noopener">'
       + '<span class="ml-fecha">'+_mlFecha(m.fecha)+'</span>'
       + '<span class="ml-de">'+escHGlob(_mlNombre(m.de))+'</span>'
       + '<span class="ml-asunto">'+escHGlob(m.asunto||'(sin asunto)')+(m.n>1?' <small>('+m.n+')</small>':'')+'</span>'
