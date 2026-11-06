@@ -826,10 +826,13 @@
   .vj-num{ font-size:12px; font-weight:700; color:var(--gris5,#888); }
   .vj-chip{ font-size:11px; font-weight:700; color:#fff; border-radius:4px; padding:1px 5px; margin-top:2px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; cursor:pointer; }
   .vj-chip.prov{ opacity:.65; border:1px dashed #fff; }
-  .vj-list{ margin-top:22px; display:grid; gap:10px; }
-  .vj-card{ background:var(--gris1,#1a1a1a); border:1px solid var(--borde,#2e2e2e); border-left:4px solid var(--naranja,#E8651A); border-radius:8px; padding:10px 14px; }
-  .vj-card h4{ margin:0 0 3px; font-size:16px; font-weight:800; }
-  .vj-card .sub{ font-size:13px; color:var(--gris5,#888); }
+  .vj-chip.personal{ background:transparent !important; border:1px dashed var(--gris5,#888); color:var(--gris5,#888); }
+  .vj-list{ margin-top:10px; display:grid; grid-template-columns:repeat(auto-fill,minmax(270px,1fr)); gap:8px; }
+  .vj-card{ background:var(--gris1,#1a1a1a); border:1px solid var(--borde,#2e2e2e); border-left:4px solid var(--naranja,#E8651A); border-radius:8px; padding:7px 10px; }
+  .vj-card h4{ margin:0 0 2px; font-size:14px; font-weight:800; }
+  .vj-card .vj-btn{ padding:2px 8px; font-size:12px; }
+  .vj-card .vj-est{ font-size:10px; }
+  .vj-card .sub{ font-size:12px; color:var(--gris5,#888); }
   .vj-card .obra{ margin-top:6px; font-size:12px; color:var(--texto,#f0f0f0); opacity:.85; }
   .vj-ov{ position:fixed; inset:0; background:rgba(0,0,0,.6); z-index:500; display:flex; align-items:center; justify-content:center; padding:16px; }
   .vj-modal{ background:var(--gris1,#1a1a1a); border:1px solid var(--borde,#2e2e2e); border-top:3px solid var(--naranja,#E8651A);
@@ -863,11 +866,11 @@
   @media (max-width:640px){ .dt-tab{ display:block; overflow-x:auto; } }
   #cfRoot.modo-dt > *:not(.cf-brandbar):not(.cf-modnav):not(#vistaEspecial){ display:none !important; }
   .vj-h{ margin:0; font-family:'Barlow Condensed',sans-serif; font-size:20px; font-weight:800; text-transform:uppercase; letter-spacing:.06em; }
-  .vj-personas{ display:flex; gap:6px; flex-wrap:wrap; margin-top:6px; }
-  .vj-personas span{ color:#fff; font-size:13px; font-weight:800; padding:2px 10px; border-radius:12px; }
-  .vj-fechas{ display:flex; gap:22px; margin-top:8px; font-size:15px; color:var(--gris5,#888); }
-  .vj-fechas b{ color:var(--texto,#f0f0f0); font-size:17px; }
-  .vj-hitos{ margin:8px 0 0; padding-left:18px; font-size:14px; }
+  .vj-personas{ display:flex; gap:4px; flex-wrap:wrap; margin-top:4px; }
+  .vj-personas span{ color:#fff; font-size:11px; font-weight:800; padding:1px 7px; border-radius:10px; }
+  .vj-fechas{ display:flex; gap:14px; margin-top:4px; font-size:13px; color:var(--gris5,#888); }
+  .vj-fechas b{ color:var(--texto,#f0f0f0); font-size:14px; }
+  .vj-hitos{ margin:4px 0 0; padding-left:16px; font-size:12px; }
   .vj-hitos li{ margin:2px 0; }
   .dt-mapa{ position:relative; background:#fff; border:1px solid var(--borde,#2e2e2e); border-radius:10px; overflow:hidden; }
   .dt-mapa img{ display:block; width:100%; height:auto; }
@@ -4780,6 +4783,7 @@ var VJ_COLORES = {alejandro:'#E8651A', francisco:'#3D7A45', franco:'#2F6E9E', le
 var VJ_PALETA = ['#334155','#57534E','#3F6212','#1E3A8A','#7C2D12'];
 var _vjMes = null; // {y, m}
 var _vjVerRealizados = false;
+var _vjVerDespues = false;
 
 function _vjPersist(){
   var st = window._stateRef; if(!st) return;
@@ -4850,16 +4854,26 @@ function renderViajes(container, st){
   var y=_vjMes.y, m=_vjMes.m;
   var primer = new Date(y,m,1).getDay(), dias = new Date(y,m+1,0).getDate(), hoyStr = _vjHoy();
 
-  var idx = st.viajes.map(function(v,i){ return {v:v,i:i}; });
-  var proximos = idx.filter(function(o){ return o.v.hasta >= hoyStr || o.v.vueltaTbc && o.v.estado!=='realizado'; })
+  // Los viajes personales solo se ven en el calendario
+  var idx = st.viajes.map(function(v,i){ return {v:v,i:i}; }).filter(function(o){ return !o.v.personal; });
+  var activos = idx.filter(function(o){ return o.v.estado!=='realizado' && (o.v.hasta >= hoyStr || o.v.vueltaTbc); })
     .sort(function(a,b){ return a.v.desde.localeCompare(b.v.desde); });
-  var hechos = idx.filter(function(o){ return proximos.indexOf(o)<0; }).sort(function(a,b){ return b.v.desde.localeCompare(a.v.desde); });
+  // En la lista, solo lo de los próximos dos meses; el resto queda en el calendario y en "Más adelante"
+  var lim = new Date(hoy); lim.setMonth(lim.getMonth()+2);
+  var limStr = lim.getFullYear()+'-'+String(lim.getMonth()+1).padStart(2,'0')+'-'+String(lim.getDate()).padStart(2,'0');
+  var proximos = activos.filter(function(o){ return o.v.desde <= limStr; });
+  var despues = activos.filter(function(o){ return o.v.desde > limStr; });
+  var hechos = idx.filter(function(o){ return activos.indexOf(o)<0; }).sort(function(a,b){ return b.v.desde.localeCompare(a.v.desde); });
 
   var h = '<div class="vj-wrap">';
-  h += '<div class="vj-bar"><h3 class="vj-h">Próximos viajes</h3><span style="flex:1"></span>'
+  h += '<div class="vj-bar"><h3 class="vj-h">Próximos viajes · 2 meses</h3><span style="flex:1"></span>'
     +'<button class="vj-btn" onclick="_vjIcs()">Exportar a calendario (.ics)</button>'
     +'<button class="vj-btn pri" onclick="_vjEditar(null)">+ Nuevo viaje</button></div>';
-  h += '<div class="vj-list">'+(proximos.length?proximos.map(function(o){ return _vjCard(o.v,o.i); }).join(''):'<div class="dt-nota">No hay viajes próximos cargados.</div>')+'</div>';
+  h += '<div class="vj-list">'+(proximos.length?proximos.map(function(o){ return _vjCard(o.v,o.i); }).join(''):'<div class="dt-nota">No hay viajes en los próximos dos meses.</div>')+'</div>';
+  if(despues.length){
+    h += '<div class="vj-bar" style="margin-top:10px"><button class="vj-btn" onclick="_vjVerDespues=!_vjVerDespues;_vjRe()">'+(_vjVerDespues?'Ocultar':'Ver')+' más adelante ('+despues.length+')</button></div>';
+    if(_vjVerDespues) h += '<div class="vj-list">'+despues.map(function(o){ return _vjCard(o.v,o.i); }).join('')+'</div>';
+  }
 
   // Calendario: dos meses seguidos para no perder el hilo a fin de mes
   var m2 = new Date(y, m+1, 1);
@@ -4891,8 +4905,8 @@ function _vjMesHtml(st, y, m, hoyStr){
         _vjPersonas(vj).forEach(function(p){
           var marca = f===vj.desde ? '↗ ' : (f===vj.hasta && !vj.vueltaTbc && !_vjSigue(st, vj, p, f) ? '↙ ' : '');
           var nota = _vjNota(vj, f, p);
-          h += '<div class="vj-chip'+(vj.estado==='planificado'?' prov':'')+(nota?' nota':'')+'" style="background:'+_vjColor(p)+(vj.estado==='realizado'?';opacity:.55':'')+'" '
-            +'title="'+escHGlob(p+' · '+(nota||vj.titulo||''))+'" onclick="event.stopPropagation();_vjEditar('+i+')">'+marca+escHGlob(p)+(nota?' · '+escHGlob(nota):'')+'</div>';
+          h += '<div class="vj-chip'+(vj.estado==='planificado'?' prov':'')+(vj.personal?' personal':'')+(nota?' nota':'')+'" style="background:'+_vjColor(p)+(vj.estado==='realizado'?';opacity:.55':'')+'" '
+            +'title="'+escHGlob(p+' · '+(nota||vj.titulo||''))+'" onclick="event.stopPropagation();_vjEditar('+i+')">'+marca+escHGlob(p)+(vj.personal?' · personal':'')+(nota?' · '+escHGlob(nota):'')+'</div>';
         });
       }
     });
@@ -4921,6 +4935,7 @@ function _vjEditar(idx, fechaDefault){
     +'<div class="vj-row"><div><label>Ida</label><input type="date" id="vjDes" value="'+vj.desde+'"></div>'
     +'<div><label>Vuelta</label><input type="date" id="vjHas" value="'+vj.hasta+'"></div></div>'
     +'<label style="display:flex;gap:8px;align-items:center;text-transform:none;letter-spacing:0;font-size:14px;color:var(--texto,#f0f0f0)"><input type="checkbox" id="vjTbc" style="width:auto"'+(vj.vueltaTbc?' checked':'')+'> Vuelta a confirmar</label>'
+    +'<label style="display:flex;gap:8px;align-items:center;text-transform:none;letter-spacing:0;font-size:14px;color:var(--texto,#f0f0f0)"><input type="checkbox" id="vjPers" style="width:auto"'+(vj.personal?' checked':'')+'> Viaje personal (no es de obra: solo se ve en el calendario)</label>'
     +'<label>Estado</label><select id="vjEst">'+Object.keys(VJ_ESTADOS).map(function(k){return '<option value="'+k+'"'+((vj.estado||'planificado')===k?' selected':'')+'>'+VJ_ESTADOS[k]+'</option>';}).join('')+'</select>'
     +'<label>Detalle por día (una línea por nota: 31/10 Francisco: traslado a Iguazú)</label><textarea id="vjDias" rows="3" placeholder="29/10 Alejandro: llega 15 h">'+escHGlob(_vjDiasTxt(vj))+'</textarea>'
     +'<label>Hitos del viaje (uno por línea)</label><textarea id="vjHit" rows="4" placeholder="Ej: Plano entregado: nivel de molienda +25 cm">'+escHGlob(vj.hitos||'')+'</textarea>'
@@ -4941,6 +4956,7 @@ function _vjGuardar(idx){
     hasta: document.getElementById('vjHas').value,
     personas: document.getElementById('vjPer').value.split(',').map(function(s){return s.trim();}).filter(Boolean),
     vueltaTbc: document.getElementById('vjTbc').checked,
+    personal: document.getElementById('vjPers').checked,
     estado: document.getElementById('vjEst').value,
     hitos: document.getElementById('vjHit').value.trim(),
     dias: _vjDiasParse(document.getElementById('vjDias').value, document.getElementById('vjDes').value),
@@ -4964,6 +4980,7 @@ function _vjIcs(){
   var ymd = function(s){ return s.replace(/-/g,''); };
   var limpio = function(s){ return String(s||'').replace(/\n/g,' ').replace(/[,;]/g,' '); };
   (st.viajes||[]).forEach(function(v,i){
+    if(v.personal) return;
     var fin = new Date(v.hasta+'T00:00:00'); fin.setDate(fin.getDate()+1); // DTEND es exclusivo
     var finS = fin.getFullYear()+String(fin.getMonth()+1).padStart(2,'0')+String(fin.getDate()).padStart(2,'0');
     L.push('BEGIN:VEVENT','UID:'+(v.id||('viaje'+i+'-'+ymd(v.desde)))+'@ingemax','DTSTAMP:'+ymd(_vjHoy())+'T000000Z',
